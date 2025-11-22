@@ -1,0 +1,31 @@
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import Header from '@/components/Header';
+
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata: Metadata = {
+  title: 'Custom Lanyard Ordering | Teevent',
+  description: 'Order custom lanyards with 2cm width, 2-sided color printing, and single lobster hook. Fast and reliable service.',
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+      </head>
+      <body className={inter.className}>
+        <Header />
+        {children}
+      </body>
+    </html>
+  );
+}
+
+

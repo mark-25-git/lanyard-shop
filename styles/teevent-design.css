@@ -1,0 +1,500 @@
+/* Teevent Design System - Uses tokens from main.css */
+/* All design tokens (colors, typography, spacing) are defined in main.css */
+
+/* Modern loading spinner animations */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Modern dot pulse animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+.modern-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.modern-spinner-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.modern-spinner-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.modern-spinner-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.modern-spinner-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Floating notification animations */
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(-50%) translateY(20px);
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@-webkit-keyframes slideUpFade {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(-50%) translateY(20px);
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Button Styles - Aligned with main.css */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  transition: all var(--transition-base);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-light);
+}
+
+.btn-primary:active {
+  background: var(--color-primary);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Input Styles - Aligned with main.css */
+.input-field {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-xl);
+  font-size: var(--text-base);
+  font-family: var(--font-family-primary);
+  transition: all var(--transition-base);
+  background: var(--bg-bright-primary);
+  color: var(--text-bright-primary);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+}
+
+.input-field::placeholder {
+  color: var(--text-bright-tertiary);
+}
+
+/* Floating Label Styles */
+.floating-label-wrapper {
+  position: relative;
+  margin-bottom: var(--space-4);
+}
+
+.floating-label-input {
+  width: 100%;
+  padding: var(--space-4) var(--space-4) var(--space-2) var(--space-4);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-xl);
+  font-size: var(--text-base);
+  font-family: var(--font-family-primary);
+  line-height: 1.5;
+  transition: all var(--transition-base);
+  background: var(--bg-bright-primary);
+  color: var(--text-bright-primary);
+  box-sizing: border-box;
+}
+
+.floating-label-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+}
+
+.floating-label-input[readonly] {
+  background: var(--bg-bright-secondary);
+  cursor: not-allowed;
+}
+
+.floating-label-input[readonly]:focus {
+  border-color: var(--color-gray-300);
+  box-shadow: none;
+}
+
+/* Floating Label State - Use :not(:placeholder-shown) as primary method (works with placeholder=" ") */
+.floating-label-input:focus + .floating-label,
+.floating-label-input:not(:placeholder-shown) + .floating-label {
+  top: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--text-bright-secondary);
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+}
+
+/* Fallback for browsers that don't support :not(:placeholder-shown) - use has-value class */
+.floating-label-input.has-value + .floating-label {
+  top: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--text-bright-secondary);
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+}
+
+.floating-label {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  font-size: var(--text-base);
+  color: var(--text-bright-tertiary);
+  pointer-events: none;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  padding: 0 var(--space-1);
+  z-index: 1;
+}
+
+.floating-label-select {
+  width: 100%;
+  padding: var(--space-4) var(--space-4) var(--space-2) var(--space-4);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-xl);
+  font-size: var(--text-base);
+  font-family: var(--font-family-primary);
+  line-height: 1.5;
+  transition: all var(--transition-base);
+  background: var(--bg-bright-primary);
+  color: var(--text-bright-primary);
+  -webkit-appearance: none;
+  appearance: none;
+  box-sizing: border-box;
+}
+
+.floating-label-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+}
+
+.floating-label-select:focus + .floating-label,
+.floating-label-select.has-value + .floating-label {
+  top: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--text-bright-secondary);
+  -webkit-transform: translateY(0);
+  transform: translateY(0);
+}
+
+/* Card Styles - Aligned with main.css */
+.card {
+  background: var(--bg-bright-card);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-bright-sm);
+  border: 1px solid var(--color-gray-500);
+  transition: all var(--transition-base);
+}
+
+/* Container - Aligned with main.css */
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+/* Section Padding - Aligned with main.css */
+.section-padding {
+  padding: var(--section-padding-y) var(--section-padding-x);
+}
+
+/* Container with section-padding: use 64px top and bottom padding for all screen sizes */
+.container.section-padding {
+  padding-top: var(--space-16);
+  padding-bottom: var(--space-16);
+}
+
+/* Responsive Design - Aligned with main.css breakpoints */
+@media (max-width: 768px) {
+  /* Section padding on mobile - uses main.css variables */
+  .section-padding {
+    padding: var(--section-padding-y-mobile) var(--section-padding-x-mobile);
+  }
+
+  /* Container padding on mobile */
+  .container {
+    padding: 0 var(--container-padding);
+  }
+
+  /* Card padding on mobile */
+  .card {
+    padding: var(--space-6);
+  }
+
+  /* Button full width on mobile for better touch targets */
+  .btn-primary {
+    width: 100%;
+    padding: var(--space-4) var(--space-6);
+    font-size: var(--text-base);
+    min-height: 44px; /* Touch-friendly minimum height */
+  }
+
+  /* Input fields - ensure they're touch-friendly */
+  .input-field {
+    font-size: 16px; /* Prevents zoom on iOS - must be 16px or larger */
+    padding: var(--space-4);
+    min-height: 44px; /* Touch-friendly minimum height */
+  }
+
+  /* Floating label inputs - mobile fixes */
+  .floating-label-input {
+    font-size: 16px !important; /* Prevents zoom on iOS - must be 16px or larger */
+    padding: var(--space-5) var(--space-4) var(--space-3) var(--space-4);
+    min-height: 48px; /* Touch-friendly minimum height */
+  }
+
+  .floating-label-select {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    padding: var(--space-5) var(--space-4) var(--space-3) var(--space-4);
+    min-height: 48px; /* Touch-friendly minimum height */
+  }
+
+  .floating-label {
+    font-size: 16px; /* Match input font size on mobile */
+    left: var(--space-4);
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+
+  .floating-label-input:focus + .floating-label,
+  .floating-label-input:not(:placeholder-shown) + .floating-label {
+    top: var(--space-2);
+    font-size: var(--text-xs);
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+
+  /* Fallback for mobile */
+  .floating-label-input.has-value + .floating-label {
+    top: var(--space-2);
+    font-size: var(--text-xs);
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+
+  .floating-label-select:focus + .floating-label,
+  .floating-label-select.has-value + .floating-label {
+    top: var(--space-2);
+    font-size: var(--text-xs);
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+
+  /* Prevent iOS zoom on input focus */
+  .floating-label-input,
+  .floating-label-select {
+    -webkit-appearance: none;
+    appearance: none;
+    touch-action: manipulation;
+  }
+
+  /* Improve label visibility on mobile */
+  .floating-label-wrapper {
+    margin-bottom: var(--space-5);
+  }
+}
+
+/* Utility classes for responsive layouts */
+@media (max-width: 768px) {
+  .mobile-stack {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-full-width {
+    width: 100%;
+  }
+
+  .mobile-text-center {
+    text-align: center;
+  }
+
+  .mobile-hide {
+    display: none;
+  }
+}
+
+/* Grid utilities - Responsive */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+}
+
+@media (max-width: 768px) {
+  .responsive-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}
+
+/* Flex utilities - Responsive */
+.responsive-flex {
+  display: flex;
+  gap: var(--space-3);
+}
+
+@media (max-width: 768px) {
+  .responsive-flex {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .responsive-flex-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  /* Make sticky elements not sticky on mobile */
+  [style*="position: sticky"] {
+    position: relative !important;
+    top: auto !important;
+  }
+
+  /* Responsive shipping header */
+  .shipping-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: var(--space-3) !important;
+  }
+
+  /* Order summary card - not sticky on mobile */
+  .order-summary-card {
+    position: relative !important;
+    top: auto !important;
+  }
+}
+
+/* Additional responsive utilities */
+@media (max-width: 768px) {
+  /* Stack elements on mobile */
+  .mobile-stack {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Full width on mobile */
+  .mobile-full-width {
+    width: 100%;
+  }
+
+  /* Center text on mobile */
+  .mobile-text-center {
+    text-align: center;
+  }
+
+  /* Hide on mobile */
+  .mobile-hide {
+    display: none;
+  }
+
+  /* Show on mobile only */
+  .mobile-only {
+    display: block;
+  }
+
+  /* Hide on desktop */
+  .desktop-only {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none;
+  }
+
+  .desktop-only {
+    display: block;
+  }
+}
+
+/* Hide number input spinner */
+.quantity-input-no-spinner {
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.quantity-input-no-spinner::-webkit-inner-spin-button,
+.quantity-input-no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+
