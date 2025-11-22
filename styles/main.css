@@ -2143,7 +2143,7 @@ a:focus {
     
     .hero {
         /* Fallback to background image when video is disabled */
-        background-image: url('../images/hero/hero.webp');
+        /* background-image: url('../images/hero/hero.webp'); */ /* Image not used in lanyard shop */
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -2620,7 +2620,7 @@ a:focus {
 }
 
 .solution-card[data-solution="fast-support"] {
-    background: url('../images/solution/fast-support.webp');
+    /* background: url('../images/solution/fast-support.webp'); */ /* Image not used in lanyard shop */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -2634,7 +2634,7 @@ a:focus {
 }
 
 .solution-card[data-solution="flexible-files"] {
-    background: url('../images/solution/canva.webp');
+    /* background: url('../images/solution/canva.webp'); */ /* Image not used in lanyard shop */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -2648,7 +2648,7 @@ a:focus {
 }
 
 .solution-card[data-solution="honest-pricing"] {
-    background: url('../images/solution/honest-pricing.webp');
+    /* background: url('../images/solution/honest-pricing.webp'); */ /* Image not used in lanyard shop */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -2662,7 +2662,7 @@ a:focus {
 }
 
 .solution-card[data-solution="real-service"] {
-    background: url('../images/solution/after-sales.webp');
+    /* background: url('../images/solution/after-sales.webp'); */ /* Image not used in lanyard shop */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -2680,7 +2680,7 @@ a:focus {
 }
 
 .solution-card[data-solution="fast-support"]:hover {
-    background: url('../images/solution/fast-support.webp');
+    /* background: url('../images/solution/fast-support.webp'); */ /* Image not used in lanyard shop */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -2688,7 +2688,7 @@ a:focus {
 }
 
 .solution-card[data-solution="flexible-files"]:hover {
-    background: url('../images/solution/canva.webp');
+    /* background: url('../images/solution/canva.webp'); */ /* Image not used in lanyard shop */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -2696,7 +2696,7 @@ a:focus {
 }
 
 .solution-card[data-solution="honest-pricing"]:hover {
-    background: url('../images/solution/honest-pricing.webp');
+    /* background: url('../images/solution/honest-pricing.webp'); */ /* Image not used in lanyard shop */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -2704,7 +2704,7 @@ a:focus {
 }
 
 .solution-card[data-solution="real-service"]:hover {
-    background: url('../images/solution/after-sales.webp');
+    /* background: url('../images/solution/after-sales.webp'); */ /* Image not used in lanyard shop */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
