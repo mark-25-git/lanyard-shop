@@ -1,6 +1,9 @@
 import { getStats } from '@/lib/stats';
 import CustomizePageClient from './CustomizePageClient';
 
+// Force dynamic rendering - stats are fetched server-side
+export const dynamic = 'force-dynamic';
+
 export default async function CustomizePage() {
   // Fetch stats server-side before rendering
   const stats = await getStats();

@@ -5,6 +5,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { formatCurrency } from '@/lib/utils';
 import { Order, OrderStatus } from '@/types/order';
 
+// Force dynamic rendering - uses searchParams
+export const dynamic = 'force-dynamic';
+
 const statusSteps: { status: OrderStatus; label: string; description: string }[] = [
   { status: 'pending', label: 'Order Placed', description: 'Your order has been received.' },
   { status: 'payment_pending', label: 'Payment Pending', description: 'Waiting for payment.' },

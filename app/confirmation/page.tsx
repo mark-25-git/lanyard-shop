@@ -5,6 +5,9 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { formatCurrency } from '@/lib/utils';
 import { Order } from '@/types/order';
 
+// Force dynamic rendering - uses searchParams
+export const dynamic = 'force-dynamic';
+
 export default function ConfirmationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
