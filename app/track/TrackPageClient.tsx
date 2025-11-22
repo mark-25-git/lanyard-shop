@@ -309,58 +309,96 @@ export default function TrackPageClient() {
               </div>
 
               {/* Billing Address Card */}
-              <div className="card" style={{ padding: 'var(--space-6)' }}>
-                <h3 style={{
-                  fontSize: 'var(--text-xl)',
-                  fontWeight: 'var(--font-weight-semibold)',
-                  marginBottom: 'var(--space-4)'
-                }}>
-                  Billing Address
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                  {order.event_or_organization_name && (
-                    <p style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                      {order.event_or_organization_name}
+              {order.billing_name && (
+                <div className="card" style={{ padding: 'var(--space-6)' }}>
+                  <h3 style={{
+                    fontSize: 'var(--text-xl)',
+                    fontWeight: 'var(--font-weight-semibold)',
+                    marginBottom: 'var(--space-4)'
+                  }}>
+                    Billing Address
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                    {order.event_or_organization_name && (
+                      <p style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                        {order.event_or_organization_name}
+                      </p>
+                    )}
+                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                      {order.billing_name || order.customer_name}
                     </p>
-                  )}
-                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                    {order.customer_name}
-                  </p>
-                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                    {order.customer_phone}
-                  </p>
-                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0, whiteSpace: 'pre-line' }}>
-                    {order.billing_address}
-                  </p>
+                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                      {order.billing_phone || order.customer_phone}
+                    </p>
+                    {order.billing_address_line1 && (
+                      <>
+                        <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                          {order.billing_address_line1}
+                        </p>
+                        {order.billing_address_line2 && (
+                          <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                            {order.billing_address_line2}
+                          </p>
+                        )}
+                        <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                          {[order.billing_postal_code, order.billing_city, order.billing_state].filter(Boolean).join(', ')}
+                        </p>
+                        {order.billing_country && (
+                          <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                            {order.billing_country}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Shipping Address Card */}
-              <div className="card" style={{ padding: 'var(--space-6)' }}>
-                <h3 style={{
-                  fontSize: 'var(--text-xl)',
-                  fontWeight: 'var(--font-weight-semibold)',
-                  marginBottom: 'var(--space-4)'
-                }}>
-                  Shipping Address
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                  {order.event_or_organization_name && (
-                    <p style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                      {order.event_or_organization_name}
+              {order.shipping_name && (
+                <div className="card" style={{ padding: 'var(--space-6)' }}>
+                  <h3 style={{
+                    fontSize: 'var(--text-xl)',
+                    fontWeight: 'var(--font-weight-semibold)',
+                    marginBottom: 'var(--space-4)'
+                  }}>
+                    Shipping Address
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                    {order.event_or_organization_name && (
+                      <p style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                        {order.event_or_organization_name}
+                      </p>
+                    )}
+                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                      {order.shipping_name}
                     </p>
-                  )}
-                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                    {order.shipping_name}
-                  </p>
-                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                    {order.shipping_phone}
-                  </p>
-                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0, whiteSpace: 'pre-line' }}>
-                    {order.shipping_address}
-                  </p>
+                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                      {order.shipping_phone}
+                    </p>
+                    {order.shipping_address_line1 && (
+                      <>
+                        <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                          {order.shipping_address_line1}
+                        </p>
+                        {order.shipping_address_line2 && (
+                          <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                            {order.shipping_address_line2}
+                          </p>
+                        )}
+                        <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                          {[order.shipping_postal_code, order.shipping_city, order.shipping_state].filter(Boolean).join(', ')}
+                        </p>
+                        {order.shipping_country && (
+                          <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                            {order.shipping_country}
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Download Invoice Button */}
