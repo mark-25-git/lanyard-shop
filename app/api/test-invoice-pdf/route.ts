@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
         order: order as Order,
         logoDataUri: logoDataUri || '',
         bankAccount: bankAccount || '',
-      })
+      }) as React.ReactElement
     );
 
     // Return PDF
