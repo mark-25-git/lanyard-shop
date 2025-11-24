@@ -58,7 +58,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const priceCalculation = await calculatePrice(quantity);
+    let priceCalculation;
+    try {
+      priceCalculation = await calculatePrice(quantity);
+    } catch (error: any) {
+      // If it's a database connection error, return 500
+      if (error.message?.includes('Database connection') || error.message?.includes('server configuration')) {
+        console.error('Database connection error in calculate-price:', error);
+        return createServerError(
+          request,
+          new Error('Database connection error. Please try again later.')
+        );
+      }
+      // Otherwise, treat as no pricing tier found
+      return createUserError(
+        'No pricing tier found for this quantity. Please contact us for custom pricing.',
+        400,
+        request
+      );
+    }
 
     if (!priceCalculation) {
       return createUserError(

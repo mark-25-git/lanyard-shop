@@ -138,7 +138,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createServerClient();
+    let supabase;
+    try {
+      supabase = createServerClient();
+    } catch (clientError: any) {
+      console.error('Failed to create Supabase client:', clientError.message);
+      return createServerError(
+        request,
+        new Error('Database connection error. Please check server configuration.')
+      );
+    }
+    
     // Use provided order number or generate a new one
     const order_number = providedOrderNumber || generateOrderNumber();
 

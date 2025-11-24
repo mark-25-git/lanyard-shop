@@ -18,7 +18,14 @@ export async function getPricingTier(quantity: number): Promise<PricingTier | nu
 
   try {
     // Use server client (same as other working API routes)
-    const supabase = createServerClient();
+    let supabase;
+    try {
+      supabase = createServerClient();
+    } catch (clientError: any) {
+      console.error('Failed to create Supabase client:', clientError.message);
+      // Re-throw as a more descriptive error
+      throw new Error('Database connection error. Please check server configuration.');
+    }
     
     const { data, error } = await supabase
       .from('pricing_tiers')
@@ -31,6 +38,11 @@ export async function getPricingTier(quantity: number): Promise<PricingTier | nu
 
     if (error) {
       console.error('Pricing tier query error:', error);
+      // If it's a connection/auth error, log it but don't expose to user
+      if (error.message?.includes('JWT') || error.message?.includes('Invalid API key')) {
+        console.error('Supabase authentication error - check environment variables');
+        throw new Error('Database authentication error. Please check server configuration.');
+      }
       return null;
     }
 

@@ -25,7 +25,17 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const supabase = createServerClient();
+    let supabase;
+    try {
+      supabase = createServerClient();
+    } catch (clientError: any) {
+      console.error('Failed to create Supabase client:', clientError.message);
+      return createServerError(
+        request,
+        new Error('Database connection error. Please check server configuration.')
+      );
+    }
+    
     const searchParams = request.nextUrl.searchParams;
     const orderId = searchParams.get('id');
     const orderNumber = searchParams.get('order_number');
