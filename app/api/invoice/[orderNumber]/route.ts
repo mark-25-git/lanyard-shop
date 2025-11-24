@@ -10,7 +10,8 @@ import {
 } from '@/lib/error-handler';
 import { sanitizeText } from '@/lib/sanitize';
 import { Order } from '@/types/order';
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
+import chromium from '@sparticuz/chromium';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
@@ -195,17 +196,28 @@ export async function GET(
     const html = replaceTemplatePlaceholders(template, order as Order, logoDataUri, bankAccount);
 
     // Generate PDF using Puppeteer
+    // Use @sparticuz/chromium for Vercel serverless functions
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+    
+    // Configure chromium for Vercel (reduce bundle size)
+    if (isProduction) {
+      chromium.setGraphicsMode(false); // Disable GPU for serverless
+    }
+    
     const browser = await puppeteer.launch({
       headless: true,
-      args: [
+      args: isProduction ? chromium.args : [
         '--no-sandbox', 
         '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage', // Overcome limited resource problems
+        '--disable-dev-shm-usage',
         '--disable-accelerated-2d-canvas',
         '--no-first-run',
         '--no-zygote',
         '--disable-gpu'
       ],
+      executablePath: isProduction 
+        ? await chromium.executablePath() 
+        : undefined, // Use system Chrome in development
     });
 
     try {
