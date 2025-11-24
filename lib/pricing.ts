@@ -3,7 +3,7 @@ import { PricingTier, PriceCalculation } from '@/types/order';
 
 /**
  * Get pricing tier for a given quantity
- * Returns null if quantity is less than MOQ (50) or greater than max tier (599)
+ * Returns null if quantity is less than MOQ (50) or >= 600 (enterprise pricing)
  */
 export async function getPricingTier(quantity: number): Promise<PricingTier | null> {
   // MOQ is 50
@@ -11,8 +11,8 @@ export async function getPricingTier(quantity: number): Promise<PricingTier | nu
     return null;
   }
 
-  // For quantities > 599, contact us
-  if (quantity > 599) {
+  // For quantities >= 600, contact us for enterprise pricing
+  if (quantity >= 600) {
     return null;
   }
 

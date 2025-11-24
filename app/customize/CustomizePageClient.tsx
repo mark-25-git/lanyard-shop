@@ -62,9 +62,9 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
       return;
     }
 
-    if (quantity > 599) {
+    if (quantity >= 600) {
       setPriceData(null);
-      setError('For quantities above 599 pieces, please contact us for custom pricing.');
+      setError(null); // No error, just show contact message in PriceDisplay
       return;
     }
 
@@ -181,6 +181,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
                   value={quantity}
                   onChange={setQuantity}
                   min={50}
+                  max={undefined}
                 />
                 {quantity > 0 && quantity < 50 && (
                   <div style={{
@@ -407,7 +408,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
             </div>
           )}
 
-          {priceData && quantity >= 50 && (
+          {priceData && quantity >= 50 && quantity < 600 && (
             <div style={{ 
               marginTop: 'var(--space-6)',
               paddingBottom: 'var(--space-6)'
@@ -424,6 +425,35 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
               >
                 Check Out
               </button>
+            </div>
+          )}
+          {quantity >= 600 && (
+            <div style={{ 
+              marginTop: 'var(--space-6)',
+              paddingBottom: 'var(--space-6)'
+            }}>
+              <button
+                disabled
+                className="btn-primary"
+                style={{ 
+                  width: '100%', 
+                  padding: 'var(--space-4)',
+                  fontSize: 'var(--text-lg)',
+                  opacity: 0.5,
+                  cursor: 'not-allowed',
+                  borderRadius: 'var(--radius-xl)'
+                }}
+              >
+                Check Out
+              </button>
+              <p style={{
+                marginTop: 'var(--space-3)',
+                textAlign: 'center',
+                fontSize: 'var(--text-sm)',
+                color: 'var(--text-bright-tertiary)'
+              }}>
+                Please contact us for orders of 600+ pieces
+              </p>
             </div>
           )}
           {quantity > 0 && quantity < 50 && (

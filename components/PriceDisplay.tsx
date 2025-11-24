@@ -47,24 +47,15 @@ export default function PriceDisplay({
     );
   }
 
-  if (quantity > 599) {
+  if (quantity >= 600) {
     return (
       <div style={{ 
         textAlign: 'center', 
         padding: 'var(--space-8)'
       }}>
-        <p style={{ color: 'var(--text-bright-tertiary)', marginBottom: 'var(--space-4)' }}>
-          For quantities above 599 pieces, please contact us for custom pricing.
+        <p style={{ color: 'var(--text-bright-tertiary)' }}>
+          Enter a quantity of 50-599 pieces to see pricing.
         </p>
-        <a
-          href="https://wa.me/60137482481?text=Hi%20Teevent!%20I%27d%20like%20to%20get%20a%20quote%20for%20more%20than%20599%20lanyards."
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-primary"
-          style={{ display: 'inline-block' }}
-        >
-          Contact Us for Pricing
-        </a>
       </div>
     );
   }

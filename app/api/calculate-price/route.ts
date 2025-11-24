@@ -49,10 +49,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // For quantities > 599, contact us
-    if (quantity > 599) {
+    // For quantities >= 600, contact us for enterprise pricing
+    if (quantity >= 600) {
       return createUserError(
-        'For quantities above 599 pieces, please contact us for custom pricing.',
+        'For quantities of 600+ pieces, please contact us for enterprise pricing.',
         400,
         request
       );

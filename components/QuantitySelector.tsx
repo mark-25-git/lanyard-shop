@@ -6,14 +6,14 @@ interface QuantitySelectorProps {
   value: number;
   onChange: (quantity: number) => void;
   min?: number;
-  max?: number; // Max is 599, quantities above require contact
+  max?: number; // Optional max limit (removed default 599 limit)
 }
 
 export default function QuantitySelector({ 
   value, 
   onChange, 
   min = 50, 
-  max = 599 
+  max 
 }: QuantitySelectorProps) {
   const [localValue, setLocalValue] = useState(value.toString());
 
@@ -27,11 +27,14 @@ export default function QuantitySelector({
     setLocalValue(newValue);
     
     const numValue = parseInt(newValue, 10);
-    if (!isNaN(numValue) && numValue >= 1 && numValue <= max) {
+    if (!isNaN(numValue) && numValue >= 1 && (max === undefined || numValue <= max)) {
       onChange(numValue);
     } else if (newValue === '' || newValue === '0') {
       // Allow empty or 0 for user input, but don't update the value
       onChange(0);
+    } else if (!isNaN(numValue) && numValue > 0) {
+      // Allow any positive number (no max limit)
+      onChange(numValue);
     }
   };
 
@@ -40,7 +43,7 @@ export default function QuantitySelector({
     if (isNaN(numValue) || numValue < 1) {
       setLocalValue('1');
       onChange(1);
-    } else if (numValue > max) {
+    } else if (max !== undefined && numValue > max) {
       setLocalValue(max.toString());
       onChange(max);
     } else {
@@ -50,7 +53,7 @@ export default function QuantitySelector({
   };
 
   const increment = () => {
-    const newValue = Math.min(value + 10, max);
+    const newValue = max !== undefined ? Math.min(value + 10, max) : value + 10;
     setLocalValue(newValue.toString());
     onChange(newValue);
   };
@@ -116,13 +119,13 @@ export default function QuantitySelector({
         <button
           type="button"
           onClick={increment}
-          disabled={value >= max}
+          disabled={max !== undefined && value >= max}
           style={{
             padding: 'var(--space-2) var(--space-4)',
             border: 'none',
             background: 'transparent',
-            cursor: value >= max ? 'not-allowed' : 'pointer',
-            opacity: value >= max ? 0.5 : 1,
+            cursor: (max !== undefined && value >= max) ? 'not-allowed' : 'pointer',
+            opacity: (max !== undefined && value >= max) ? 0.5 : 1,
             fontSize: 'var(--text-xl)',
             fontWeight: 'var(--font-weight-bold)',
             color: 'var(--color-primary)'
@@ -131,22 +134,52 @@ export default function QuantitySelector({
           +
         </button>
       </div>
-      {value >= max && (
-        <span style={{ 
-          color: 'var(--text-bright-tertiary)', 
-          fontSize: 'var(--text-sm)',
+      {value >= 600 && (
+        <div style={{ 
           width: '100%',
+          marginTop: 'var(--space-4)',
+          padding: 'var(--space-4)',
+          background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+          borderRadius: 'var(--radius-lg)',
           textAlign: 'center'
         }}>
-          • For {max + 1}+ pieces, <a 
-            href="https://wa.me/60137482481?text=Hi%20Teevent!%20I%27d%20like%20to%20get%20a%20quote%20for%20more%20than%20599%20lanyards."
+          <p style={{ 
+            color: 'var(--text-bright-primary)', 
+            fontSize: 'var(--text-base)',
+            fontWeight: 'var(--font-weight-semibold)',
+            margin: '0 0 var(--space-2) 0'
+          }}>
+            Need 600+ pieces?
+          </p>
+          <a 
+            href={`https://wa.me/60137482481?text=Hi%20Teevent!%20I%27d%20like%20to%20get%20a%20quote%20for%20${value}%20lanyards.`}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}
+            style={{ 
+              display: 'inline-block',
+              textDecoration: 'none',
+              padding: 'var(--space-3) var(--space-6)',
+              fontSize: 'var(--text-base)',
+              borderRadius: '9999px',
+              border: '2px solid var(--color-primary)',
+              color: 'var(--color-primary)',
+              fontWeight: 'var(--font-weight-medium)',
+              background: 'transparent',
+              transition: 'all 0.2s ease',
+              marginTop: 'var(--space-2)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--color-primary)';
+              e.currentTarget.style.color = 'var(--color-white)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--color-primary)';
+            }}
           >
-            contact us
+            Contact us for better pricing
           </a>
-        </span>
+        </div>
       )}
     </div>
   );
