@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { formatCurrency } from '@/lib/utils';
 import { Order, OrderStatus } from '@/types/order';
+import HelpSection from '@/components/HelpSection';
 
 const statusSteps: { status: OrderStatus; label: string; description: string }[] = [
   { status: 'pending', label: 'Order Placed', description: 'Your order has been received.' },
@@ -121,7 +122,7 @@ export default function TrackPageClient() {
             }}>
               Enter Order Number
             </h2>
-            <div style={{ display: 'flex', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
+            <div style={{ marginBottom: 'var(--space-4)' }}>
               <input
                 type="text"
                 value={searchInput}
@@ -134,19 +135,25 @@ export default function TrackPageClient() {
                 placeholder="Enter order number"
                 className="floating-label-input"
                 style={{
-                  flex: 1,
+                  width: '100%',
                   padding: 'var(--space-3)',
                   fontSize: 'var(--text-base)',
                   border: '1px solid var(--color-gray-300)',
                   borderRadius: 'var(--radius-lg)',
                   background: 'var(--bg-bright-primary)',
-                  color: 'var(--text-bright-primary)'
+                  color: 'var(--text-bright-primary)',
+                  marginBottom: 'var(--space-3)'
                 }}
               />
               <button
                 onClick={handleSearch}
                 className="btn-primary"
-                style={{ padding: 'var(--space-3) var(--space-6)' }}
+                style={{ 
+                  width: '100%',
+                  padding: 'var(--space-3) var(--space-6)',
+                  fontSize: 'var(--text-base)',
+                  borderRadius: '9999px'
+                }}
               >
                 Search
               </button>
@@ -169,145 +176,211 @@ export default function TrackPageClient() {
         {/* Order Details */}
         {order && (
           <>
-            {/* Order Status Timeline */}
+            {/* Order Status */}
             <div className="card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
-              <h2 style={{ 
-                fontSize: 'var(--text-2xl)', 
-                fontWeight: 'var(--font-weight-semibold)',
-                marginBottom: 'var(--space-6)'
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                marginBottom: 'var(--space-4)'
               }}>
-                Order Status
-              </h2>
-              <div style={{ position: 'relative' }}>
-                {statusSteps.map((step, index) => {
-                  const currentStepIndex = statusSteps.findIndex(s => s.status === order.status);
-                  const isCompleted = index <= currentStepIndex;
-                  const isCurrent = index === currentStepIndex;
-
-                  return (
-                    <div key={step.status} style={{
-                      display: 'flex',
-                      gap: 'var(--space-4)',
-                      marginBottom: index < statusSteps.length - 1 ? 'var(--space-6)' : 0,
-                      position: 'relative'
+                <h2 style={{ 
+                  fontSize: 'var(--text-2xl)', 
+                  fontWeight: 'var(--font-weight-semibold)',
+                  margin: 0
+                }}>
+                  Order Status
+                </h2>
+                <p style={{ 
+                  fontSize: 'var(--text-base)', 
+                  color: 'var(--text-bright-secondary)',
+                  margin: 0
+                }}>
+                  {order.order_number}
+                </p>
+              </div>
+              {(() => {
+                const currentStatus = statusSteps.find(s => s.status === order.status);
+                if (!currentStatus) return null;
+                
+                return (
+                  <div style={{ 
+                    textAlign: 'center',
+                    background: 'var(--bg-bright-secondary)',
+                    padding: 'var(--space-4)',
+                    borderRadius: 'var(--radius-lg)',
+                    marginBottom: 'var(--space-4)'
+                  }}>
+                    <h3 style={{
+                      fontSize: 'var(--text-lg)',
+                      fontWeight: 'var(--font-weight-semibold)',
+                      color: 'var(--color-primary)',
+                      marginBottom: 'var(--space-1)'
                     }}>
-                      {/* Timeline Line */}
-                      {index < statusSteps.length - 1 && (
-                        <div style={{
-                          position: 'absolute',
-                          left: '12px',
-                          top: '32px',
-                          width: '2px',
-                          height: 'calc(100% + var(--space-6))',
-                          background: isCompleted ? 'var(--color-primary)' : 'var(--color-gray-300)',
-                          zIndex: 0
-                        }} />
-                      )}
-
-                      {/* Status Icon */}
-                      <div style={{
-                        width: '24px',
-                        height: '24px',
-                        borderRadius: '50%',
-                        background: isCompleted ? 'var(--color-primary)' : 'var(--color-gray-300)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                        zIndex: 1,
-                        position: 'relative'
-                      }}>
-                        {isCompleted && (
-                          <i className="bi bi-check" style={{
-                            color: 'var(--color-white)',
-                            fontSize: 'var(--text-sm)'
-                          }}></i>
-                        )}
-                      </div>
-
-                      {/* Status Content */}
-                      <div style={{ flex: 1, paddingTop: '2px' }}>
-                        <h3 style={{
-                          fontSize: 'var(--text-lg)',
-                          fontWeight: isCurrent ? 'var(--font-weight-semibold)' : 'var(--font-weight-regular)',
-                          color: isCurrent ? 'var(--color-primary)' : 'var(--text-bright-primary)',
-                          marginBottom: 'var(--space-1)'
-                        }}>
-                          {step.label}
-                        </h3>
-                        <p style={{
-                          fontSize: 'var(--text-sm)',
-                          color: 'var(--text-bright-secondary)',
-                          margin: 0
-                        }}>
-                          {step.description}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
+                      {currentStatus.label}
+                    </h3>
+                    <p style={{
+                      fontSize: 'var(--text-base)',
+                      color: 'var(--text-bright-secondary)',
+                      margin: 0
+                    }}>
+                      {currentStatus.description}
+                    </p>
+                  </div>
+                );
+              })()}
+              
+              {/* Estimated Delivery Date Banner */}
+              <div style={{
+                padding: 'var(--space-3)',
+                background: 'var(--bg-bright-secondary)',
+                borderRadius: 'var(--radius-lg)',
+                textAlign: 'center'
+              }}>
+                <p style={{
+                  fontSize: 'var(--text-sm)',
+                  color: 'var(--text-bright-secondary)',
+                  margin: 0,
+                  lineHeight: '1.5'
+                }}>
+                  <i className="bi bi-truck" style={{
+                    marginRight: 'var(--space-2)',
+                    color: 'var(--color-primary)'
+                  }}></i>
+                  Estimated delivery: {(() => {
+                    const deliveryDate = new Date(order.created_at);
+                    deliveryDate.setDate(deliveryDate.getDate() + 14); // 2 weeks from order date
+                    return deliveryDate.toLocaleDateString('en-US', { 
+                      month: 'long', 
+                      day: 'numeric', 
+                      year: 'numeric' 
+                    });
+                  })()}
+                </p>
               </div>
             </div>
 
-            {/* Order Information */}
-            <div style={{ display: 'grid', gap: 'var(--space-6)', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-              {/* Order Details Card */}
-              <div className="card" style={{ padding: 'var(--space-6)' }}>
-                <h3 style={{
-                  fontSize: 'var(--text-xl)',
-                  fontWeight: 'var(--font-weight-semibold)',
-                  marginBottom: 'var(--space-4)'
+            {/* Order Details Card - Full Width */}
+            <div className="card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
+              <h3 style={{
+                fontSize: 'var(--text-xl)',
+                fontWeight: 'var(--font-weight-semibold)',
+                marginBottom: 'var(--space-4)'
+              }}>
+                Order Details
+              </h3>
+              
+              {/* Lanyard Specs Subsection */}
+              <div style={{ 
+                marginBottom: 'var(--space-4)',
+                paddingBottom: 'var(--space-4)',
+                borderBottom: '1px solid var(--color-gray-200)'
+              }}>
+                <p style={{ 
+                  fontSize: 'var(--text-sm)',
+                  color: 'var(--text-bright-tertiary)',
+                  marginBottom: 'var(--space-2)'
                 }}>
-                  Order Details
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                  <div>
-                    <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
-                      Order Number
-                    </p>
-                    <p style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                      {order.order_number}
-                    </p>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
-                      Quantity
-                    </p>
-                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                      {order.quantity} pieces
-                    </p>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
-                      Unit Price
-                    </p>
-                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                      {formatCurrency(order.unit_price)}
-                    </p>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
-                      Total Price
-                    </p>
-                    <p style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                      {formatCurrency(order.total_price)}
-                    </p>
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
-                      Order Date
-                    </p>
-                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                      {new Date(order.created_at).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </p>
-                  </div>
-                </div>
+                  Lanyard Specs
+                </p>
+                <ul style={{
+                  listStyle: 'none',
+                  padding: 0,
+                  margin: 0,
+                  fontSize: 'var(--text-sm)',
+                  color: 'var(--text-bright-secondary)'
+                }}>
+                  <li style={{ marginBottom: 'var(--space-1)' }}>• 2cm width</li>
+                  <li style={{ marginBottom: 'var(--space-1)' }}>• 2-sided color printing</li>
+                  <li>• Single lobster hook</li>
+                </ul>
               </div>
 
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>
+                    Order Number
+                  </p>
+                  <p style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                    {order.order_number}
+                  </p>
+                </div>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>
+                    Order Date
+                  </p>
+                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                    {new Date(order.created_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </p>
+                </div>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>
+                    Quantity
+                  </p>
+                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                    {order.quantity} pieces
+                  </p>
+                </div>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>
+                    Unit Price
+                  </p>
+                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                    {formatCurrency(order.unit_price)}
+                  </p>
+                </div>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>
+                    Delivery
+                  </p>
+                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                    Free
+                  </p>
+                </div>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingTop: 'var(--space-3)',
+                  marginTop: 'var(--space-2)',
+                  borderTop: '2px solid var(--color-gray-200)'
+                }}>
+                  <p style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                    Total Price
+                  </p>
+                  <p style={{ fontSize: 'var(--text-xl)', fontWeight: 'var(--font-weight-bold)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                    {formatCurrency(order.total_price)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Billing and Shipping Addresses - Side by Side */}
+            <div style={{ display: 'grid', gap: 'var(--space-6)', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', marginBottom: 'var(--space-6)' }}>
               {/* Billing Address Card */}
               {order.billing_name && (
                 <div className="card" style={{ padding: 'var(--space-6)' }}>
@@ -408,14 +481,22 @@ export default function TrackPageClient() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-primary"
-                style={{ display: 'inline-block', textDecoration: 'none' }}
+                style={{ 
+                  display: 'block',
+                  width: '100%',
+                  textDecoration: 'none',
+                  textAlign: 'center',
+                  padding: 'var(--space-3) var(--space-6)',
+                  fontSize: 'var(--text-base)',
+                  borderRadius: '9999px'
+                }}
               >
                 Download Invoice
               </a>
             </div>
 
             {/* Search Again Button */}
-            <div style={{ marginTop: 'var(--space-6)', textAlign: 'center' }}>
+            <div style={{ marginTop: 'var(--space-6)', textAlign: 'center', marginBottom: 'var(--space-6)' }}>
               <button
                 onClick={() => {
                   setOrder(null);
@@ -423,14 +504,34 @@ export default function TrackPageClient() {
                   setError(null);
                   router.push('/track');
                 }}
-                className="btn-primary"
-                style={{ background: 'var(--color-gray-600)' }}
+                style={{ 
+                  width: '100%',
+                  padding: 'var(--space-3) var(--space-6)',
+                  fontSize: 'var(--text-base)',
+                  borderRadius: '9999px',
+                  border: '2px solid var(--color-primary)',
+                  color: 'var(--color-primary)',
+                  fontWeight: 'var(--font-weight-medium)',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--color-primary)';
+                  e.currentTarget.style.color = 'var(--color-white)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = 'var(--color-primary)';
+                }}
               >
                 Track Another Order
               </button>
             </div>
           </>
         )}
+
+        <HelpSection />
       </div>
     </div>
   );

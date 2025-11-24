@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { isValidEmail, isValidPhone } from '@/lib/utils';
 import { formatCurrency } from '@/lib/utils';
 import { BillingAddress, ShippingAddress } from '@/types/order';
+import HelpSection from '@/components/HelpSection';
+import CustomCheckbox from '@/components/CustomCheckbox';
 
 const MALAYSIAN_STATES = [
   'Johor',
@@ -461,21 +463,12 @@ export default function CheckoutPage() {
                   }}>
                     Shipping Address
                   </h2>
-                  <label style={{ 
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'var(--space-2)',
-                    cursor: 'pointer',
-                    fontSize: 'var(--text-sm)'
-                  }}>
-                    <input
-                      type="checkbox"
-                      checked={sameAsBilling}
-                      onChange={(e) => setSameAsBilling(e.target.checked)}
-                      style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                    />
-                    Same as billing address
-                  </label>
+                  <CustomCheckbox
+                    id="same-as-billing"
+                    checked={sameAsBilling}
+                    onChange={setSameAsBilling}
+                    label="Same as billing address"
+                  />
                 </div>
 
                 {!sameAsBilling && (
@@ -662,7 +655,7 @@ export default function CheckoutPage() {
                 }}>
                   {/* Review Text */}
                   <blockquote style={{
-                    fontSize: 'var(--text-sm)',
+                    fontSize: 'var(--text-base)',
                     lineHeight: '1.6',
                     color: 'var(--text-bright-primary)',
                     margin: '0 0 var(--space-3) 0',
@@ -692,7 +685,7 @@ export default function CheckoutPage() {
                   
                   {/* Author Info */}
                   <div style={{
-                    fontSize: 'var(--text-xs)',
+                    fontSize: 'var(--text-sm)',
                     color: 'var(--text-bright-secondary)'
                   }}>
                     <p style={{ 
@@ -822,33 +815,7 @@ export default function CheckoutPage() {
           </div>
         </form>
 
-        {/* Help Text */}
-        <div style={{ 
-          textAlign: 'center', 
-          marginTop: 'var(--space-10)',
-          paddingTop: 'var(--space-6)',
-          borderTop: '1px solid var(--color-gray-200)'
-        }}>
-          <p style={{ 
-            fontSize: 'var(--text-base)',
-            color: 'var(--text-bright-secondary)',
-            margin: 0
-          }}>
-            Need more help?{' '}
-            <a
-              href="https://wa.me/60137482481?text=Hi%20Teevent!%20I%20need%20help%20with%20my%20order."
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: 'var(--color-primary)',
-                textDecoration: 'underline'
-              }}
-            >
-              Contact us
-            </a>
-            .
-          </p>
-        </div>
+        <HelpSection />
       </div>
     </div>
   );

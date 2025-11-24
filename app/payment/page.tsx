@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { formatCurrency } from '@/lib/utils';
 import { generateOrderNumber } from '@/lib/pricing';
+import HelpSection from '@/components/HelpSection';
 
 const BANK_NAME = process.env.NEXT_PUBLIC_BANK_NAME || 'MAYBANK';
 // BANK_ACCOUNT is validated server-side when needed
@@ -37,6 +38,7 @@ export default function PaymentPage() {
   const [notificationMessage, setNotificationMessage] = useState('');
   const [orderNumber, setOrderNumber] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
 
   useEffect(() => {
     loadPaymentData();
@@ -181,34 +183,395 @@ export default function PaymentPage() {
           fontWeight: 'var(--font-weight-bold)',
           marginBottom: 'var(--space-6)'
         }}>
-          Checkout
+          Payment
         </h1>
 
-        {/* Apple-style Payment Protection Guarantee */}
-        <div style={{ 
-          marginBottom: 'var(--space-10)',
-          padding: 'var(--space-8) 0',
+        {/* Prominent Total Amount Section */}
+        <div className="card" style={{ 
+          padding: 'var(--space-8)', 
+          marginBottom: 'var(--space-4)',
+          background: 'var(--bg-bright-secondary)',
           textAlign: 'center'
         }}>
+          <p style={{
+            fontSize: 'var(--text-base)',
+            color: 'var(--text-bright-secondary)',
+            marginBottom: 'var(--space-2)'
+          }}>
+            Total Amount to Pay
+          </p>
+          <p style={{
+            fontSize: 'var(--text-5xl)',
+            fontWeight: 'var(--font-weight-bold)',
+            color: 'var(--text-bright-primary)',
+            margin: 0
+          }}>
+            {formatCurrency(paymentData.total_price)}
+          </p>
+        </div>
+
+        {/* Order Summary Section */}
+        <div className="card" style={{ 
+          padding: 'var(--space-6)', 
+          marginBottom: 'var(--space-4)'
+        }}>
+          <h3 style={{
+            fontSize: 'var(--text-xl)',
+            fontWeight: 'var(--font-weight-semibold)',
+            marginBottom: 'var(--space-4)'
+          }}>
+            Order Summary
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+            {/* Lanyard Specs */}
+            <div>
+              <p style={{ 
+                fontSize: 'var(--text-base)',
+                color: 'var(--text-bright-secondary)',
+                marginBottom: 'var(--space-2)'
+              }}>
+                Lanyard Specs
+              </p>
+              <ul style={{
+                listStyle: 'none',
+                padding: 0,
+                margin: 0,
+                fontSize: 'var(--text-sm)',
+                color: 'var(--text-bright-primary)'
+              }}>
+                <li style={{ marginBottom: 'var(--space-1)' }}>• 2cm width</li>
+                <li style={{ marginBottom: 'var(--space-1)' }}>• 2-sided color printing</li>
+                <li>• Single lobster hook</li>
+              </ul>
+            </div>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <span style={{ 
+                fontSize: 'var(--text-base)',
+                color: 'var(--text-bright-secondary)'
+              }}>
+                Quantity
+              </span>
+              <span style={{ 
+                fontSize: 'var(--text-base)',
+                color: 'var(--text-bright-primary)',
+                fontWeight: 'var(--font-weight-medium)'
+              }}>
+                {paymentData.quantity} pieces
+              </span>
+            </div>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <span style={{ 
+                fontSize: 'var(--text-base)',
+                color: 'var(--text-bright-secondary)'
+              }}>
+                Unit Price
+              </span>
+              <span style={{ 
+                fontSize: 'var(--text-base)',
+                color: 'var(--text-bright-primary)',
+                fontWeight: 'var(--font-weight-medium)'
+              }}>
+                {formatCurrency(paymentData.unit_price)}
+              </span>
+            </div>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <span style={{ 
+                fontSize: 'var(--text-base)',
+                color: 'var(--text-bright-secondary)'
+              }}>
+                Delivery
+              </span>
+              <span style={{ 
+                fontSize: 'var(--text-base)',
+                color: 'var(--text-bright-primary)',
+                fontWeight: 'var(--font-weight-medium)'
+              }}>
+                Free
+              </span>
+            </div>
+            <div style={{ 
+              paddingTop: 'var(--space-3)',
+              borderTop: '1px solid var(--color-gray-200)',
+              display: 'flex', 
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: 'var(--space-2)'
+            }}>
+              <span style={{ 
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-weight-semibold)',
+                color: 'var(--text-bright-primary)'
+              }}>
+                Total
+              </span>
+              <span style={{ 
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-weight-bold)',
+                color: 'var(--text-bright-primary)'
+              }}>
+                {formatCurrency(paymentData.total_price)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Delivery Confirmation Banner */}
+        <div style={{
+          padding: 'var(--space-4)',
+          marginBottom: 'var(--space-6)',
+          background: 'var(--bg-bright-secondary)',
+          borderRadius: 'var(--radius-lg)',
+          textAlign: 'center'
+        }}>
+          <p style={{
+            fontSize: 'var(--text-sm)',
+            color: 'var(--text-bright-secondary)',
+            margin: 0,
+            lineHeight: '1.5'
+          }}>
+            <i className="bi bi-truck" style={{
+              marginRight: 'var(--space-2)',
+              color: 'var(--color-primary)'
+            }}></i>
+            Estimated delivery: {(() => {
+              const deliveryDate = new Date();
+              deliveryDate.setDate(deliveryDate.getDate() + 14); // 2 weeks from today
+              return deliveryDate.toLocaleDateString('en-US', { 
+                month: 'long', 
+                day: 'numeric', 
+                year: 'numeric' 
+              });
+            })()}
+          </p>
+        </div>
+
+        {/* Payment Method Section */}
+        <div className="card" style={{ padding: 'var(--space-8)', marginBottom: 'var(--space-6)' }}>
+          <h2 style={{ 
+            fontSize: 'var(--text-2xl)', 
+            fontWeight: 'var(--font-weight-semibold)',
+            marginBottom: 'var(--space-6)'
+          }}>
+            Payment Method
+          </h2>
+
+          {/* Bank Transfer Option */}
+          <div style={{ marginBottom: 'var(--space-6)' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-3)',
+              marginBottom: 'var(--space-6)'
+            }}>
+              <i className="bi bi-bank" style={{
+                fontSize: 'var(--text-2xl)',
+                color: 'var(--color-primary)'
+              }}></i>
+              <span style={{
+                fontSize: 'var(--text-lg)',
+                fontWeight: 'var(--font-weight-semibold)'
+              }}>
+                DuitNow/Bank Transfer
+              </span>
+            </div>
+
+            {/* Step 1 */}
+            <div style={{ marginBottom: 'var(--space-6)' }}>
+              <p style={{
+                fontSize: 'var(--text-base)',
+                color: 'var(--text-bright-primary)',
+                margin: 0
+              }}>
+                1. Go to your bank's app or website.
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div style={{ marginBottom: 'var(--space-6)' }}>
+              <p style={{
+                fontSize: 'var(--text-base)',
+                color: 'var(--text-bright-primary)',
+                margin: '0 0 var(--space-4) 0'
+              }}>
+                2. Transfer <strong>{formatCurrency(paymentData.total_price)}</strong> to the account details provided below.
+              </p>
+
+              {/* Bank Transfer Details */}
+              <div style={{ 
+                background: 'var(--bg-bright-secondary)',
+                padding: 'var(--space-6)',
+                borderRadius: 'var(--radius-xl)'
+              }}>
+                <div style={{ marginBottom: 'var(--space-4)' }}>
+                  <p style={{ 
+                    color: 'var(--text-bright-tertiary)',
+                    fontSize: 'var(--text-sm)',
+                    marginBottom: 'var(--space-1)'
+                  }}>
+                    Bank Name
+                  </p>
+                  <p style={{ 
+                    fontSize: 'var(--text-xl)',
+                    fontWeight: 'var(--font-weight-semibold)'
+                  }}>
+                    {BANK_NAME}
+                  </p>
+                </div>
+
+                <div style={{ marginBottom: 'var(--space-4)' }}>
+                  <p style={{ 
+                    color: 'var(--text-bright-tertiary)',
+                    fontSize: 'var(--text-sm)',
+                    marginBottom: 'var(--space-1)'
+                  }}>
+                    Account Number
+                  </p>
+                  <p style={{ 
+                    fontSize: 'var(--text-xl)',
+                    fontWeight: 'var(--font-weight-semibold)',
+                    wordBreak: 'break-all',
+                    display: 'inline'
+                  }}>
+                    {BANK_ACCOUNT}
+                  </p>
+                  {' '}
+                  <button
+                    onClick={() => handleCopy(BANK_ACCOUNT, 'Account number copied.')}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      fontSize: 'var(--text-base)',
+                      color: 'var(--color-primary)',
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                      padding: 0,
+                      display: 'inline'
+                    }}
+                  >
+                    Copy
+                  </button>
+                  <div style={{ marginTop: 'var(--space-2)' }}>
+                    <button
+                      onClick={() => setShowQRModal(true)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        fontSize: 'var(--text-base)',
+                        color: 'var(--color-primary)',
+                        textDecoration: 'underline',
+                        cursor: 'pointer',
+                        padding: 0,
+                        display: 'inline'
+                      }}
+                    >
+                      Show QR
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <p style={{ 
+                    color: 'var(--text-bright-tertiary)',
+                    fontSize: 'var(--text-sm)',
+                    marginBottom: 'var(--space-1)'
+                  }}>
+                    Account Name
+                  </p>
+                  <p style={{ 
+                    fontSize: 'var(--text-xl)',
+                    fontWeight: 'var(--font-weight-semibold)'
+                  }}>
+                    {BANK_ACCOUNT_NAME}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div>
+              <p style={{
+                fontSize: 'var(--text-base)',
+                color: 'var(--text-bright-primary)',
+                margin: '0 0 var(--space-4) 0'
+              }}>
+                3. <strong>Crucial:</strong> Use the Order Number as the Payment Reference.
+              </p>
+
+              <div style={{ 
+                background: 'var(--bg-bright-secondary)',
+                padding: 'var(--space-6)',
+                borderRadius: 'var(--radius-xl)'
+              }}>
+                <p style={{ 
+                  fontSize: 'var(--text-xl)',
+                  fontWeight: 'var(--font-weight-semibold)',
+                  color: 'var(--text-bright-primary)',
+                  letterSpacing: '0.05em',
+                  margin: 0,
+                  display: 'inline'
+                }}>
+                  {orderNumber}
+                </p>
+                {' '}
+                <button
+                  onClick={() => handleCopy(orderNumber, 'Order number copied.')}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontSize: 'var(--text-base)',
+                    color: 'var(--color-primary)',
+                    textDecoration: 'underline',
+                    cursor: 'pointer',
+                    padding: 0,
+                    display: 'inline'
+                  }}
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Payment Protection Guarantee - moved above button */}
+        <div style={{ 
+          marginBottom: 'var(--space-6)',
+          padding: 'var(--space-6)',
+          textAlign: 'center',
+          background: 'var(--bg-bright-secondary)',
+          borderRadius: 'var(--radius-xl)'
+        }}>
           <i className="bi bi-shield-fill-check" style={{
-            fontSize: '32px',
+            fontSize: 'var(--text-3xl)',
             color: 'var(--text-bright-primary)',
             marginBottom: 'var(--space-3)',
             display: 'block'
           }}></i>
           <h2 style={{ 
-            fontSize: '28px',
+            fontSize: 'var(--text-3xl)',
             fontWeight: '600',
             margin: '0 0 var(--space-3) 0',
             color: 'var(--text-bright-primary)',
             letterSpacing: '-0.02em',
             lineHeight: '1.2'
           }}>
-            Your payment is protected.
+            Money-back Guarantee
           </h2>
           
           <p style={{ 
-            fontSize: '17px',
+            fontSize: 'var(--text-base)',
             lineHeight: '1.47059',
             color: 'var(--text-bright-secondary)',
             margin: '0',
@@ -222,140 +585,7 @@ export default function PaymentPage() {
           </p>
         </div>
 
-        <div className="card" style={{ padding: 'var(--space-8)', marginBottom: 'var(--space-6)' }}>
-          <h2 style={{ 
-            fontSize: 'var(--text-2xl)', 
-            fontWeight: 'var(--font-weight-semibold)',
-            marginBottom: 'var(--space-6)'
-          }}>
-            Bank Transfer Details
-          </h2>
-
-          <div style={{ 
-            background: 'var(--bg-bright-secondary)',
-            padding: 'var(--space-6)',
-            borderRadius: 'var(--radius-xl)',
-            marginBottom: 'var(--space-6)'
-          }}>
-            <div style={{ marginBottom: 'var(--space-4)' }}>
-              <p style={{ 
-                color: 'var(--text-bright-tertiary)',
-                fontSize: 'var(--text-sm)',
-                marginBottom: 'var(--space-1)'
-              }}>
-                Bank Name
-              </p>
-              <p style={{ 
-                fontSize: 'var(--text-xl)',
-                fontWeight: 'var(--font-weight-semibold)'
-              }}>
-                {BANK_NAME}
-              </p>
-            </div>
-
-            <div style={{ marginBottom: 'var(--space-4)' }}>
-              <p style={{ 
-                color: 'var(--text-bright-tertiary)',
-                fontSize: 'var(--text-sm)',
-                marginBottom: 'var(--space-1)'
-              }}>
-                Account Number
-              </p>
-              <p style={{ 
-                fontSize: 'var(--text-xl)',
-                fontWeight: 'var(--font-weight-semibold)',
-                wordBreak: 'break-all',
-                display: 'inline'
-              }}>
-                {BANK_ACCOUNT}
-              </p>
-              {' '}
-              <button
-                onClick={() => handleCopy(BANK_ACCOUNT, 'Account number copied.')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: 'var(--text-base)',
-                  color: 'var(--color-primary)',
-                  textDecoration: 'underline',
-                  cursor: 'pointer',
-                  padding: 0,
-                  display: 'inline'
-                }}
-              >
-                Copy
-              </button>
-            </div>
-
-            <div>
-              <p style={{ 
-                color: 'var(--text-bright-tertiary)',
-                fontSize: 'var(--text-sm)',
-                marginBottom: 'var(--space-1)'
-              }}>
-                Account Name
-              </p>
-              <p style={{ 
-                fontSize: 'var(--text-xl)',
-                fontWeight: 'var(--font-weight-semibold)'
-              }}>
-                {BANK_ACCOUNT_NAME}
-              </p>
-            </div>
-          </div>
-
-          <div style={{ marginBottom: 'var(--space-6)' }}>
-            <p style={{ 
-              color: 'var(--text-bright-tertiary)',
-              fontSize: 'var(--text-sm)',
-              marginBottom: 'var(--space-2)'
-            }}>
-              Order Number (Include in payment reference)
-            </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-              <p style={{ 
-                fontSize: 'var(--text-2xl)',
-                fontWeight: 'var(--font-weight-bold)',
-                color: 'var(--color-primary)',
-                letterSpacing: '0.05em',
-                margin: 0
-              }}>
-                {orderNumber}
-              </p>
-              <button
-                onClick={() => handleCopy(orderNumber, 'Order number copied.')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: 'var(--text-base)',
-                  color: 'var(--color-primary)',
-                  textDecoration: 'underline',
-                  cursor: 'pointer',
-                  padding: 0,
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                Copy
-              </button>
-            </div>
-          </div>
-
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between',
-            fontSize: 'var(--text-xl)',
-            fontWeight: 'var(--font-weight-bold)',
-            paddingTop: 'var(--space-4)',
-            borderTop: '1px solid var(--color-gray-200)'
-          }}>
-            <span>Total Amount</span>
-            <span style={{ color: 'var(--text-bright-primary)' }}>
-              {formatCurrency(paymentData.total_price)}
-            </span>
-          </div>
-        </div>
-
-        <div style={{ textAlign: 'center', marginTop: 'var(--space-8)' }}>
+        <div style={{ textAlign: 'center' }}>
           <button
             onClick={async () => {
               if (!paymentData || !orderNumber) return;
@@ -422,12 +652,22 @@ export default function PaymentPage() {
             )}
           </button>
           <p style={{
+            marginTop: 'var(--space-4)',
+            fontSize: 'var(--text-sm)',
+            color: 'var(--text-bright-secondary)',
+            textAlign: 'center',
+            lineHeight: '1.6'
+          }}>
+            We will verify your transfer typically within 1-2 business hours. You will receive an email confirmation once the payment is confirmed.
+          </p>
+          <p style={{
             marginTop: 'var(--space-3)',
             fontSize: 'var(--text-sm)',
-            color: 'var(--text-bright-tertiary)',
-            textAlign: 'center'
+            color: 'var(--text-bright-secondary)',
+            textAlign: 'center',
+            lineHeight: '1.6'
           }}>
-            Clicking this button will submit your order.
+            You will be instructed to send your design files in the next step.
           </p>
         </div>
       </div>
@@ -456,33 +696,92 @@ export default function PaymentPage() {
         </div>
       )}
 
-      {/* Help Text */}
-      <div style={{ 
-        textAlign: 'center', 
-        marginTop: 'var(--space-10)',
-        paddingTop: 'var(--space-6)',
-        borderTop: '1px solid var(--color-gray-200)'
-      }}>
-        <p style={{ 
-          fontSize: 'var(--text-base)',
-          color: 'var(--text-bright-secondary)',
-          margin: 0
-        }}>
-          Need more help?{' '}
-          <a
-            href="https://wa.me/60137482481?text=Hi%20Teevent!%20I%20need%20help%20with%20my%20order."
-            target="_blank"
-            rel="noopener noreferrer"
+      <HelpSection />
+
+      {/* QR Code Modal */}
+      {showQRModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: 'var(--space-4)'
+          }}
+          onClick={() => setShowQRModal(false)}
+        >
+          <div
             style={{
-              color: 'var(--color-primary)',
-              textDecoration: 'underline'
+              background: 'var(--bg-bright-primary)',
+              borderRadius: 'var(--radius-xl)',
+              padding: 'var(--space-6)',
+              maxWidth: '500px',
+              width: '100%',
+              position: 'relative'
             }}
+            onClick={(e) => e.stopPropagation()}
           >
-            Contact us
-          </a>
-          .
-        </p>
-      </div>
+            <button
+              onClick={() => setShowQRModal(false)}
+              style={{
+                position: 'absolute',
+                top: 'var(--space-4)',
+                right: 'var(--space-4)',
+                background: 'none',
+                border: 'none',
+                fontSize: 'var(--text-2xl)',
+                color: 'var(--text-bright-secondary)',
+                cursor: 'pointer',
+                padding: 0,
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              ×
+            </button>
+            <h3 style={{
+              fontSize: 'var(--text-2xl)',
+              fontWeight: 'var(--font-weight-semibold)',
+              marginBottom: 'var(--space-4)',
+              textAlign: 'center'
+            }}>
+              Payment QR Code
+            </h3>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginBottom: 'var(--space-4)'
+            }}>
+              <img
+                src="/images/payment/payment-qr.png"
+                alt="Payment QR Code"
+                style={{
+                  maxWidth: '100%',
+                  height: 'auto',
+                  borderRadius: 'var(--radius-lg)'
+                }}
+              />
+            </div>
+            <p style={{
+              fontSize: 'var(--text-sm)',
+              color: 'var(--text-bright-secondary)',
+              textAlign: 'center',
+              margin: 0
+            }}>
+              Scan this QR code to make payment
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

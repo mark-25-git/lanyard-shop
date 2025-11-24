@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import QuantitySelector from '@/components/QuantitySelector';
 import PriceDisplay from '@/components/PriceDisplay';
 import TemplateDownload from '@/components/TemplateDownload';
 import LanyardCarousel from '@/components/LanyardCarousel';
+import HelpSection from '@/components/HelpSection';
 
 interface SocialProofStats {
   text: string;
@@ -28,17 +29,16 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
   } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentStatIndex, setCurrentStatIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(true);
-  const carouselRef = useRef<HTMLDivElement>(null);
   const [canvaLink, setCanvaLink] = useState('');
 
+  // Stats data kept for future use on product landing page
   // Format numbers with commas
   const formatNumber = (num: number): string => {
     return num.toLocaleString('en-US');
   };
 
   // Use initial stats from server (no fetch needed)
+  // Kept for future use on product landing page
   const socialProofStats: SocialProofStats[] = [
     {
       text: `Trusted by ${formatNumber(initialStats.unique_events)} Events`
@@ -50,69 +50,6 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
       text: `${formatNumber(initialStats.complaints)} Complaints`
     }
   ];
-
-  // Seamless vertical carousel for social proof stats
-  useEffect(() => {
-    // Don't start carousel if stats haven't loaded yet
-    if (socialProofStats.length === 0) return;
-
-    const SLIDE_DURATION_MS = 3000; // 3 seconds per slide
-    const TRANSITION_DURATION_MS = 500; // CSS transition duration
-    const RESET_BUFFER_MS = 50; // Small buffer before reset
-
-    let resetTimeout: NodeJS.Timeout | null = null;
-
-    const interval = setInterval(() => {
-      setCurrentStatIndex((prev) => {
-        // If we're already at the clone, reset immediately (shouldn't happen, but safety check)
-        if (prev === socialProofStats.length) {
-          setIsTransitioning(false);
-          setTimeout(() => {
-            setCurrentStatIndex(0);
-            setTimeout(() => {
-              setIsTransitioning(true);
-            }, 20);
-          }, 0);
-          return prev; // Return current to prevent increment
-        }
-
-        // Clear any pending reset
-        if (resetTimeout) {
-          clearTimeout(resetTimeout);
-          resetTimeout = null;
-        }
-
-        const nextIndex = prev + 1;
-        
-        // If we're about to show the clone (index equals length), show it with transition
-        if (nextIndex === socialProofStats.length) {
-          // Schedule reset immediately after transition completes (not after full slide duration)
-          // This keeps the interval timing consistent
-          resetTimeout = setTimeout(() => {
-            // Disable transition for instant reset
-            setIsTransitioning(false);
-            // Reset to 0 instantly (clone looks identical to first item)
-            setCurrentStatIndex(0);
-            // Re-enable transition after a tiny delay for next slide
-            setTimeout(() => {
-              setIsTransitioning(true);
-            }, 20);
-          }, TRANSITION_DURATION_MS + RESET_BUFFER_MS);
-          
-          return socialProofStats.length; // Show clone with smooth transition
-        }
-        
-        return nextIndex;
-      });
-    }, SLIDE_DURATION_MS);
-
-    return () => {
-      clearInterval(interval);
-      if (resetTimeout) {
-        clearTimeout(resetTimeout);
-      }
-    };
-  }, [socialProofStats.length]);
 
   useEffect(() => {
     calculatePrice();
@@ -184,94 +121,6 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
             Customize your lanyard.
           </h1>
 
-          {/* Social Proof Stats - Vertical Carousel */}
-          <div style={{ 
-            marginBottom: 'var(--space-8)',
-            height: '32px',
-            overflow: 'hidden',
-            position: 'relative',
-            display: 'flex',
-            justifyContent: 'center'
-          }}>
-            {/* Container for all stats stacked vertically */}
-            <div 
-              ref={carouselRef}
-              style={{
-                height: `${(socialProofStats.length + 1) * 32}px`, // Total height: 4 items × 32px = 128px
-                transform: `translateY(-${currentStatIndex * 32}px)`, // Move by exact pixel amount
-                transition: isTransitioning 
-                  ? 'transform 0.5s ease-in-out'
-                  : 'none',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                width: '100%',
-                maxWidth: 'fit-content'
-              }}
-            >
-              {/* Original items */}
-              {socialProofStats.map((stat, index) => (
-                <div
-                  key={`original-${index}`}
-                  style={{
-                    height: '32px',
-                    minHeight: '32px',
-                    maxHeight: '32px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 'var(--space-2)',
-                    whiteSpace: 'nowrap',
-                    flexShrink: 0
-                  }}
-                >
-                  <i className="bi bi-patch-check-fill" style={{
-                    fontSize: 'var(--text-base)',
-                    color: 'var(--color-primary)'
-                  }}></i>
-                  <span style={{
-                    fontSize: 'var(--text-sm)',
-                    color: 'var(--text-bright-secondary)',
-                    lineHeight: '1',
-                    display: 'flex',
-                    alignItems: 'center'
-                  }}>
-                    {stat.text}
-                  </span>
-                </div>
-              ))}
-              {/* Clone of first item for seamless loop */}
-              <div
-                key="clone-0"
-                style={{
-                  height: '32px',
-                  minHeight: '32px',
-                  maxHeight: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 'var(--space-2)',
-                  whiteSpace: 'nowrap',
-                  flexShrink: 0
-                }}
-              >
-                <i className="bi bi-patch-check-fill" style={{
-                  fontSize: 'var(--text-base)',
-                  color: 'var(--color-primary)'
-                }}></i>
-                <span style={{
-                  fontSize: 'var(--text-sm)',
-                  color: 'var(--text-bright-secondary)',
-                  lineHeight: '1',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                  {socialProofStats[0].text}
-                </span>
-              </div>
-            </div>
-          </div>
 
           <div style={{ marginBottom: 'var(--space-8)' }}>
             {/* Your lanyard will have */}
@@ -391,10 +240,26 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
               }}>
                 Use our template.{' '}
                 <span style={{ color: 'var(--text-bright-tertiary)' }}>
-                  Your design prints exactly as you intended.
+                  Design directly in our template to avoid misalignment.
                 </span>
               </h2>
               <TemplateDownload />
+              <p style={{
+                marginTop: 'var(--space-4)',
+                fontSize: 'var(--text-sm)',
+                color: 'var(--text-bright-secondary)',
+                lineHeight: '1.6'
+              }}>
+                By using our template, we can avoid the size adjustment process.
+              </p>
+              <p style={{
+                marginTop: 'var(--space-2)',
+                fontSize: 'var(--text-sm)',
+                color: 'var(--text-bright-secondary)',
+                lineHeight: '1.6'
+              }}>
+                During size adjustment process, your design might be misaligned.
+              </p>
             </div>
 
             {/* Canva Link Input */}
@@ -441,6 +306,17 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
                 </p>
               </div>
             </div>
+
+            {/* Other Design File Instruction */}
+            <div style={{ marginBottom: 'var(--space-8)' }}>
+              <h2 style={{ 
+                fontSize: 'var(--text-2xl)', 
+                fontWeight: 'var(--font-weight-semibold)',
+                marginBottom: 'var(--space-4)'
+              }}>
+                If you're using PS or AI, you'll be instructed to send it to us after payment.
+              </h2>
+            </div>
           </div>
         </div>
       </div>
@@ -453,7 +329,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
         right: '50%',
         marginLeft: '-50vw',
         marginRight: '-50vw',
-        marginBottom: 'var(--space-8)',
+        marginBottom: 0,
         background: '#f1f3f5'
       }}>
         <div style={{ 
@@ -477,7 +353,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
               textAlign: 'center'
             }}>
               <i className="bi bi-calendar" style={{
-                fontSize: '24px',
+                fontSize: 'var(--text-2xl)',
                 color: 'var(--text-bright-primary)',
                 marginBottom: 'var(--space-2)',
                 display: 'block'
@@ -515,71 +391,6 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
             </div>
           )}
 
-          {/* Order Number & WhatsApp Instructions */}
-          {priceData && quantity >= 50 && (
-            <div style={{ 
-              marginTop: 'var(--space-6)',
-              padding: 'var(--space-6)',
-              textAlign: 'center'
-            }}>
-              <p style={{ 
-                fontSize: 'var(--text-base)',
-                lineHeight: '1.6',
-                color: 'var(--text-bright-secondary)',
-                margin: '0 0 var(--space-2) 0'
-              }}>
-                After payment, you'll receive an order number.
-              </p>
-              <p style={{ 
-                fontSize: 'var(--text-base)',
-                lineHeight: '1.6',
-                color: 'var(--text-bright-secondary)',
-                margin: '0'
-              }}>
-                Send your design file via WhatsApp with your order number.
-              </p>
-            </div>
-          )}
-
-          {/* Apple-style Refund Guarantee */}
-          {priceData && quantity >= 50 && (
-            <div style={{ 
-              marginTop: 'var(--space-8)',
-              padding: 'var(--space-8) 0',
-              textAlign: 'center'
-            }}>
-              <i className="bi bi-shield-fill-check" style={{
-                fontSize: '32px',
-                color: 'var(--text-bright-primary)',
-                marginBottom: 'var(--space-3)',
-                display: 'block'
-              }}></i>
-              <h2 style={{ 
-                fontSize: '28px',
-                fontWeight: '600',
-                margin: '0 0 var(--space-3) 0',
-                color: 'var(--text-bright-primary)',
-                letterSpacing: '-0.02em',
-                lineHeight: '1.2'
-              }}>
-                Your payment is protected.
-              </h2>
-              
-              <p style={{ 
-                fontSize: '17px',
-                lineHeight: '1.47059',
-                color: 'var(--text-bright-secondary)',
-                margin: '0',
-                maxWidth: '520px',
-                marginLeft: 'auto',
-                marginRight: 'auto',
-                fontWeight: '400'
-              }}>
-                If we determine your design cannot be produced, 
-                you'll receive a full refund. No questions asked.
-              </p>
-            </div>
-          )}
 
           {/* Checkout Button - Moved inside price section */}
           {error && (
@@ -642,33 +453,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
       {/* Continue with rest of content */}
       <div className="container section-padding">
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          {/* Help Text */}
-        <div style={{ 
-          textAlign: 'center', 
-          marginTop: 'var(--space-10)',
-          paddingTop: 'var(--space-6)',
-          borderTop: '1px solid var(--color-gray-200)'
-        }}>
-          <p style={{ 
-            fontSize: 'var(--text-base)',
-            color: 'var(--text-bright-secondary)',
-            margin: 0
-          }}>
-            Need more help?{' '}
-            <a
-              href="https://wa.me/60137482481?text=Hi%20Teevent!%20I%20need%20help%20with%20my%20order."
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: 'var(--color-primary)',
-                textDecoration: 'underline'
-              }}
-            >
-              Contact us
-            </a>
-            .
-          </p>
-        </div>
+          <HelpSection />
         </div>
       </div>
     </>

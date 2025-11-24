@@ -171,7 +171,7 @@ export default function DesignUpload({ onUploadComplete, initialUrl }: DesignUpl
               background: 'var(--bg-bright-secondary)',
               marginBottom: 'var(--space-3)'
             }}>
-              <i className="bi bi-cloud-arrow-up" style={{ fontSize: '32px', color: 'var(--text-bright-primary)' }}></i>
+              <i className="bi bi-cloud-arrow-up" style={{ fontSize: 'var(--text-3xl)', color: 'var(--text-bright-primary)' }}></i>
             </div>
             <p style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-2)' }}>
               Click to upload or drag and drop
