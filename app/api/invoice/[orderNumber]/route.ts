@@ -199,11 +199,6 @@ export async function GET(
     // Use @sparticuz/chromium for Vercel serverless functions
     const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
     
-    // Configure chromium for Vercel (reduce bundle size)
-    if (isProduction) {
-      chromium.setGraphicsMode(false); // Disable GPU for serverless
-    }
-    
     const browser = await puppeteer.launch({
       headless: true,
       args: isProduction ? chromium.args : [
