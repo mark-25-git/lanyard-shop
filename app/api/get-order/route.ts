@@ -71,6 +71,13 @@ export async function GET(request: NextRequest) {
     const { data, error } = await query.single();
 
     if (error) {
+      console.error('Supabase query error:', {
+        code: (error as any).code,
+        message: error.message,
+        details: (error as any).details,
+        hint: (error as any).hint
+      });
+      
       // Check if it's a "not found" error
       if (isNotFoundError(error)) {
         return createNotFoundError('Order not found.', request);
@@ -89,6 +96,11 @@ export async function GET(request: NextRequest) {
 
     return addCorsHeaders(request, response);
   } catch (error) {
+    console.error('Unexpected error in get-order:', error);
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
     return createServerError(request, error);
   }
 }
