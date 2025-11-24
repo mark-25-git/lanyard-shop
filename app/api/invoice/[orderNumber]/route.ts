@@ -10,8 +10,6 @@ import {
 } from '@/lib/error-handler';
 import { sanitizeText } from '@/lib/sanitize';
 import { Order } from '@/types/order';
-import puppeteer from 'puppeteer-core';
-import chromium from '@sparticuz/chromium';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
@@ -206,8 +204,24 @@ export async function GET(
     const html = replaceTemplatePlaceholders(template, order as Order, logoDataUri, bankAccount);
 
     // Generate PDF using Puppeteer
-    // Use @sparticuz/chromium for Vercel serverless functions
+    // Use dynamic import to avoid loading Puppeteer at module initialization
+    // This prevents conflicts with other dependencies like Supabase
     const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+    
+    let puppeteer: any;
+    let chromium: any;
+    
+    if (isProduction) {
+      // In production (Vercel), use puppeteer-core with @sparticuz/chromium
+      const puppeteerModule = await import('puppeteer-core');
+      const chromiumModule = await import('@sparticuz/chromium');
+      puppeteer = puppeteerModule.default;
+      chromium = chromiumModule.default;
+    } else {
+      // In development, use regular puppeteer
+      const puppeteerModule = await import('puppeteer');
+      puppeteer = puppeteerModule.default;
+    }
     
     const browser = await puppeteer.launch({
       headless: true,
@@ -222,7 +236,7 @@ export async function GET(
       ],
       executablePath: isProduction 
         ? await chromium.executablePath() 
-        : undefined, // Use system Chrome in development
+        : undefined,
     });
 
     try {
