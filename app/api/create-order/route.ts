@@ -51,7 +51,9 @@ export async function POST(request: NextRequest) {
       customer_email, 
       customer_phone,
       billing,
-      shipping
+      shipping,
+      promo_code, // Optional promo code
+      discount_amount // Optional discount amount (will be re-validated)
     } = body;
 
     // Validate quantity
@@ -92,7 +94,7 @@ export async function POST(request: NextRequest) {
 
     // Use server-calculated prices
     const unit_price = priceCalculation.unit_price;
-    const total_price = priceCalculation.total_price;
+    const subtotal = priceCalculation.total_price;
 
     if (!customer_name || !customer_email || !customer_phone) {
       return createUserError(
@@ -151,6 +153,51 @@ export async function POST(request: NextRequest) {
     
     // Use provided order number or generate a new one
     const order_number = providedOrderNumber || generateOrderNumber();
+    
+    // Validate and apply promo code if provided (moved before order creation)
+    let final_total = subtotal;
+    let promoCodeToSave: string | null = null;
+    let discountAmountToSave = 0;
+    
+    if (promo_code) {
+      // Re-validate promo code server-side for security
+      const sanitizedPromoCode = sanitizeText(promo_code.trim().toUpperCase(), 50);
+      if (sanitizedPromoCode) {
+        const { data: promoCodeData, error: promoError } = await supabase
+          .from('promo_codes')
+          .select('code, discount_amount, is_active, allowed_email')
+          .eq('code', sanitizedPromoCode)
+          .eq('is_active', true)
+          .single();
+        
+        if (!promoError && promoCodeData) {
+          // Check email restriction if promo code has one
+          if (promoCodeData.allowed_email) {
+            // Normalize emails for case-insensitive comparison
+            const normalizedAllowedEmail = promoCodeData.allowed_email.trim().toLowerCase();
+            const normalizedCustomerEmail = sanitizedCustomerEmail ? sanitizedCustomerEmail.trim().toLowerCase() : null;
+
+            if (!normalizedCustomerEmail || normalizedCustomerEmail !== normalizedAllowedEmail) {
+              // Email doesn't match restriction - ignore promo code
+              // Continue without discount (don't fail the order)
+            } else {
+              // Email matches - apply discount
+              const promoDiscount = parseFloat(promoCodeData.discount_amount.toString());
+              discountAmountToSave = promoDiscount;
+              final_total = Math.max(0, subtotal - promoDiscount);
+              promoCodeToSave = promoCodeData.code;
+            }
+          } else {
+            // No email restriction - apply discount
+            const promoDiscount = parseFloat(promoCodeData.discount_amount.toString());
+            discountAmountToSave = promoDiscount;
+            final_total = Math.max(0, subtotal - promoDiscount);
+            promoCodeToSave = promoCodeData.code;
+          }
+        }
+        // If promo code is invalid, ignore it and continue without discount
+      }
+    }
 
     // Create order with sanitized billing and shipping addresses
     const { data, error } = await supabase
@@ -162,7 +209,9 @@ export async function POST(request: NextRequest) {
         customer_phone: sanitizedCustomerPhone,
         quantity,
         unit_price,
-        total_price,
+        total_price: final_total,
+        promo_code: promoCodeToSave,
+        discount_amount: discountAmountToSave,
         design_file_url: sanitizedDesignFileUrl,
         event_or_organization_name: sanitizedEventOrOrgName,
         status: 'payment_pending_verification',

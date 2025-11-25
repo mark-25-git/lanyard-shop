@@ -164,7 +164,7 @@ export default function ConfirmationPageClient() {
         </div>
 
         {/* Primary Next Step: Design Submission */}
-        <div style={{ marginBottom: 'var(--space-6)' }}>
+        <div style={{ marginTop: 'var(--space-16)', marginBottom: 'var(--space-16)' }}>
           <h3 style={{
             fontSize: 'var(--text-xl)',
             fontWeight: 'var(--font-weight-semibold)',
@@ -262,6 +262,16 @@ export default function ConfirmationPageClient() {
                 {order.quantity} pieces
               </p>
             </div>
+            {order.promo_code && order.discount_amount && order.discount_amount > 0 && (
+              <div>
+                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
+                  Promo Code Applied
+                </p>
+                <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                  {order.promo_code} (-{formatCurrency(order.discount_amount)})
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Lanyard Specs */}

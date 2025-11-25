@@ -361,6 +361,44 @@ export default function TrackPageClient() {
                     Free
                   </p>
                 </div>
+                {order.promo_code && order.discount_amount && order.discount_amount > 0 && (
+                  <>
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginTop: 'var(--space-3)',
+                      paddingTop: 'var(--space-3)',
+                      borderTop: '1px solid var(--color-gray-200)'
+                    }}>
+                      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>
+                        Subtotal
+                      </p>
+                      <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', fontWeight: 'var(--font-weight-medium)', margin: 0 }}>
+                        {formatCurrency(order.unit_price * order.quantity)}
+                      </p>
+                    </div>
+                    <div style={{ 
+                      marginTop: 'var(--space-3)'
+                    }}>
+                      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0, marginBottom: 'var(--space-2)' }}>
+                        Promo Code Applied
+                      </p>
+                      <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}>
+                        <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                          {order.promo_code}
+                        </p>
+                        <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                          -{formatCurrency(order.discount_amount)}
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
                 <div style={{ 
                   display: 'flex', 
                   justifyContent: 'space-between',

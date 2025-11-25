@@ -269,7 +269,9 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ order, logoDataUri, bankAccount
   
   // Format prices with 2 decimal places
   const unitPrice = parseFloat(order.unit_price.toFixed(2));
-  const totalPrice = parseFloat(order.total_price.toFixed(2));
+  const subtotal = parseFloat((order.unit_price * order.quantity).toFixed(2)); // Original price before discount
+  const totalPrice = parseFloat(order.total_price.toFixed(2)); // Final price after discount
+  const discountAmount = order.discount_amount || 0;
 
   return (
     <Document>
@@ -370,7 +372,7 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ order, logoDataUri, bankAccount
                 RM {unitPrice.toFixed(2)}
               </Text>
               <Text style={[styles.tableCell, styles.tableCellLast, styles.tableCellTotal]}>
-                RM {totalPrice.toFixed(2)}
+                RM {subtotal.toFixed(2)}
               </Text>
             </View>
           </View>
@@ -380,8 +382,14 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ order, logoDataUri, bankAccount
             <View style={styles.summaryTable}>
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Subtotal</Text>
-                <Text style={styles.summaryValue}>RM {totalPrice.toFixed(2)}</Text>
+                <Text style={styles.summaryValue}>RM {subtotal.toFixed(2)}</Text>
               </View>
+              {order.promo_code && discountAmount > 0 && (
+                <View style={styles.summaryRow}>
+                  <Text style={styles.summaryLabel}>Promo Code Applied ({order.promo_code})</Text>
+                  <Text style={styles.summaryValue}>-RM {discountAmount.toFixed(2)}</Text>
+                </View>
+              )}
               <View style={styles.finalTotalRow}>
                 <Text style={styles.finalTotalLabel}>Total</Text>
                 <Text style={styles.finalTotalValue}>RM {totalPrice.toFixed(2)}</Text>

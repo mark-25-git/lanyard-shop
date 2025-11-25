@@ -43,6 +43,8 @@ export interface Order {
   quantity: number;
   unit_price: number;
   total_price: number;
+  promo_code: string | null;
+  discount_amount: number;
   design_file_url: string | null;
   event_or_organization_name: string | null;
   status: OrderStatus;

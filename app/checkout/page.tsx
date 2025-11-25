@@ -99,6 +99,15 @@ export default function CheckoutPage() {
   } | null>(null);
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const [eventOrOrganizationName, setEventOrOrganizationName] = useState('');
+  const [promoCode, setPromoCode] = useState('');
+  const [promoCodeState, setPromoCodeState] = useState<'idle' | 'valid' | 'invalid' | 'loading'>('idle');
+  const [promoError, setPromoError] = useState('');
+  const [showPromoCodeInput, setShowPromoCodeInput] = useState(false);
+  const [discountInfo, setDiscountInfo] = useState<{
+    discount_amount: number;
+    final_total: number;
+    code: string;
+  } | null>(null);
 
   // Randomly select a review on component mount
   useEffect(() => {
@@ -122,6 +131,20 @@ export default function CheckoutPage() {
       unitPrice: parseFloat(storedUnitPrice),
       totalPrice: parseFloat(storedTotalPrice),
     });
+
+    // Load promo code from sessionStorage if exists
+    const storedPromoCode = sessionStorage.getItem('promoCode');
+    const storedDiscountInfo = sessionStorage.getItem('discountInfo');
+    if (storedPromoCode && storedDiscountInfo) {
+      try {
+        setPromoCode(storedPromoCode);
+        setDiscountInfo(JSON.parse(storedDiscountInfo));
+        setPromoCodeState('valid');
+        setShowPromoCodeInput(false); // Don't show input if code is already applied
+      } catch (e) {
+        // Ignore parse errors
+      }
+    }
   }, [router]);
 
   // Sync shipping with billing when checkbox is checked
@@ -196,6 +219,69 @@ export default function CheckoutPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleApplyPromoCode = async () => {
+    if (!promoCode.trim() || !orderData) {
+      return;
+    }
+
+    setPromoCodeState('loading');
+    setPromoError('');
+
+    try {
+      const response = await fetch('/api/validate-promo-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: promoCode.trim().toUpperCase(),
+          total_price: orderData.totalPrice,
+          customer_email: billing.email ? billing.email.trim().toLowerCase() : null,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setPromoCodeState('invalid');
+        setPromoError(data.error || 'Invalid promo code');
+        setDiscountInfo(null);
+        sessionStorage.removeItem('promoCode');
+        sessionStorage.removeItem('discountInfo');
+        return;
+      }
+
+      // Valid promo code
+      setPromoCodeState('valid');
+      setPromoError('');
+      setDiscountInfo(data.data);
+      sessionStorage.setItem('promoCode', data.data.code);
+      sessionStorage.setItem('discountInfo', JSON.stringify(data.data));
+    } catch (err) {
+      setPromoCodeState('invalid');
+      setPromoError('Failed to validate promo code. Please try again.');
+      setDiscountInfo(null);
+      sessionStorage.removeItem('promoCode');
+      sessionStorage.removeItem('discountInfo');
+    }
+  };
+
+  const handleRemovePromoCode = () => {
+    setPromoCode('');
+    setPromoCodeState('idle');
+    setPromoError('');
+    setDiscountInfo(null);
+    setShowPromoCodeInput(false);
+    sessionStorage.removeItem('promoCode');
+    sessionStorage.removeItem('discountInfo');
+  };
+
+  const handleCancelPromoCode = () => {
+    setShowPromoCodeInput(false);
+    if (promoCodeState !== 'valid') {
+      setPromoCode('');
+      setPromoError('');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -218,6 +304,7 @@ export default function CheckoutPage() {
         shipping,
         design_file_url: canvaLink, // Canva link if provided
         event_or_organization_name: eventOrOrganizationName.trim() || null, // Event/org name if provided
+        promo_code: discountInfo?.code || null, // Include promo code if valid
       }));
 
       // Small delay to show loading spinner
@@ -768,6 +855,134 @@ export default function CheckoutPage() {
                       })()}
                     </span>
                   </div>
+                  {/* Promo Code Section */}
+                  <div style={{ 
+                    marginTop: 'var(--space-4)',
+                    paddingTop: 'var(--space-4)',
+                    borderTop: '1px solid var(--color-gray-200)'
+                  }}>
+                    <div style={{ 
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 'var(--space-2)',
+                      marginBottom: showPromoCodeInput ? 'var(--space-3)' : 0
+                    }}>
+                      <span style={{ color: 'var(--text-bright-secondary)' }}>Apply a Promo Code:</span>
+                      {!showPromoCodeInput && (
+                        <button
+                          type="button"
+                          onClick={() => setShowPromoCodeInput(true)}
+                          style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'var(--color-primary)',
+                            fontSize: 'var(--text-base)',
+                            cursor: 'pointer',
+                            textDecoration: 'underline',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--space-1)',
+                            padding: 0,
+                            alignSelf: 'flex-start'
+                          }}
+                        >
+                          Enter your promo code
+                          <i className="bi bi-chevron-down" style={{ fontSize: 'var(--text-sm)' }}></i>
+                        </button>
+                      )}
+                    </div>
+                    {showPromoCodeInput && (
+                      <div style={{ marginTop: 'var(--space-3)' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-2)' }}>
+                          <div className="floating-label-wrapper" style={{ flex: 1, position: 'relative', marginBottom: 0 }}>
+                            <input
+                              type="text"
+                              value={promoCodeState === 'valid' && discountInfo 
+                                ? `${discountInfo.code} (-${formatCurrency(discountInfo.discount_amount)})`
+                                : promoCode}
+                              onChange={(e) => {
+                                if (promoCodeState !== 'valid') {
+                                  setPromoCode(e.target.value.toUpperCase());
+                                  if (promoCodeState === 'invalid') {
+                                    setPromoCodeState('idle');
+                                    setPromoError('');
+                                  }
+                                }
+                              }}
+                              className={`floating-label-input ${(promoCode || (promoCodeState === 'valid' && discountInfo)) ? 'has-value' : ''}`}
+                              placeholder=" "
+                              readOnly={promoCodeState === 'valid'}
+                              style={{
+                                paddingRight: promoCodeState === 'valid' ? 'var(--space-4)' : '70px',
+                                color: promoCodeState === 'valid' ? 'var(--color-primary)' : undefined,
+                                borderColor: promoCodeState === 'valid' ? 'var(--color-primary)' : undefined
+                              }}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter' && promoCode.trim() && promoCodeState !== 'valid') {
+                                  e.preventDefault();
+                                  handleApplyPromoCode();
+                                }
+                              }}
+                            />
+                            <label className="floating-label">
+                              Promo Code
+                            </label>
+                            {promoCodeState !== 'valid' && (
+                              <button
+                                type="button"
+                                onClick={handleApplyPromoCode}
+                                disabled={promoCodeState === 'loading' || !promoCode.trim()}
+                                style={{
+                                  position: 'absolute',
+                                  right: '8px',
+                                  top: '50%',
+                                  transform: 'translateY(-50%)',
+                                  background: 'transparent',
+                                  border: 'none',
+                                  color: promoCodeState === 'loading' || !promoCode.trim() 
+                                    ? 'var(--text-bright-tertiary)' 
+                                    : 'var(--color-primary)',
+                                  fontSize: 'var(--text-base)',
+                                  cursor: promoCodeState === 'loading' || !promoCode.trim() ? 'not-allowed' : 'pointer',
+                                  padding: 'var(--space-2)',
+                                  textDecoration: promoCodeState === 'loading' ? 'none' : 'underline',
+                                  zIndex: 1
+                                }}
+                              >
+                                {promoCodeState === 'loading' ? '...' : 'Apply'}
+                              </button>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={promoCodeState === 'valid' ? handleRemovePromoCode : handleCancelPromoCode}
+                            style={{
+                              background: 'transparent',
+                              border: 'none',
+                              color: 'var(--color-primary)',
+                              fontSize: 'var(--text-base)',
+                              cursor: 'pointer',
+                              textDecoration: 'underline',
+                              padding: 0,
+                              whiteSpace: 'nowrap',
+                              alignSelf: 'center'
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                        {promoError && (
+                          <p style={{ 
+                            color: '#dc2626', 
+                            fontSize: 'var(--text-sm)', 
+                            marginTop: 'var(--space-2)' 
+                          }}>
+                            {promoError}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
                   <div style={{ 
                     display: 'flex', 
                     justifyContent: 'space-between',
@@ -779,7 +994,7 @@ export default function CheckoutPage() {
                   }}>
                     <span>Total Price</span>
                     <span style={{ color: 'var(--text-bright-primary)' }}>
-                      {formatCurrency(orderData.totalPrice)}
+                      {formatCurrency(discountInfo?.final_total ?? orderData.totalPrice)}
                     </span>
                   </div>
                 </div>

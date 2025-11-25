@@ -20,6 +20,7 @@ interface CheckoutData {
   shipping: any;
   design_file_url?: string | null; // Canva link if provided
   event_or_organization_name?: string | null; // Event/org name if provided
+  promo_code?: string | null; // Promo code if applied
 }
 
 interface PaymentData {
@@ -27,6 +28,8 @@ interface PaymentData {
   unit_price: number;
   total_price: number;
   checkoutData: CheckoutData;
+  promo_code?: string | null;
+  discount_amount?: number;
 }
 
 export default function PaymentPage() {
@@ -74,12 +77,32 @@ export default function PaymentPage() {
         throw new Error(data.error || 'Failed to calculate price');
       }
 
+      // Load promo code from sessionStorage if exists
+      const storedPromoCode = sessionStorage.getItem('promoCode');
+      const storedDiscountInfo = sessionStorage.getItem('discountInfo');
+      let promoCode: string | null = null;
+      let discountAmount = 0;
+      let finalTotal = data.data.total_price;
+
+      if (storedPromoCode && storedDiscountInfo) {
+        try {
+          const discountInfo = JSON.parse(storedDiscountInfo);
+          promoCode = discountInfo.code;
+          discountAmount = discountInfo.discount_amount;
+          finalTotal = discountInfo.final_total;
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+
       // Store validated server-calculated price
       setPaymentData({
         quantity: checkoutData.quantity,
         unit_price: data.data.unit_price,
-        total_price: data.data.total_price,
+        total_price: finalTotal,
         checkoutData,
+        promo_code: promoCode,
+        discount_amount: discountAmount,
       });
 
       // Generate order number for payment reference
@@ -328,6 +351,54 @@ export default function PaymentPage() {
                 >
                   {paymentData.checkoutData.design_file_url}
                 </a>
+              </div>
+            )}
+            {/* Promo Code Discount Display */}
+            {paymentData.promo_code && paymentData.discount_amount && paymentData.discount_amount > 0 && (
+              <div style={{ 
+                marginTop: 'var(--space-3)',
+                paddingTop: 'var(--space-3)',
+                borderTop: '1px solid var(--color-gray-200)'
+              }}>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 'var(--space-2)'
+                }}>
+                  <span style={{ 
+                    fontSize: 'var(--text-base)',
+                    color: 'var(--text-bright-secondary)'
+                  }}>
+                    Subtotal
+                  </span>
+                  <span style={{ 
+                    fontSize: 'var(--text-base)',
+                    color: 'var(--text-bright-primary)',
+                    fontWeight: 'var(--font-weight-medium)'
+                  }}>
+                    {formatCurrency(paymentData.unit_price * paymentData.quantity)}
+                  </span>
+                </div>
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}>
+                  <span style={{ 
+                    fontSize: 'var(--text-base)',
+                    color: 'var(--text-bright-secondary)'
+                  }}>
+                    Promo Code ({paymentData.promo_code})
+                  </span>
+                  <span style={{ 
+                    fontSize: 'var(--text-base)',
+                    color: 'var(--text-bright-primary)',
+                    fontWeight: 'var(--font-weight-medium)'
+                  }}>
+                    -{formatCurrency(paymentData.discount_amount)}
+                  </span>
+                </div>
               </div>
             )}
             <div style={{ 
@@ -656,6 +727,8 @@ export default function PaymentPage() {
                     shipping: paymentData.checkoutData.shipping,
                     design_file_url: paymentData.checkoutData.design_file_url || null, // Canva link if provided
                     event_or_organization_name: paymentData.checkoutData.event_or_organization_name || null, // Event/org name if provided
+                    promo_code: paymentData.promo_code || null, // Promo code if applied
+                    discount_amount: paymentData.discount_amount || 0, // Discount amount
                   }),
                 });
 
@@ -667,6 +740,8 @@ export default function PaymentPage() {
 
                 // Clear session storage
                 sessionStorage.removeItem('checkoutData');
+                sessionStorage.removeItem('promoCode');
+                sessionStorage.removeItem('discountInfo');
 
                 // Redirect to confirmation page
                 router.push(`/confirmation?order_number=${encodeURIComponent(orderNumber)}`);
