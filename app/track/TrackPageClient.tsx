@@ -28,9 +28,17 @@ export default function TrackPageClient() {
   const [searchInput, setSearchInput] = useState('');
   const [error, setError] = useState<string | null>(null);
 
+  const normalizeOrderNumber = (value: string) => {
+    const trimmed = value.trim().toUpperCase();
+    if (!trimmed) return '';
+    return trimmed.startsWith('INV-') ? trimmed : `INV-${trimmed.replace(/^INV/, '').replace(/^-/, '')}`;
+  };
+
   useEffect(() => {
     if (orderNumberParam) {
-      fetchOrderByNumber(orderNumberParam);
+      const normalizedParam = normalizeOrderNumber(orderNumberParam);
+      setSearchInput(normalizedParam);
+      fetchOrderByNumber(normalizedParam);
     } else {
       setLoading(false);
     }
@@ -79,7 +87,14 @@ export default function TrackPageClient() {
     }
 
     // Navigate to the track page with order number as query parameter
-    router.push(`/track?order_number=${encodeURIComponent(searchInput.trim())}`);
+    const normalized = normalizeOrderNumber(searchInput);
+    if (!normalized) {
+      alert('Please enter an order number');
+      return;
+    }
+
+    setSearchInput(normalized);
+    router.push(`/track?order_number=${encodeURIComponent(normalized)}`);
   };
 
 
@@ -132,7 +147,7 @@ export default function TrackPageClient() {
                     handleSearch();
                   }
                 }}
-                placeholder="Enter order number"
+                placeholder="e.g. INV-2511255ZX50E or 2511255ZX50E"
                 className="floating-label-input"
                 style={{
                   width: '100%',

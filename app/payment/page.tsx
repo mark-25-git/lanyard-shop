@@ -523,7 +523,7 @@ export default function PaymentPage() {
                 color: 'var(--text-bright-primary)',
                 margin: '0 0 var(--space-4) 0'
               }}>
-                2. Transfer <strong>{formatCurrency(paymentData.total_price)}</strong> to the account details provided below.
+                2. Transfer <strong>{formatCurrency(paymentData.total_price)}</strong> to the account details provided below. <strong>Use the Order Number as the Recipient Reference.</strong>
               </p>
 
               {/* Bank Transfer Details */}
@@ -599,6 +599,48 @@ export default function PaymentPage() {
                   </div>
                 </div>
 
+                <div style={{ marginBottom: 'var(--space-4)' }}>
+                  <p style={{ 
+                    color: 'var(--text-bright-tertiary)',
+                    fontSize: 'var(--text-sm)',
+                    marginBottom: 'var(--space-1)'
+                  }}>
+                    Recipient Reference
+                  </p>
+                  <p style={{ 
+                    fontSize: 'var(--text-xl)',
+                    fontWeight: 'var(--font-weight-semibold)',
+                    color: 'var(--text-bright-primary)',
+                    letterSpacing: '0.05em',
+                    margin: 0,
+                    display: 'inline'
+                  }}>
+                    {orderNumber}
+                  </p>
+                  {' '}
+                  <button
+                    onClick={() => {
+                      // Extract the part after the dash (e.g., INV-2511255ZX50E -> 2511255ZX50E)
+                      const referencePart = orderNumber.includes('-') 
+                        ? orderNumber.substring(orderNumber.indexOf('-') + 1)
+                        : orderNumber;
+                      handleCopy(referencePart, 'Recipient reference copied.');
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      fontSize: 'var(--text-base)',
+                      color: 'var(--color-primary)',
+                      textDecoration: 'underline',
+                      cursor: 'pointer',
+                      padding: 0,
+                      display: 'inline'
+                    }}
+                  >
+                    Copy
+                  </button>
+                </div>
+
                 <div>
                   <p style={{ 
                     color: 'var(--text-bright-tertiary)',
@@ -614,50 +656,6 @@ export default function PaymentPage() {
                     {BANK_ACCOUNT_NAME}
                   </p>
                 </div>
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div>
-              <p style={{
-                fontSize: 'var(--text-base)',
-                color: 'var(--text-bright-primary)',
-                margin: '0 0 var(--space-4) 0'
-              }}>
-                3. <strong>Crucial:</strong> Use the Order Number as the Payment Reference.
-              </p>
-
-              <div style={{ 
-                background: 'var(--bg-bright-secondary)',
-                padding: 'var(--space-6)',
-                borderRadius: 'var(--radius-xl)'
-              }}>
-                <p style={{ 
-                  fontSize: 'var(--text-xl)',
-                  fontWeight: 'var(--font-weight-semibold)',
-                  color: 'var(--text-bright-primary)',
-                  letterSpacing: '0.05em',
-                  margin: 0,
-                  display: 'inline'
-                }}>
-                  {orderNumber}
-                </p>
-                {' '}
-                <button
-                  onClick={() => handleCopy(orderNumber, 'Order number copied.')}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    fontSize: 'var(--text-base)',
-                    color: 'var(--color-primary)',
-                    textDecoration: 'underline',
-                    cursor: 'pointer',
-                    padding: 0,
-                    display: 'inline'
-                  }}
-                >
-                  Copy
-                </button>
               </div>
             </div>
           </div>
