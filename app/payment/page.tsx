@@ -301,6 +301,35 @@ export default function PaymentPage() {
                 Free
               </span>
             </div>
+            {paymentData.checkoutData.design_file_url && (
+              <div style={{ 
+                marginTop: 'var(--space-3)',
+                paddingTop: 'var(--space-3)',
+                borderTop: '1px solid var(--color-gray-200)'
+              }}>
+                <p style={{ 
+                  fontSize: 'var(--text-base)',
+                  color: 'var(--text-bright-secondary)',
+                  marginBottom: 'var(--space-2)'
+                }}>
+                  Your Canva Design Link
+                </p>
+                <a
+                  href={paymentData.checkoutData.design_file_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--color-primary)',
+                    textDecoration: 'underline',
+                    wordBreak: 'break-all',
+                    display: 'block'
+                  }}
+                >
+                  {paymentData.checkoutData.design_file_url}
+                </a>
+              </div>
+            )}
             <div style={{ 
               paddingTop: 'var(--space-3)',
               borderTop: '1px solid var(--color-gray-200)',
@@ -325,6 +354,24 @@ export default function PaymentPage() {
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Design Confirmation Banner */}
+        <div style={{
+          padding: 'var(--space-4)',
+          marginBottom: 'var(--space-6)',
+          background: 'var(--bg-bright-secondary)',
+          borderRadius: 'var(--radius-lg)',
+          textAlign: 'center'
+        }}>
+          <p style={{
+            fontSize: 'var(--text-sm)',
+            color: 'var(--text-bright-secondary)',
+            margin: 0,
+            lineHeight: '1.5'
+          }}>
+            We will confirm the design with you again before production.
+          </p>
         </div>
 
         {/* Delivery Confirmation Banner */}

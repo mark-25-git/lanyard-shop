@@ -7,6 +7,7 @@ import PriceDisplay from '@/components/PriceDisplay';
 import TemplateDownload from '@/components/TemplateDownload';
 import LanyardCarousel from '@/components/LanyardCarousel';
 import HelpSection from '@/components/HelpSection';
+import CustomCheckbox from '@/components/CustomCheckbox';
 
 interface SocialProofStats {
   text: string;
@@ -30,6 +31,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [canvaLink, setCanvaLink] = useState('');
+  const [freeDesignReview, setFreeDesignReview] = useState(true);
 
   // Stats data kept for future use on product landing page
   // Format numbers with commas
@@ -305,6 +307,17 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
                 }}>
                   If you have used our template and designed in Canva, paste link here.
                 </p>
+              </div>
+              <div style={{
+                marginTop: 'var(--space-4)'
+              }}>
+                <CustomCheckbox
+                  checked={freeDesignReview}
+                  onChange={() => setFreeDesignReview(true)}
+                  label="Get free design review by us before production."
+                  id="free-design-review"
+                  labelStyle={{ fontSize: 'var(--text-base)' }}
+                />
               </div>
             </div>
 

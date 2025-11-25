@@ -149,7 +149,7 @@ export default function QuantitySelector({
             fontWeight: 'var(--font-weight-semibold)',
             margin: '0 0 var(--space-2) 0'
           }}>
-            Need 600+ pieces?
+            Get priority support and better pricing.
           </p>
           <a 
             href={`https://wa.me/60137482481?text=Hi%20Teevent!%20I%27d%20like%20to%20get%20a%20quote%20for%20${value}%20lanyards.`}
@@ -177,7 +177,7 @@ export default function QuantitySelector({
               e.currentTarget.style.color = 'var(--color-primary)';
             }}
           >
-            Contact us for better pricing
+            Contact Us
           </a>
         </div>
       )}

@@ -3,13 +3,15 @@ interface CustomCheckboxProps {
   onChange: (checked: boolean) => void;
   label: string;
   id?: string;
+  labelStyle?: React.CSSProperties;
 }
 
 export default function CustomCheckbox({ 
   checked, 
   onChange, 
   label,
-  id 
+  id,
+  labelStyle
 }: CustomCheckboxProps) {
   return (
     <label 
@@ -20,7 +22,8 @@ export default function CustomCheckbox({
         gap: 'var(--space-2)',
         cursor: 'pointer',
         fontSize: 'var(--text-sm)',
-        position: 'relative'
+        position: 'relative',
+        ...labelStyle
       }}
     >
       <input
