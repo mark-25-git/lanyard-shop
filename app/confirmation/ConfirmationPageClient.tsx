@@ -267,7 +267,7 @@ export default function ConfirmationPageClient() {
                 <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
                   Promo Code Applied
                 </p>
-                <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0, wordBreak: 'break-word', whiteSpace: 'normal' }}>
                   {order.promo_code} (-{formatCurrency(order.discount_amount)})
                 </p>
               </div>
