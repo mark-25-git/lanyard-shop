@@ -562,6 +562,40 @@ export default function TrackPageClient() {
                     {formatCurrency(order.total_price)}
                   </p>
                 </div>
+
+                {/* Canva Design Link */}
+                {order.design_file_url && (
+                  <div style={{ 
+                    marginTop: 'var(--space-4)',
+                    paddingTop: 'var(--space-4)',
+                    borderTop: '1px solid var(--color-gray-200)'
+                  }}>
+                    <p style={{ 
+                      fontSize: 'var(--text-sm)', 
+                      color: 'var(--text-bright-secondary)', 
+                      marginBottom: 'var(--space-2)',
+                      margin: 0
+                    }}>
+                      Canva Design Link
+                    </p>
+                    <a
+                      href={order.design_file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'inline-block',
+                        fontSize: 'var(--text-base)',
+                        color: 'var(--color-primary)',
+                        textDecoration: 'underline',
+                        wordBreak: 'break-all',
+                        lineHeight: '1.5',
+                        marginTop: 'var(--space-1)'
+                      }}
+                    >
+                      {order.design_file_url}
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
 

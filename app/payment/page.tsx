@@ -324,35 +324,6 @@ export default function PaymentPage() {
                 Free
               </span>
             </div>
-            {paymentData.checkoutData.design_file_url && (
-              <div style={{ 
-                marginTop: 'var(--space-3)',
-                paddingTop: 'var(--space-3)',
-                borderTop: '1px solid var(--color-gray-200)'
-              }}>
-                <p style={{ 
-                  fontSize: 'var(--text-base)',
-                  color: 'var(--text-bright-secondary)',
-                  marginBottom: 'var(--space-2)'
-                }}>
-                  Your Canva Design Link
-                </p>
-                <a
-                  href={paymentData.checkoutData.design_file_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    fontSize: 'var(--text-sm)',
-                    color: 'var(--color-primary)',
-                    textDecoration: 'underline',
-                    wordBreak: 'break-all',
-                    display: 'block'
-                  }}
-                >
-                  {paymentData.checkoutData.design_file_url}
-                </a>
-              </div>
-            )}
             {/* Promo Code Discount Display */}
             {paymentData.promo_code && paymentData.discount_amount && paymentData.discount_amount > 0 && (
               <div style={{ 
@@ -424,6 +395,36 @@ export default function PaymentPage() {
                 {formatCurrency(paymentData.total_price)}
               </span>
             </div>
+            {/* Canva Design Link - Moved below Total */}
+            {paymentData.checkoutData.design_file_url && (
+              <div style={{ 
+                marginTop: 'var(--space-4)',
+                paddingTop: 'var(--space-4)',
+                borderTop: '1px solid var(--color-gray-200)'
+              }}>
+                <p style={{ 
+                  fontSize: 'var(--text-base)',
+                  color: 'var(--text-bright-secondary)',
+                  marginBottom: 'var(--space-2)'
+                }}>
+                  Your Canva Design Link
+                </p>
+                <a
+                  href={paymentData.checkoutData.design_file_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--color-primary)',
+                    textDecoration: 'underline',
+                    wordBreak: 'break-all',
+                    display: 'block'
+                  }}
+                >
+                  {paymentData.checkoutData.design_file_url}
+                </a>
+              </div>
+            )}
           </div>
         </div>
 

@@ -152,8 +152,18 @@ export function sanitizeUrl(url: string | null | undefined): string | null {
   // Remove HTML tags
   sanitized = stripHtml(sanitized);
   
+  // If empty after sanitization, return null
+  if (!sanitized) {
+    return null;
+  }
+  
   // Basic URL validation
   try {
+    // If URL doesn't have a protocol, add https://
+    if (!sanitized.match(/^https?:\/\//i)) {
+      sanitized = `https://${sanitized}`;
+    }
+    
     const urlObj = new URL(sanitized);
     // Only allow http and https protocols
     if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
@@ -161,7 +171,7 @@ export function sanitizeUrl(url: string | null | undefined): string | null {
     }
     return sanitized;
   } catch {
-    // Invalid URL
+    // Invalid URL - return null
     return null;
   }
 }

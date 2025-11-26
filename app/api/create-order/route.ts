@@ -120,7 +120,15 @@ export async function POST(request: NextRequest) {
     const sanitizedCustomerPhone = sanitizePhone(customer_phone);
     const sanitizedBilling = sanitizeAddress(billing);
     const sanitizedShipping = sanitizeAddress(shipping);
-    const sanitizedDesignFileUrl = design_file_url ? sanitizeUrl(design_file_url) : null;
+    // Sanitize design file URL (Canva link)
+    let sanitizedDesignFileUrl: string | null = null;
+    if (design_file_url) {
+      sanitizedDesignFileUrl = sanitizeUrl(design_file_url);
+      // Log if URL was rejected for debugging
+      if (!sanitizedDesignFileUrl && design_file_url) {
+        console.warn('Design file URL was rejected by sanitization:', design_file_url);
+      }
+    }
     const sanitizedEventOrOrgName = event_or_organization_name ? sanitizeText(event_or_organization_name, 200) : null;
 
     // Validate sanitized inputs
@@ -278,6 +286,23 @@ export async function POST(request: NextRequest) {
     } catch (statsError) {
       // Log error but don't fail the order creation
       console.error('Error incrementing stats:', statsError);
+    }
+
+    // Send order confirmation email (non-blocking, fire and forget)
+    try {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+      // Call email API asynchronously - don't await, don't block order creation
+      fetch(`${siteUrl}/api/send-order-confirmation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: data.id }),
+      }).catch((emailError) => {
+        // Log error but don't fail order creation
+        console.error('Failed to trigger order confirmation email:', emailError);
+      });
+    } catch (emailError) {
+      // Silent fail - email is non-critical
+      console.error('Error triggering email:', emailError);
     }
 
     // Return order data with confirmation token
