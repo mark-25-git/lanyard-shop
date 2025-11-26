@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
       const { data: emailData, error: emailError } = await resend.emails.send({
         from: `Teevent <${fromEmail}>`,
         to: order.customer_email,
-        subject: `Order Confirmation #${order.order_number} - Teevent`,
+        subject: `Order Confirmation #${order.order_number}`,
         html: emailHtml,
         // Optional: Add reply-to address
         replyTo: 'team.teevent@gmail.com',
