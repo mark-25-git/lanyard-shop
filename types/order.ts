@@ -72,6 +72,9 @@ export interface Order {
   shipping_country: string | null;
   created_at: string;
   updated_at: string;
+  // Security protocol fields
+  confirmation_token?: string | null;
+  confirmation_viewed_at?: string | null;
 }
 
 export interface PricingTier {

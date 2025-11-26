@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const orderId = searchParams.get('id');
     const orderNumber = searchParams.get('order_number');
+    const sessionToken = searchParams.get('session_token') || request.cookies.get('tracking_session')?.value;
 
     if (!orderId && !orderNumber) {
       return createUserError(
@@ -51,6 +52,7 @@ export async function GET(request: NextRequest) {
     // Sanitize inputs
     const sanitizedOrderId = orderId ? sanitizeText(orderId, 100) : null;
     const sanitizedOrderNumber = orderNumber ? sanitizeText(orderNumber, 50) : null;
+    const sanitizedSessionToken = sessionToken ? sanitizeText(sessionToken, 100) : null;
 
     if (!sanitizedOrderId && !sanitizedOrderNumber) {
       return createUserError(
@@ -60,38 +62,75 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let query = supabase.from('orders').select('*');
-
-    if (sanitizedOrderId) {
-      query = query.eq('id', sanitizedOrderId);
-    } else if (sanitizedOrderNumber) {
-      query = query.eq('order_number', sanitizedOrderNumber);
+    // If order_number is provided, require session token validation (for tracking page)
+    // If order_id is provided, allow direct access (for admin/internal use)
+    if (sanitizedOrderNumber && !sanitizedSessionToken) {
+      return createUserError(
+        'Session token required for order tracking. Please verify your identity first.',
+        401,
+        request
+      );
     }
 
-    const { data, error } = await query.single();
+    let orderData: Order | null = null;
 
-    if (error) {
-      console.error('Supabase query error:', {
-        code: (error as any).code,
-        message: error.message,
-        details: (error as any).details,
-        hint: (error as any).hint
+    // If session token is provided, validate it using database function
+    if (sanitizedSessionToken && sanitizedOrderNumber) {
+      const { data: sessionData, error: sessionError } = await supabase.rpc('validate_tracking_session', {
+        p_session_token: sanitizedSessionToken,
+        p_order_number: sanitizedOrderNumber
       });
-      
-      // Check if it's a "not found" error
-      if (isNotFoundError(error)) {
+
+      if (sessionError || !sessionData || sessionData.length === 0 || !sessionData[0] || !sessionData[0].order_data) {
+        return createUserError(
+          'Invalid or expired session. Please verify your identity again.',
+          401,
+          request
+        );
+      }
+
+      orderData = sessionData[0].order_data as Order;
+    } else {
+      // Direct query (for admin/internal use with order ID, or if no session required)
+      let query = supabase.from('orders').select('*');
+
+      if (sanitizedOrderId) {
+        query = query.eq('id', sanitizedOrderId);
+      } else if (sanitizedOrderNumber) {
+        query = query.eq('order_number', sanitizedOrderNumber);
+      }
+
+      const { data, error } = await query.single();
+
+      if (error) {
+        console.error('Supabase query error:', {
+          code: (error as any).code,
+          message: error.message,
+          details: (error as any).details,
+          hint: (error as any).hint
+        });
+        
+        // Check if it's a "not found" error
+        if (isNotFoundError(error)) {
+          return createNotFoundError('Order not found.', request);
+        }
+        return createServerError(request, error);
+      }
+
+      if (!data) {
         return createNotFoundError('Order not found.', request);
       }
-      return createServerError(request, error);
+
+      orderData = data as Order;
     }
 
-    if (!data) {
+    if (!orderData) {
       return createNotFoundError('Order not found.', request);
     }
 
     const response = NextResponse.json({
       success: true,
-      data: data as Order,
+      data: orderData,
     });
 
     return addCorsHeaders(request, response);

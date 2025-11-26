@@ -25,8 +25,13 @@ export default function TrackPageClient() {
   const orderNumberParam = searchParams.get('order_number') || searchParams.get('orderNumber');
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
-  const [searchInput, setSearchInput] = useState('');
+  const [isVerified, setIsVerified] = useState(false);
+  const [verificationForm, setVerificationForm] = useState({
+    orderNumber: '',
+    lastFourDigits: ''
+  });
   const [error, setError] = useState<string | null>(null);
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
 
   const normalizeOrderNumber = (value: string) => {
     const trimmed = value.trim().toUpperCase();
@@ -34,41 +39,66 @@ export default function TrackPageClient() {
     return trimmed.startsWith('INV-') ? trimmed : `INV-${trimmed.replace(/^INV/, '').replace(/^-/, '')}`;
   };
 
+  // Check for existing session on load
   useEffect(() => {
+    const checkExistingSession = async () => {
+      // Check if order number is in URL
+      if (orderNumberParam) {
+        const normalizedParam = normalizeOrderNumber(orderNumberParam);
+        setVerificationForm(prev => ({ ...prev, orderNumber: normalizedParam }));
+      }
+
+      // Try to fetch order with existing session (cookie will be sent automatically)
+      // If session exists and is valid, order will load
+      // If not, user will need to verify
     if (orderNumberParam) {
       const normalizedParam = normalizeOrderNumber(orderNumberParam);
-      setSearchInput(normalizedParam);
-      fetchOrderByNumber(normalizedParam);
+        await fetchOrderWithSession(normalizedParam);
     } else {
       setLoading(false);
     }
+    };
+
+    checkExistingSession();
   }, [orderNumberParam]);
 
-  const fetchOrderByNumber = async (number: string) => {
+  const fetchOrderWithSession = async (orderNumber: string) => {
     setLoading(true);
     setError(null);
+    
     try {
-      const url = `/api/get-order?order_number=${encodeURIComponent(number)}`;
+      const url = `/api/get-order?order_number=${encodeURIComponent(orderNumber)}`;
       
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        credentials: 'include' // Include cookies
+      });
       const data = await response.json();
 
       if (!response.ok) {
+        // Session expired or invalid - need to verify
+        if (response.status === 401) {
+          setIsVerified(false);
+          setOrder(null);
+          setError(null); // Don't show error, just show verification form
+        } else {
         setError(data.error || 'Failed to fetch order');
         setOrder(null);
+        }
         setLoading(false);
         return;
       }
 
       if (data.success && data.data) {
         setOrder(data.data);
+        setIsVerified(true);
         setError(null);
       } else {
-        setError('Order not found');
+        setIsVerified(false);
+        setError('Order not found.');
         setOrder(null);
       }
     } catch (err: any) {
-      // Failed to fetch order
+      setIsVerified(false);
       if (err.name === 'AbortError') {
         setError('Request timed out. Please try again.');
       } else {
@@ -80,21 +110,63 @@ export default function TrackPageClient() {
     }
   };
 
-  const handleSearch = () => {
-    if (!searchInput.trim()) {
-      alert('Please enter an order number');
+  const handleVerification = async () => {
+    if (!verificationForm.orderNumber.trim() || !verificationForm.lastFourDigits.trim()) {
+      setError('Please enter both order number and last 4 digits of phone number.');
       return;
     }
 
-    // Navigate to the track page with order number as query parameter
-    const normalized = normalizeOrderNumber(searchInput);
-    if (!normalized) {
-      alert('Please enter an order number');
+    const normalizedOrderNumber = normalizeOrderNumber(verificationForm.orderNumber);
+    if (!normalizedOrderNumber) {
+      setError('Please enter a valid order number.');
       return;
     }
 
-    setSearchInput(normalized);
-    router.push(`/track?order_number=${encodeURIComponent(normalized)}`);
+    if (verificationForm.lastFourDigits.trim().length !== 4) {
+      setError('Please enter the last 4 digits of your phone number.');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/verify-tracking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // Include cookies
+        body: JSON.stringify({
+          order_number: normalizedOrderNumber,
+          last_four_digits: verificationForm.lastFourDigits.trim().replace(/\D/g, '')
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        // Use the error message from the API (which is more specific)
+        setError(data.error || 'The order number and phone do not match.');
+        setIsVerified(false);
+        setOrder(null);
+        setLoading(false);
+        return;
+      }
+
+      // Verification successful
+      setOrder(data.data);
+      setIsVerified(true);
+      setSessionToken(data.session_token);
+      setError(null);
+      
+      // Update URL to include order number
+      router.push(`/track?order_number=${encodeURIComponent(normalizedOrderNumber)}`, { scroll: false });
+    } catch (err) {
+      setError('Failed to verify. Please try again.');
+      setIsVerified(false);
+      setOrder(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
 
@@ -117,34 +189,53 @@ export default function TrackPageClient() {
   }
 
   return (
-    <div className="container section-padding">
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div className="container section-padding" style={!isVerified ? { 
+      display: 'flex', 
+      flexDirection: 'column',
+      alignItems: 'center', 
+      justifyContent: 'center',
+      minHeight: '100vh',
+      margin: '0 auto',
+      paddingTop: 'var(--space-8)',
+      paddingBottom: 'var(--space-8)',
+      maxWidth: '1200px'
+    } : {
+      margin: '0 auto',
+      maxWidth: '1200px'
+    }}>
+      <div style={{ maxWidth: '800px', width: '100%', margin: '0 auto' }}>
         <h1 style={{ 
           fontSize: 'var(--text-4xl)', 
           fontWeight: 'var(--font-weight-bold)',
-          marginBottom: 'var(--space-8)'
+          marginBottom: 'var(--space-8)',
+          textAlign: !isVerified ? 'center' : 'left'
         }}>
           Track Your Order
         </h1>
 
-        {/* Search Section */}
-        {!order && (
-          <div className="card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-8)' }}>
-            <h2 style={{ 
-              fontSize: 'var(--text-2xl)', 
-              fontWeight: 'var(--font-weight-semibold)',
-              marginBottom: 'var(--space-4)'
-            }}>
-              Enter Order Number
-            </h2>
+        {/* Verification Form */}
+        {!isVerified && (
+          <div className="card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-8)', textAlign: 'left' }}>
             <div style={{ marginBottom: 'var(--space-4)' }}>
+              <label style={{
+                display: 'block',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-weight-medium)',
+                color: 'var(--text-bright-primary)',
+                marginBottom: 'var(--space-2)'
+              }}>
+                Order Number
+              </label>
               <input
                 type="text"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
+                value={verificationForm.orderNumber}
+                onChange={(e) => setVerificationForm(prev => ({
+                  ...prev,
+                  orderNumber: e.target.value
+                }))}
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
-                    handleSearch();
+                    handleVerification();
                   }
                 }}
                 placeholder="e.g. INV-2511255ZX50E or 2511255ZX50E"
@@ -157,20 +248,61 @@ export default function TrackPageClient() {
                   borderRadius: 'var(--radius-lg)',
                   background: 'var(--bg-bright-primary)',
                   color: 'var(--text-bright-primary)',
-                  marginBottom: 'var(--space-3)'
+                  marginBottom: 'var(--space-4)'
+                }}
+              />
+              <label style={{
+                display: 'block',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 'var(--font-weight-medium)',
+                color: 'var(--text-bright-primary)',
+                marginBottom: 'var(--space-2)'
+              }}>
+                Last 4 Digits of Phone Number (billing or shipping)
+              </label>
+              <input
+                type="text"
+                value={verificationForm.lastFourDigits}
+                onChange={(e) => {
+                  const digits = e.target.value.replace(/\D/g, '').slice(0, 4);
+                  setVerificationForm(prev => ({
+                    ...prev,
+                    lastFourDigits: digits
+                  }));
+                }}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleVerification();
+                  }
+                }}
+                placeholder="1234"
+                maxLength={4}
+                className="floating-label-input"
+                style={{
+                  width: '100%',
+                  padding: 'var(--space-3)',
+                  fontSize: 'var(--text-base)',
+                  border: '1px solid var(--color-gray-300)',
+                  borderRadius: 'var(--radius-lg)',
+                  background: 'var(--bg-bright-primary)',
+                  color: 'var(--text-bright-primary)',
+                  marginBottom: 'var(--space-4)'
                 }}
               />
               <button
-                onClick={handleSearch}
+                onClick={handleVerification}
+                disabled={loading}
                 className="btn-primary"
                 style={{ 
                   width: '100%',
                   padding: 'var(--space-3) var(--space-6)',
                   fontSize: 'var(--text-base)',
-                  borderRadius: '9999px'
+                  borderRadius: '9999px',
+                  opacity: loading ? 0.6 : 1,
+                  cursor: loading ? 'not-allowed' : 'pointer'
                 }}
               >
-                Search
+                {loading ? 'Verifying...' : 'Track'}
               </button>
             </div>
             {error && (
@@ -529,36 +661,72 @@ export default function TrackPageClient() {
 
             {/* Download Invoice Button */}
             <div style={{ marginTop: 'var(--space-6)', textAlign: 'center' }}>
-              <a
-                href={`/api/invoice/${order.order_number}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={async () => {
+                  if (!order) return;
+                  
+                  try {
+                    // Generate download token
+                    const response = await fetch('/api/generate-invoice-token', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      credentials: 'include', // Include cookies for session
+                      body: JSON.stringify({
+                        order_number: order.order_number
+                      })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.success || !data.token) {
+                      alert('Failed to generate download link. Please try again.');
+                      return;
+                    }
+
+                    // Create temporary anchor element for download (works on mobile Safari)
+                    const downloadUrl = `/api/invoice/${data.token}`;
+                    const link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.download = `invoice-${order.order_number}.pdf`;
+                    link.target = '_blank';
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  } catch (err) {
+                    alert('Failed to download invoice. Please try again.');
+                    console.error('Invoice download error:', err);
+                  }
+                }}
                 className="btn-primary"
                 style={{ 
-                  display: 'block',
-                  width: '100%',
-                  textDecoration: 'none',
+                  display: 'inline-block',
                   textAlign: 'center',
                   padding: 'var(--space-3) var(--space-6)',
                   fontSize: 'var(--text-base)',
-                  borderRadius: '9999px'
+                  borderRadius: '9999px',
+                  width: '220px',
+                  border: 'none',
+                  cursor: 'pointer'
                 }}
               >
                 Download Invoice
-              </a>
+              </button>
             </div>
 
-            {/* Search Again Button */}
+            {/* Track Another Order Button */}
             <div style={{ marginTop: 'var(--space-6)', textAlign: 'center', marginBottom: 'var(--space-6)' }}>
               <button
                 onClick={() => {
                   setOrder(null);
-                  setSearchInput('');
+                  setIsVerified(false);
+                  setVerificationForm({ orderNumber: '', lastFourDigits: '' });
                   setError(null);
+                  setSessionToken(null);
                   router.push('/track');
                 }}
                 style={{ 
-                  width: '100%',
+                  display: 'inline-block',
                   padding: 'var(--space-3) var(--space-6)',
                   fontSize: 'var(--text-base)',
                   borderRadius: '9999px',
@@ -567,7 +735,8 @@ export default function TrackPageClient() {
                   fontWeight: 'var(--font-weight-medium)',
                   background: 'transparent',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.2s ease',
+                  width: '220px'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.background = 'var(--color-primary)';

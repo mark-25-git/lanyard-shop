@@ -741,8 +741,15 @@ export default function PaymentPage() {
                 sessionStorage.removeItem('promoCode');
                 sessionStorage.removeItem('discountInfo');
 
-                // Redirect to confirmation page
-                router.push(`/confirmation?order_number=${encodeURIComponent(orderNumber)}`);
+                // Redirect to confirmation page with token
+                const confirmationToken = data.data?.confirmation_token;
+                if (confirmationToken) {
+                  router.push(`/confirmation?token=${encodeURIComponent(confirmationToken)}`);
+                } else {
+                  // Fallback to order number if token not available (shouldn't happen)
+                  console.error('Confirmation token not received from API');
+                  router.push(`/confirmation?order_number=${encodeURIComponent(orderNumber)}`);
+                }
               } catch (err) {
                 alert(err instanceof Error ? err.message : 'Failed to create order. Please try again.');
                 setSubmitting(false);

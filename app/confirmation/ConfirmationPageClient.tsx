@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { formatCurrency } from '@/lib/utils';
 import { Order } from '@/types/order';
@@ -9,21 +9,62 @@ import HelpSection from '@/components/HelpSection';
 export default function ConfirmationPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const tokenParam = searchParams.get('token');
+  // Support legacy order_number for backward compatibility during transition
   const orderNumberParam = searchParams.get('order_number') || searchParams.get('orderNumber');
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
+  
+  // Prevent duplicate API calls (React StrictMode in dev causes double-invocation)
+  const hasFetchedRef = useRef(false);
 
   useEffect(() => {
-    if (orderNumberParam) {
-      fetchOrder();
+    // Prevent duplicate calls
+    if (hasFetchedRef.current) {
+      return;
+    }
+
+    if (tokenParam) {
+      hasFetchedRef.current = true;
+      fetchOrderByToken();
+    } else if (orderNumberParam) {
+      // Legacy support: fallback to old method
+      hasFetchedRef.current = true;
+      fetchOrderByNumber();
     } else {
+      setError('Invalid confirmation link. Please check your link and try again.');
       setLoading(false);
     }
-  }, [orderNumberParam]);
+  }, [tokenParam, orderNumberParam]);
 
-  const fetchOrder = async () => {
+  const fetchOrderByToken = async () => {
+    if (!tokenParam) return;
+    
+    try {
+      const response = await fetch(`/api/confirmation/${encodeURIComponent(tokenParam)}`);
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        // Token expired or invalid
+        setError('This link has expired or is invalid. Please use the tracking page to view your order status.');
+        setOrder(null);
+        return;
+      }
+
+      setOrder(data.data);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load order confirmation. Please try again or use the tracking page.');
+      setOrder(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchOrderByNumber = async () => {
     if (!orderNumberParam) return;
     
     try {
@@ -35,8 +76,10 @@ export default function ConfirmationPageClient() {
       }
 
       setOrder(data.data);
+      setError(null);
     } catch (err) {
-      // Failed to fetch order
+      setError('Failed to load order. Please use the tracking page to view your order.');
+      setOrder(null);
     } finally {
       setLoading(false);
     }
@@ -94,14 +137,59 @@ export default function ConfirmationPageClient() {
     );
   }
 
-  if (!order) {
+  if (error && !order) {
     return (
-      <div className="container section-padding">
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ color: 'var(--text-bright-secondary)' }}>Order not found.</p>
+      <div className="container section-padding" style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        minHeight: '60vh'
+      }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+          <h1 style={{ 
+            fontSize: 'var(--text-3xl)', 
+            fontWeight: 'var(--font-weight-bold)',
+            marginBottom: 'var(--space-4)'
+          }}>
+            Link Expired
+          </h1>
+          <p style={{ 
+            fontSize: 'var(--text-lg)',
+            color: 'var(--text-bright-secondary)',
+            marginBottom: 'var(--space-6)',
+            lineHeight: '1.6'
+          }}>
+            {error.replace('This page can only be viewed once for security reasons. ', '')}
+          </p>
+          <a
+            href="/track"
+            className="btn-primary"
+            style={{ 
+              display: 'inline-block',
+              textDecoration: 'none',
+              padding: 'var(--space-3) var(--space-6)',
+              fontSize: 'var(--text-base)',
+              borderRadius: '9999px'
+            }}
+          >
+            Go to Tracking Page
+          </a>
         </div>
       </div>
     );
+  }
+
+  if (!order) {
+    if (!loading) {
+      return (
+        <div className="container section-padding">
+          <div style={{ textAlign: 'center' }}>
+            <p style={{ color: 'var(--text-bright-secondary)' }}>Order not found.</p>
+          </div>
+        </div>
+      );
+    }
+    return null; // Still loading
   }
 
   return (
@@ -344,10 +432,29 @@ export default function ConfirmationPageClient() {
           </div>
         </div>
 
+        {/* Important Notice */}
+        <div style={{ 
+          background: '#fef3c7',
+          border: '1px solid #fbbf24',
+          padding: 'var(--space-4)',
+          borderRadius: 'var(--radius-lg)',
+          marginBottom: 'var(--space-6)',
+          textAlign: 'center'
+        }}>
+          <p style={{ 
+            fontSize: 'var(--text-sm)',
+            color: '#92400e',
+            margin: 0,
+            lineHeight: '1.6'
+          }}>
+            <strong>Important:</strong> This page can only be viewed once. Please save your order number <strong>{order.order_number}</strong> for future reference.
+          </p>
+        </div>
+
         {/* Secondary Actions */}
         <div style={{ textAlign: 'center', marginBottom: 'var(--space-6)' }}>
           <a
-            href={`/track?order_number=${encodeURIComponent(order.order_number)}`}
+            href="/track"
             style={{ 
               display: 'inline-block', 
               textDecoration: 'none',

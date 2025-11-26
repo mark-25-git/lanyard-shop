@@ -243,6 +243,33 @@ export async function POST(request: NextRequest) {
       return createServerError(request, error);
     }
 
+    // Generate confirmation token using database function
+    let confirmationToken: string | null = null;
+    try {
+      const { data: tokenData, error: tokenError } = await supabase.rpc('generate_confirmation_token');
+      
+      if (!tokenError && tokenData) {
+        confirmationToken = tokenData;
+        
+        // Update order with confirmation token
+        const { error: updateError } = await supabase
+          .from('orders')
+          .update({ confirmation_token: confirmationToken })
+          .eq('id', data.id);
+        
+        if (updateError) {
+          console.error('Error updating order with confirmation token:', updateError);
+          // Don't fail the order creation if token generation fails
+          // Token can be generated later if needed
+        }
+      } else {
+        console.error('Error generating confirmation token:', tokenError);
+      }
+    } catch (tokenGenError) {
+      console.error('Exception generating confirmation token:', tokenGenError);
+      // Continue without token - order creation succeeded
+    }
+
     // Increment stats for new order
     // Every new order = new event (+1) and adds to lanyards delivered (+quantity)
     try {
@@ -253,9 +280,13 @@ export async function POST(request: NextRequest) {
       console.error('Error incrementing stats:', statsError);
     }
 
+    // Return order data with confirmation token
     const response = NextResponse.json({
       success: true,
-      data: data as Order,
+      data: {
+        ...data,
+        confirmation_token: confirmationToken,
+      } as Order,
     });
 
     return addCorsHeaders(request, response);

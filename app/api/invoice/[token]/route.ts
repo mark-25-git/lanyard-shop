@@ -6,7 +6,6 @@ import {
   createUserError,
   createServerError,
   createNotFoundError,
-  isNotFoundError,
 } from '@/lib/error-handler';
 import { sanitizeText } from '@/lib/sanitize';
 import { Order } from '@/types/order';
@@ -33,7 +32,7 @@ async function imageToDataUri(imagePath: string): Promise<string> {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orderNumber: string } }
+  { params }: { params: { token: string } }
 ) {
   // Handle CORS preflight
   const preflightResponse = handleCorsPreflight(request);
@@ -48,27 +47,26 @@ export async function GET(
   }
 
   try {
-    const { orderNumber } = params;
+    const { token } = params;
     
-    if (!orderNumber) {
+    if (!token || typeof token !== 'string') {
       return createUserError(
-        'Order number is required.',
+        'Download token is required.',
         400,
         request
       );
     }
 
-    // Sanitize order number
-    const sanitizedOrderNumber = sanitizeText(orderNumber, 50);
-    if (!sanitizedOrderNumber) {
+    // Sanitize token
+    const sanitizedToken = sanitizeText(token, 100);
+    if (!sanitizedToken) {
       return createUserError(
-        'Invalid order number provided.',
+        'Invalid download token format.',
         400,
         request
       );
     }
 
-    // Fetch order from Supabase
     let supabase;
     try {
       supabase = createServerClient();
@@ -79,18 +77,30 @@ export async function GET(
         new Error('Database connection error. Please check server configuration.')
       );
     }
-    
+
+    // Use invoice token (one-time use, validates and marks as used)
+    const { data: tokenData, error: tokenError } = await supabase.rpc('use_invoice_token', {
+      p_token: sanitizedToken
+    });
+
+    if (tokenError || !tokenData || tokenData.length === 0 || !tokenData[0] || !tokenData[0].order_number) {
+      return createNotFoundError(
+        'This download link has expired or is invalid. This link can only be used once.',
+        request
+      );
+    }
+
+    const orderNumber = tokenData[0].order_number as string;
+
+    // Fetch order from Supabase
     const { data: order, error } = await supabase
       .from('orders')
       .select('*')
-      .eq('order_number', sanitizedOrderNumber)
+      .eq('order_number', orderNumber)
       .single();
 
     if (error || !order) {
-      if (isNotFoundError(error)) {
-        return createNotFoundError('Order not found.', request);
-      }
-      return createServerError(request, error);
+      return createNotFoundError('Order not found.', request);
     }
 
     // Convert logo to base64 data URI
@@ -116,7 +126,7 @@ export async function GET(
       const response = new NextResponse(pdfArray, {
         headers: {
           'Content-Type': 'application/pdf',
-          'Content-Disposition': `attachment; filename="invoice-${sanitizedOrderNumber}.pdf"`,
+          'Content-Disposition': `attachment; filename="invoice-${orderNumber}.pdf"`,
         },
       });
 
