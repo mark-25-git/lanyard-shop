@@ -32,6 +32,7 @@ export default function TrackPageClient() {
   });
   const [error, setError] = useState<string | null>(null);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [downloadingInvoice, setDownloadingInvoice] = useState(false);
 
   const normalizeOrderNumber = (value: string) => {
     const trimmed = value.trim().toUpperCase();
@@ -663,7 +664,9 @@ export default function TrackPageClient() {
             <div style={{ marginTop: 'var(--space-6)', textAlign: 'center' }}>
               <button
                 onClick={async () => {
-                  if (!order) return;
+                  if (!order || downloadingInvoice) return;
+                  
+                  setDownloadingInvoice(true);
                   
                   try {
                     // Generate download token
@@ -680,6 +683,7 @@ export default function TrackPageClient() {
 
                     if (!response.ok || !data.success || !data.token) {
                       alert('Failed to generate download link. Please try again.');
+                      setDownloadingInvoice(false);
                       return;
                     }
 
@@ -693,11 +697,18 @@ export default function TrackPageClient() {
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
+                    
+                    // Reset loading state after a short delay
+                    setTimeout(() => {
+                      setDownloadingInvoice(false);
+                    }, 1000);
                   } catch (err) {
                     alert('Failed to download invoice. Please try again.');
                     console.error('Invoice download error:', err);
+                    setDownloadingInvoice(false);
                   }
                 }}
+                disabled={downloadingInvoice}
                 className="btn-primary"
                 style={{ 
                   display: 'inline-block',
@@ -707,10 +718,19 @@ export default function TrackPageClient() {
                   borderRadius: '9999px',
                   width: '220px',
                   border: 'none',
-                  cursor: 'pointer'
+                  cursor: downloadingInvoice ? 'not-allowed' : 'pointer',
+                  opacity: downloadingInvoice ? 0.6 : 1
                 }}
               >
-                Download Invoice
+                {downloadingInvoice ? (
+                  <div className="modern-spinner" style={{ display: 'inline-flex' }}>
+                    <div className="modern-spinner-dot"></div>
+                    <div className="modern-spinner-dot"></div>
+                    <div className="modern-spinner-dot"></div>
+                  </div>
+                ) : (
+                  'Download Invoice'
+                )}
               </button>
             </div>
 

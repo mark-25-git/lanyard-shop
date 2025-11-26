@@ -141,11 +141,16 @@ export default function ConfirmationPageClient() {
     return (
       <div className="container section-padding" style={{ 
         display: 'flex', 
+        flexDirection: 'column',
         alignItems: 'center', 
         justifyContent: 'center',
-        minHeight: '60vh'
+        minHeight: '100vh',
+        margin: '0 auto',
+        paddingTop: 'var(--space-8)',
+        paddingBottom: 'var(--space-8)',
+        maxWidth: '1200px'
       }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
+        <div style={{ maxWidth: '800px', width: '100%', textAlign: 'center' }}>
           <h1 style={{ 
             fontSize: 'var(--text-3xl)', 
             fontWeight: 'var(--font-weight-bold)',
