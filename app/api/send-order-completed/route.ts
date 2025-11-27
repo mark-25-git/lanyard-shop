@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Track email sent in order_emails table
-      await trackEmailSent(order.order_number, 'order_completed');
+      await trackEmailSent(order.id, order.order_number, 'order_completed');
 
       console.log('Order completed email sent:', {
         orderId: order.id,

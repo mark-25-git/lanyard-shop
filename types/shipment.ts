@@ -1,5 +1,6 @@
 export interface Shipment {
   id: string;
+  order_id: string;
   order_number: string;
   courier: string;
   courier_tracking_number: string;

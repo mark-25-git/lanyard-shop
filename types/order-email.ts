@@ -8,6 +8,7 @@ export type EmailStatus = 'pending' | 'sent';
 
 export interface OrderEmail {
   id: string;
+  order_id: string;
   order_number: string;
   email_type: EmailType;
   status: EmailStatus;

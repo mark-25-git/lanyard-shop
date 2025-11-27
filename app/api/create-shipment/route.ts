@@ -161,6 +161,7 @@ export async function POST(request: NextRequest) {
     const { data: shipment, error: shipmentError } = await supabase
       .from('shipments')
       .insert({
+        order_id: order.id,
         order_number: order.order_number,
         courier: sanitizedCourier,
         courier_tracking_number: sanitizedTrackingNumber,

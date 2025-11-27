@@ -6,6 +6,7 @@ import { EmailType, EmailStatus } from '@/types/order-email';
  * Creates or updates the email record with sent status
  */
 export async function trackEmailSent(
+  orderId: string,
   orderNumber: string,
   emailType: EmailType
 ): Promise<void> {
@@ -18,6 +19,7 @@ export async function trackEmailSent(
       .from('order_emails')
       .upsert(
         {
+          order_id: orderId,
           order_number: orderNumber,
           email_type: emailType,
           status: 'sent' as EmailStatus,
@@ -25,7 +27,7 @@ export async function trackEmailSent(
           updated_at: now,
         },
         {
-          onConflict: 'order_number,email_type', // Use the unique constraint
+          onConflict: 'order_id,email_type', // Use the unique constraint
         }
       );
 
