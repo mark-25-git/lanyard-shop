@@ -208,8 +208,7 @@ export default function ConfirmationPageClient() {
             marginBottom: 'var(--space-4)',
             display: 'block'
           }}></i>
-          <h1 style={{ 
-            fontSize: 'var(--text-4xl)', 
+          <h1 className="page-title" style={{ 
             fontWeight: 'var(--font-weight-bold)',
             marginBottom: 'var(--space-4)'
           }}>

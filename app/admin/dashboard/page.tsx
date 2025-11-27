@@ -140,8 +140,7 @@ export default function AdminDashboard() {
           marginBottom: 'var(--space-8)'
         }}>
           <div>
-            <h1 style={{ 
-              fontSize: 'var(--text-4xl)', 
+            <h1 className="page-title" style={{ 
               fontWeight: 'var(--font-weight-bold)',
               marginBottom: 'var(--space-2)'
             }}>

@@ -115,8 +115,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
     <>
       <div className="container section-padding">
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <h1 style={{ 
-            fontSize: 'var(--text-4xl)', 
+          <h1 className="page-title" style={{ 
             fontWeight: 'var(--font-weight-bold)',
             marginBottom: 'var(--space-8)'
           }}>
@@ -126,7 +125,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
 
           <div style={{ marginBottom: 'var(--space-8)' }}>
             {/* Your lanyard will have */}
-            <div style={{ marginBottom: 'var(--space-8)' }}>
+            <div style={{ marginBottom: '5rem' }}>
               <h2 style={{ 
                 fontSize: 'var(--text-2xl)', 
                 fontWeight: 'var(--font-weight-semibold)',
@@ -167,7 +166,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
             </div>
 
             {/* Quantity */}
-            <div style={{ marginBottom: 'var(--space-8)' }}>
+            <div style={{ marginBottom: '5rem' }}>
               <h2 style={{ 
                 fontSize: 'var(--text-2xl)', 
                 fontWeight: 'var(--font-weight-semibold)',
@@ -235,7 +234,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
             </div>
 
             {/* Design Template */}
-            <div style={{ marginBottom: 'var(--space-8)' }}>
+            <div style={{ marginBottom: '5rem' }}>
               <h2 style={{ 
                 fontSize: 'var(--text-2xl)', 
                 fontWeight: 'var(--font-weight-semibold)',
@@ -266,7 +265,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
             </div>
 
             {/* Canva Link Input */}
-            <div style={{ marginBottom: 'var(--space-8)' }}>
+            <div style={{ marginBottom: '5rem' }}>
               <h2 style={{ 
                 fontSize: 'var(--text-2xl)', 
                 fontWeight: 'var(--font-weight-semibold)',
@@ -322,7 +321,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
             </div>
 
             {/* Other Design File Instruction */}
-            <div style={{ marginBottom: 'var(--space-8)' }}>
+            <div style={{ marginBottom: '5rem' }}>
               <h2 style={{ 
                 fontSize: 'var(--text-2xl)', 
                 fontWeight: 'var(--font-weight-semibold)',
@@ -400,7 +399,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
                 color: 'var(--text-bright-tertiary)',
                 margin: 'var(--space-2) 0 0 0'
               }}>
-                May arrive earlier or later depending on production availability
+                May arrive earlier or later depending on production availability.
               </p>
             </div>
           )}
@@ -465,7 +464,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
                 fontSize: 'var(--text-sm)',
                 color: 'var(--text-bright-tertiary)'
               }}>
-                Please contact us for orders of 600+ pieces
+                Please contact us for orders of 600+ pieces.
               </p>
             </div>
           )}

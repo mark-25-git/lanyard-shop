@@ -54,8 +54,7 @@ export default function UploadPage() {
   return (
     <div className="container section-padding">
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <h1 style={{ 
-          fontSize: 'var(--text-4xl)', 
+        <h1 className="page-title" style={{ 
           fontWeight: 'var(--font-weight-bold)',
           marginBottom: 'var(--space-6)'
         }}>

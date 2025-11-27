@@ -4,8 +4,7 @@ export default function Home() {
   return (
     <div className="container section-padding">
       <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
-        <h1 style={{ 
-          fontSize: 'var(--text-4xl)', 
+        <h1 className="page-title" style={{ 
           fontWeight: 'var(--font-weight-bold)',
           marginBottom: 'var(--space-6)'
         }}>

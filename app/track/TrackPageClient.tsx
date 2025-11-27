@@ -240,8 +240,7 @@ export default function TrackPageClient() {
       maxWidth: '1200px'
     }}>
       <div style={{ maxWidth: '800px', width: '100%', margin: '0 auto' }}>
-        <h1 style={{ 
-          fontSize: 'var(--text-4xl)', 
+        <h1 className="page-title" style={{ 
           fontWeight: 'var(--font-weight-bold)',
           marginBottom: 'var(--space-8)',
           textAlign: !isVerified ? 'center' : 'left'

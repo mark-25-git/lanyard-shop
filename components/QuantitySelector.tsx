@@ -138,47 +138,79 @@ export default function QuantitySelector({
         <div style={{ 
           width: '100%',
           marginTop: 'var(--space-4)',
-          padding: 'var(--space-4)',
+          padding: 'var(--space-6)',
           background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
           borderRadius: 'var(--radius-lg)',
-          textAlign: 'center'
+          textAlign: 'left'
         }}>
           <p style={{ 
             color: 'var(--text-bright-primary)', 
             fontSize: 'var(--text-base)',
             fontWeight: 'var(--font-weight-semibold)',
-            margin: '0 0 var(--space-2) 0'
+            margin: '0 0 var(--space-4) 0'
           }}>
-            Get priority support and better pricing.
+            Unlock volume benefits:
           </p>
-          <a 
-            href={`https://wa.me/60137482481?text=Hi%20Teevent!%20I%27d%20like%20to%20get%20a%20quote%20for%20${value}%20lanyards.`}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ 
-              display: 'inline-block',
-              textDecoration: 'none',
-              padding: 'var(--space-3) var(--space-6)',
-              fontSize: 'var(--text-base)',
-              borderRadius: '9999px',
-              border: '2px solid var(--color-primary)',
-              color: 'var(--color-primary)',
-              fontWeight: 'var(--font-weight-medium)',
-              background: 'transparent',
-              transition: 'all 0.2s ease',
-              marginTop: 'var(--space-2)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--color-primary)';
-              e.currentTarget.style.color = 'var(--color-white)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = 'var(--color-primary)';
-            }}
-          >
-            Contact Us
-          </a>
+          <ul style={{
+            listStyle: 'none',
+            padding: 0,
+            margin: '0 0 var(--space-4) 0',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-2)'
+          }}>
+            {[
+              'Custom quotation',
+              'Flexible billing',
+              'Dedicated manager',
+              'Design assistance',
+              'Priority support via WhatsApp'
+            ].map((item, index) => (
+              <li key={index} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)',
+                color: 'var(--text-bright-primary)',
+                fontSize: 'var(--text-base)'
+              }}>
+                <i className="bi bi-check" style={{
+                  color: 'var(--color-primary)',
+                  fontSize: 'var(--text-lg)',
+                  flexShrink: 0
+                }}></i>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <div style={{ textAlign: 'center', marginTop: 'var(--space-4)' }}>
+            <a 
+              href={`https://wa.me/60137482481?text=Hi%20Teevent!%20I%27d%20like%20to%20get%20a%20quote%20for%20${value}%20lanyards.`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ 
+                display: 'inline-block',
+                textDecoration: 'none',
+                padding: 'var(--space-3) var(--space-6)',
+                fontSize: 'var(--text-base)',
+                borderRadius: '9999px',
+                border: '2px solid var(--color-primary)',
+                color: 'var(--color-primary)',
+                fontWeight: 'var(--font-weight-medium)',
+                background: 'transparent',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--color-primary)';
+                e.currentTarget.style.color = 'var(--color-white)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = 'var(--color-primary)';
+              }}
+            >
+              Contact Us
+            </a>
+          </div>
         </div>
       )}
     </div>

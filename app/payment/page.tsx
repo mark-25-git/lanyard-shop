@@ -201,8 +201,7 @@ export default function PaymentPage() {
   return (
     <div className="container section-padding">
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <h1 style={{ 
-          fontSize: 'var(--text-4xl)', 
+        <h1 className="page-title" style={{ 
           fontWeight: 'var(--font-weight-bold)',
           marginBottom: 'var(--space-6)'
         }}>
@@ -210,10 +209,11 @@ export default function PaymentPage() {
         </h1>
 
         {/* Prominent Total Amount Section */}
-        <div className="card" style={{ 
+        <div style={{ 
           padding: 'var(--space-8)', 
           marginBottom: 'var(--space-4)',
           background: 'var(--bg-bright-secondary)',
+          borderRadius: 'var(--radius-lg)',
           textAlign: 'center'
         }}>
           <p style={{
