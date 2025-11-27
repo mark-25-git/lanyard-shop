@@ -148,13 +148,13 @@ export async function POST(request: NextRequest) {
       // Auto-save to courier_websites
       await supabase
         .from('courier_websites')
-        .insert({
+        .upsert({
           courier_name: sanitizedCourier,
           tracking_url_template: template,
           is_active: true,
-        })
-        .onConflict('courier_name')
-        .merge();
+        }, {
+          onConflict: 'courier_name'
+        });
     }
 
     // Create shipment record
