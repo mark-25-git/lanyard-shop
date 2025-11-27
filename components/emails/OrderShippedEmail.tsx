@@ -14,19 +14,17 @@ import {
 import { Order } from '@/types/order';
 import { formatCurrency } from '@/lib/utils';
 
-interface OrderConfirmationEmailProps {
+interface OrderShippedEmailProps {
   order: Order;
-  confirmationUrl: string;
   trackingUrl: string;
-  whatsappUrl: string;
+  courier?: string | null;
 }
 
-export function OrderConfirmationEmail({
+export function OrderShippedEmail({
   order,
-  confirmationUrl,
   trackingUrl,
-  whatsappUrl,
-}: OrderConfirmationEmailProps) {
+  courier,
+}: OrderShippedEmailProps) {
   // Use production URL for logo (emails should always use production URLs)
   // Use teevent.my domain to match Resend sending domain
   // This ensures logo works even when testing from localhost
@@ -38,6 +36,26 @@ export function OrderConfirmationEmail({
     month: 'long',
     day: 'numeric'
   });
+
+  // Calculate expected delivery dates (today + 1 day and today + 2 days)
+  const today = new Date();
+  const deliveryDate1 = new Date(today);
+  deliveryDate1.setDate(today.getDate() + 1);
+  const deliveryDate2 = new Date(today);
+  deliveryDate2.setDate(today.getDate() + 2);
+
+  const expectedDeliveryRange = `${deliveryDate1.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })} - ${deliveryDate2.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })}`;
+
+  // Extract order number without INV- prefix for tracking number
+  const trackingNumberFromOrder = order.order_number.replace(/^INV-/i, '');
 
   return (
     <Html>
@@ -60,10 +78,10 @@ export function OrderConfirmationEmail({
             Hi {order.customer_name},
           </Text>
           <Text style={text}>
-            Your order #{order.order_number} has been confirmed. We will begin processing it once payment is verified.
+            Your order #{order.order_number} is on its way to you. They are expected to be delivered on {expectedDeliveryRange}.
           </Text>
 
-          {/* Order Details - Matching track page layout */}
+          {/* Order Details - Matching payment confirmed email layout for consistency */}
           <Section style={summarySection}>
             <Text style={sectionTitle}>Order Details</Text>
             
@@ -79,7 +97,7 @@ export function OrderConfirmationEmail({
 
             <Hr style={divider} />
 
-            {/* Order Information - Matching track page style */}
+            {/* Order Information - Matching payment confirmed email style */}
             <Row style={detailRow}>
               <Column>
                 <Text style={detailLabel}>Order Number</Text>
@@ -165,6 +183,29 @@ export function OrderConfirmationEmail({
             </Row>
           </Section>
 
+          {/* Shipping Information */}
+          <Section style={shippingInfoSection}>
+            <Text style={sectionTitle}>Shipping Information</Text>
+            <Row style={detailRow}>
+              <Column>
+                <Text style={detailLabel}>Tracking Number</Text>
+              </Column>
+              <Column style={detailValueColumn}>
+                <Text style={detailValueBold}>{trackingNumberFromOrder}</Text>
+              </Column>
+            </Row>
+            {courier && (
+              <Row style={detailRow}>
+                <Column>
+                  <Text style={detailLabel}>Courier</Text>
+                </Column>
+                <Column style={detailValueColumn}>
+                  <Text style={detailValue}>{courier}</Text>
+                </Column>
+              </Row>
+            )}
+          </Section>
+
           {/* Shipping Address - Separate section */}
           {order.shipping_address_line1 && (
             <Section style={addressSection}>
@@ -192,22 +233,9 @@ export function OrderConfirmationEmail({
             </Section>
           )}
 
-          {/* What's next? */}
-          <Section style={nextStepsSection}>
-            <Text style={sectionTitle}>What's next?</Text>
-            <Text style={text}>
-              If you already shared your Canva link, you don't need to do anything. If not, send your design file to our WhatsApp.
-            </Text>
-            <Section style={whatsappButtonSection}>
-              <Button href={whatsappUrl} style={primaryButton}>
-                Send Design File via WhatsApp
-              </Button>
-            </Section>
-          </Section>
-
           {/* Action Buttons */}
           <Section style={buttonSection}>
-            <Button href={trackingUrl} style={secondaryButton}>
+            <Button href={trackingUrl} style={primaryButton}>
               Track Your Order
             </Button>
           </Section>
@@ -238,7 +266,7 @@ export function OrderConfirmationEmail({
   );
 }
 
-// Email styles (inline styles required for email clients)
+// Email styles (matching PaymentConfirmedEmail for consistency)
 const main = {
   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
   backgroundColor: '#f6f6f6',
@@ -261,15 +289,6 @@ const header = {
 const logoImage = {
   margin: '0 auto',
   display: 'block',
-};
-
-const heading = {
-  fontSize: '24px',
-  fontWeight: '700',
-  color: '#000000',
-  marginBottom: '16px',
-  marginTop: '0',
-  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
 };
 
 const text = {
@@ -334,7 +353,7 @@ const detailRow = {
 
 const detailLabel = {
   fontSize: '14px',
-  color: '#495057', // var(--text-bright-secondary)
+  color: '#495057',
   margin: '0',
   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
 };
@@ -374,7 +393,7 @@ const promoCodeRow = {
 
 const promoCodeLabel = {
   fontSize: '14px',
-  color: '#495057', // var(--text-bright-secondary)
+  color: '#495057',
   margin: '0',
   marginBottom: '8px',
   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
@@ -396,6 +415,10 @@ const totalValue = {
   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
 };
 
+const shippingInfoSection = {
+  marginBottom: '32px',
+};
+
 const addressSection = {
   marginBottom: '32px',
 };
@@ -410,12 +433,6 @@ const addressText = {
 
 const nextStepsSection = {
   marginBottom: '32px',
-};
-
-const whatsappButtonSection = {
-  textAlign: 'center' as const,
-  marginTop: '16px',
-  marginBottom: '16px',
 };
 
 const buttonSection = {
@@ -476,3 +493,4 @@ const link = {
   color: '#007AFF',
   textDecoration: 'underline',
 };
+

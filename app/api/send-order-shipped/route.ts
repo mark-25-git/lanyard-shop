@@ -9,7 +9,7 @@ import {
   createNotFoundError,
 } from '@/lib/error-handler';
 import { sanitizeText } from '@/lib/sanitize';
-import { OrderConfirmationEmail } from '@/components/emails/OrderConfirmationEmail';
+import { OrderShippedEmail } from '@/components/emails/OrderShippedEmail';
 import { trackEmailSent } from '@/lib/email-tracking';
 import React from 'react';
 import { render } from '@react-email/render';
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     return preflightResponse;
   }
 
-  // Rate limiting - public API (this endpoint can be called from order creation)
+  // Rate limiting
   const rateLimitResponse = rateLimit(request, 'public');
   if (rateLimitResponse) {
     return addCorsHeaders(request, rateLimitResponse);
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { order_id } = body;
+    const { order_id, courier } = body;
 
     if (!order_id || typeof order_id !== 'string') {
       return createUserError(
@@ -77,32 +77,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if email was already sent (optional - prevent duplicates)
-    // We'll allow resending for now, but you can add this check later
-
-    // Use main domain (teevent.my) for email links to match Resend sending domain
-    // This improves deliverability - links will redirect to lanyard.teevent.my via vercel.json
+    // Use main domain (teevent.my) for email links
     const emailDomain = 'https://teevent.my';
 
-    // Generate URLs using main domain (will redirect to subdomain via vercel.json)
-    // Query parameters will be preserved in the redirect
-    const confirmationUrl = order.confirmation_token
-      ? `${emailDomain}/confirmation?token=${encodeURIComponent(order.confirmation_token)}`
-      : `${emailDomain}/confirmation?order_number=${encodeURIComponent(order.order_number)}`;
-
+    // Generate tracking URL
     const trackingUrl = `${emailDomain}/track?order_number=${encodeURIComponent(order.order_number)}`;
-
-    // WhatsApp link for design file submission
-    const whatsappMessage = `Hi Teevent! My order number is ${order.order_number}. I have completed payment and would like to send my design file.`;
-    const whatsappUrl = `https://wa.me/60137482481?text=${encodeURIComponent(whatsappMessage)}`;
 
     // Render email template to HTML string
     const emailHtml = await render(
-      React.createElement(OrderConfirmationEmail, {
+      React.createElement(OrderShippedEmail, {
         order: order as Order,
-        confirmationUrl,
         trackingUrl,
-        whatsappUrl,
+        courier: courier || null,
       })
     );
 
@@ -114,30 +100,27 @@ export async function POST(request: NextRequest) {
       const { data: emailData, error: emailError } = await resend.emails.send({
         from: `Teevent <${fromEmail}>`,
         to: order.customer_email,
-        subject: `Your order has been confirmed`,
+        subject: `Your order is on its way`,
         html: emailHtml,
-        // Optional: Add reply-to address
         replyTo: 'team.teevent@gmail.com',
       });
 
       if (emailError) {
         console.error('Resend API error:', emailError);
-        // Don't fail the request - email is non-critical
-        // Log error but return success
         return addCorsHeaders(
           request,
           NextResponse.json({
             success: false,
             error: 'Failed to send email',
-            message: 'Order was created successfully, but email could not be sent.',
+            message: 'Order shipped, but email could not be sent.',
           })
         );
       }
 
       // Track email sent in order_emails table
-      await trackEmailSent(order.order_number, 'order_confirmation');
+      await trackEmailSent(order.order_number, 'order_shipped');
 
-      console.log('Order confirmation email sent:', {
+      console.log('Order shipped email sent:', {
         orderId: order.id,
         orderNumber: order.order_number,
         recipient: order.customer_email,
@@ -154,18 +137,17 @@ export async function POST(request: NextRequest) {
       );
     } catch (resendError: any) {
       console.error('Error sending email:', resendError);
-      // Don't fail the request - email is non-critical
       return addCorsHeaders(
         request,
         NextResponse.json({
           success: false,
           error: 'Failed to send email',
-          message: 'Order was created successfully, but email could not be sent.',
+          message: 'Order shipped, but email could not be sent.',
         })
       );
     }
   } catch (error) {
-    console.error('Unexpected error in send-order-confirmation:', error);
+    console.error('Unexpected error in send-order-shipped:', error);
     return createServerError(request, error);
   }
 }

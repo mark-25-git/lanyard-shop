@@ -9,7 +9,7 @@ import {
   createNotFoundError,
 } from '@/lib/error-handler';
 import { sanitizeText } from '@/lib/sanitize';
-import { OrderConfirmationEmail } from '@/components/emails/OrderConfirmationEmail';
+import { PaymentConfirmedEmail } from '@/components/emails/PaymentConfirmedEmail';
 import { trackEmailSent } from '@/lib/email-tracking';
 import React from 'react';
 import { render } from '@react-email/render';
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     return preflightResponse;
   }
 
-  // Rate limiting - public API (this endpoint can be called from order creation)
+  // Rate limiting
   const rateLimitResponse = rateLimit(request, 'public');
   if (rateLimitResponse) {
     return addCorsHeaders(request, rateLimitResponse);
@@ -77,19 +77,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if email was already sent (optional - prevent duplicates)
-    // We'll allow resending for now, but you can add this check later
-
-    // Use main domain (teevent.my) for email links to match Resend sending domain
-    // This improves deliverability - links will redirect to lanyard.teevent.my via vercel.json
+    // Use main domain (teevent.my) for email links
     const emailDomain = 'https://teevent.my';
 
-    // Generate URLs using main domain (will redirect to subdomain via vercel.json)
-    // Query parameters will be preserved in the redirect
-    const confirmationUrl = order.confirmation_token
-      ? `${emailDomain}/confirmation?token=${encodeURIComponent(order.confirmation_token)}`
-      : `${emailDomain}/confirmation?order_number=${encodeURIComponent(order.order_number)}`;
-
+    // Generate tracking URL
     const trackingUrl = `${emailDomain}/track?order_number=${encodeURIComponent(order.order_number)}`;
 
     // WhatsApp link for design file submission
@@ -98,9 +89,8 @@ export async function POST(request: NextRequest) {
 
     // Render email template to HTML string
     const emailHtml = await render(
-      React.createElement(OrderConfirmationEmail, {
+      React.createElement(PaymentConfirmedEmail, {
         order: order as Order,
-        confirmationUrl,
         trackingUrl,
         whatsappUrl,
       })
@@ -114,30 +104,27 @@ export async function POST(request: NextRequest) {
       const { data: emailData, error: emailError } = await resend.emails.send({
         from: `Teevent <${fromEmail}>`,
         to: order.customer_email,
-        subject: `Your order has been confirmed`,
+        subject: `Your payment has been confirmed`,
         html: emailHtml,
-        // Optional: Add reply-to address
         replyTo: 'team.teevent@gmail.com',
       });
 
       if (emailError) {
         console.error('Resend API error:', emailError);
-        // Don't fail the request - email is non-critical
-        // Log error but return success
         return addCorsHeaders(
           request,
           NextResponse.json({
             success: false,
             error: 'Failed to send email',
-            message: 'Order was created successfully, but email could not be sent.',
+            message: 'Payment confirmed, but email could not be sent.',
           })
         );
       }
 
       // Track email sent in order_emails table
-      await trackEmailSent(order.order_number, 'order_confirmation');
+      await trackEmailSent(order.order_number, 'payment_confirmed');
 
-      console.log('Order confirmation email sent:', {
+      console.log('Payment confirmed email sent:', {
         orderId: order.id,
         orderNumber: order.order_number,
         recipient: order.customer_email,
@@ -154,18 +141,17 @@ export async function POST(request: NextRequest) {
       );
     } catch (resendError: any) {
       console.error('Error sending email:', resendError);
-      // Don't fail the request - email is non-critical
       return addCorsHeaders(
         request,
         NextResponse.json({
           success: false,
           error: 'Failed to send email',
-          message: 'Order was created successfully, but email could not be sent.',
+          message: 'Payment confirmed, but email could not be sent.',
         })
       );
     }
   } catch (error) {
-    console.error('Unexpected error in send-order-confirmation:', error);
+    console.error('Unexpected error in send-payment-confirmed:', error);
     return createServerError(request, error);
   }
 }

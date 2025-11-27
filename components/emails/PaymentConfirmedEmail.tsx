@@ -14,19 +14,17 @@ import {
 import { Order } from '@/types/order';
 import { formatCurrency } from '@/lib/utils';
 
-interface OrderConfirmationEmailProps {
+interface PaymentConfirmedEmailProps {
   order: Order;
-  confirmationUrl: string;
   trackingUrl: string;
   whatsappUrl: string;
 }
 
-export function OrderConfirmationEmail({
+export function PaymentConfirmedEmail({
   order,
-  confirmationUrl,
   trackingUrl,
   whatsappUrl,
-}: OrderConfirmationEmailProps) {
+}: PaymentConfirmedEmailProps) {
   // Use production URL for logo (emails should always use production URLs)
   // Use teevent.my domain to match Resend sending domain
   // This ensures logo works even when testing from localhost
@@ -38,6 +36,17 @@ export function OrderConfirmationEmail({
     month: 'long',
     day: 'numeric'
   });
+
+  // Format payment confirmed date
+  const paymentConfirmedDate = order.payment_confirmed_at
+    ? new Date(order.payment_confirmed_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : null;
 
   return (
     <Html>
@@ -60,10 +69,10 @@ export function OrderConfirmationEmail({
             Hi {order.customer_name},
           </Text>
           <Text style={text}>
-            Your order #{order.order_number} has been confirmed. We will begin processing it once payment is verified.
+            Your payment for order #{order.order_number} has been verified and confirmed. We will begin processing your order shortly.
           </Text>
 
-          {/* Order Details - Matching track page layout */}
+          {/* Order Details - Matching order confirmation email layout for consistency */}
           <Section style={summarySection}>
             <Text style={sectionTitle}>Order Details</Text>
             
@@ -79,7 +88,7 @@ export function OrderConfirmationEmail({
 
             <Hr style={divider} />
 
-            {/* Order Information - Matching track page style */}
+            {/* Order Information - Matching order confirmation email style */}
             <Row style={detailRow}>
               <Column>
                 <Text style={detailLabel}>Order Number</Text>
@@ -165,6 +174,31 @@ export function OrderConfirmationEmail({
             </Row>
           </Section>
 
+          {/* Payment Confirmation Info */}
+          {paymentConfirmedDate && (
+            <Section style={paymentInfoSection}>
+              <Text style={sectionTitle}>Payment Information</Text>
+              <Row style={detailRow}>
+                <Column>
+                  <Text style={detailLabel}>Payment Method</Text>
+                </Column>
+                <Column style={detailValueColumn}>
+                  <Text style={detailValue}>
+                    {order.payment_method === 'bank_transfer' ? 'Bank Transfer' : order.payment_method}
+                  </Text>
+                </Column>
+              </Row>
+              <Row style={detailRow}>
+                <Column>
+                  <Text style={detailLabel}>Payment Confirmed</Text>
+                </Column>
+                <Column style={detailValueColumn}>
+                  <Text style={detailValue}>{paymentConfirmedDate}</Text>
+                </Column>
+              </Row>
+            </Section>
+          )}
+
           {/* Shipping Address - Separate section */}
           {order.shipping_address_line1 && (
             <Section style={addressSection}>
@@ -196,7 +230,7 @@ export function OrderConfirmationEmail({
           <Section style={nextStepsSection}>
             <Text style={sectionTitle}>What's next?</Text>
             <Text style={text}>
-              If you already shared your Canva link, you don't need to do anything. If not, send your design file to our WhatsApp.
+              If you haven't sent your design file yet, please send it via WhatsApp to proceed with production. If you've already sent it, we'll confirm the design with you before starting production.
             </Text>
             <Section style={whatsappButtonSection}>
               <Button href={whatsappUrl} style={primaryButton}>
@@ -238,7 +272,7 @@ export function OrderConfirmationEmail({
   );
 }
 
-// Email styles (inline styles required for email clients)
+// Email styles (matching OrderConfirmationEmail for consistency)
 const main = {
   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
   backgroundColor: '#f6f6f6',
@@ -334,7 +368,7 @@ const detailRow = {
 
 const detailLabel = {
   fontSize: '14px',
-  color: '#495057', // var(--text-bright-secondary)
+  color: '#495057',
   margin: '0',
   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
 };
@@ -374,7 +408,7 @@ const promoCodeRow = {
 
 const promoCodeLabel = {
   fontSize: '14px',
-  color: '#495057', // var(--text-bright-secondary)
+  color: '#495057',
   margin: '0',
   marginBottom: '8px',
   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
@@ -394,6 +428,10 @@ const totalValue = {
   color: '#000000',
   margin: '0',
   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+};
+
+const paymentInfoSection = {
+  marginBottom: '32px',
 };
 
 const addressSection = {
@@ -476,3 +514,4 @@ const link = {
   color: '#007AFF',
   textDecoration: 'underline',
 };
+

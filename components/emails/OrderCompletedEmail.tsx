@@ -5,7 +5,6 @@ import {
   Container,
   Section,
   Text,
-  Button,
   Hr,
   Row,
   Column,
@@ -14,19 +13,13 @@ import {
 import { Order } from '@/types/order';
 import { formatCurrency } from '@/lib/utils';
 
-interface OrderConfirmationEmailProps {
+interface OrderCompletedEmailProps {
   order: Order;
-  confirmationUrl: string;
-  trackingUrl: string;
-  whatsappUrl: string;
 }
 
-export function OrderConfirmationEmail({
+export function OrderCompletedEmail({
   order,
-  confirmationUrl,
-  trackingUrl,
-  whatsappUrl,
-}: OrderConfirmationEmailProps) {
+}: OrderCompletedEmailProps) {
   // Use production URL for logo (emails should always use production URLs)
   // Use teevent.my domain to match Resend sending domain
   // This ensures logo works even when testing from localhost
@@ -38,6 +31,10 @@ export function OrderConfirmationEmail({
     month: 'long',
     day: 'numeric'
   });
+
+  // WhatsApp link for contacting about issues
+  const whatsappMessage = `Hi Teevent! My order number is ${order.order_number}. I have an issue with my order.`;
+  const whatsappUrl = `https://wa.me/60137482481?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <Html>
@@ -60,10 +57,17 @@ export function OrderConfirmationEmail({
             Hi {order.customer_name},
           </Text>
           <Text style={text}>
-            Your order #{order.order_number} has been confirmed. We will begin processing it once payment is verified.
+            Great news! Your order #{order.order_number} has been delivered. Thank you for choosing Teevent!
+          </Text>
+          <Text style={text}>
+            Please confirm the items are in good condition. If there is a problem, do not hesitate to{' '}
+            <a href={whatsappUrl} style={link}>
+              contact us
+            </a>
+            .
           </Text>
 
-          {/* Order Details - Matching track page layout */}
+          {/* Order Details - Matching other email layouts for consistency */}
           <Section style={summarySection}>
             <Text style={sectionTitle}>Order Details</Text>
             
@@ -79,7 +83,7 @@ export function OrderConfirmationEmail({
 
             <Hr style={divider} />
 
-            {/* Order Information - Matching track page style */}
+            {/* Order Information - Matching other email style */}
             <Row style={detailRow}>
               <Column>
                 <Text style={detailLabel}>Order Number</Text>
@@ -192,24 +196,11 @@ export function OrderConfirmationEmail({
             </Section>
           )}
 
-          {/* What's next? */}
-          <Section style={nextStepsSection}>
-            <Text style={sectionTitle}>What's next?</Text>
+          {/* Thank you message */}
+          <Section style={thankYouSection}>
             <Text style={text}>
-              If you already shared your Canva link, you don't need to do anything. If not, send your design file to our WhatsApp.
+              We hope you enjoyed your experience with Teevent!
             </Text>
-            <Section style={whatsappButtonSection}>
-              <Button href={whatsappUrl} style={primaryButton}>
-                Send Design File via WhatsApp
-              </Button>
-            </Section>
-          </Section>
-
-          {/* Action Buttons */}
-          <Section style={buttonSection}>
-            <Button href={trackingUrl} style={secondaryButton}>
-              Track Your Order
-            </Button>
           </Section>
 
           {/* Footer */}
@@ -238,7 +229,7 @@ export function OrderConfirmationEmail({
   );
 }
 
-// Email styles (inline styles required for email clients)
+// Email styles (matching other emails for consistency)
 const main = {
   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
   backgroundColor: '#f6f6f6',
@@ -261,15 +252,6 @@ const header = {
 const logoImage = {
   margin: '0 auto',
   display: 'block',
-};
-
-const heading = {
-  fontSize: '24px',
-  fontWeight: '700',
-  color: '#000000',
-  marginBottom: '16px',
-  marginTop: '0',
-  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
 };
 
 const text = {
@@ -334,7 +316,7 @@ const detailRow = {
 
 const detailLabel = {
   fontSize: '14px',
-  color: '#495057', // var(--text-bright-secondary)
+  color: '#495057',
   margin: '0',
   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
 };
@@ -374,7 +356,7 @@ const promoCodeRow = {
 
 const promoCodeLabel = {
   fontSize: '14px',
-  color: '#495057', // var(--text-bright-secondary)
+  color: '#495057',
   margin: '0',
   marginBottom: '8px',
   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
@@ -408,47 +390,9 @@ const addressText = {
   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
 };
 
-const nextStepsSection = {
-  marginBottom: '32px',
-};
-
-const whatsappButtonSection = {
-  textAlign: 'center' as const,
-  marginTop: '16px',
-  marginBottom: '16px',
-};
-
-const buttonSection = {
+const thankYouSection = {
   marginBottom: '32px',
   textAlign: 'center' as const,
-};
-
-const primaryButton = {
-  backgroundColor: '#007AFF',
-  color: '#ffffff',
-  padding: '12px 24px',
-  borderRadius: '9999px',
-  textDecoration: 'none',
-  display: 'inline-block',
-  fontSize: '16px',
-  fontWeight: '600',
-  margin: '0',
-  border: 'none',
-  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-};
-
-const secondaryButton = {
-  backgroundColor: '#ffffff',
-  color: '#007AFF',
-  padding: '12px 24px',
-  borderRadius: '9999px',
-  textDecoration: 'none',
-  display: 'inline-block',
-  fontSize: '16px',
-  fontWeight: '600',
-  margin: '8px',
-  border: '2px solid #007AFF',
-  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
 };
 
 const footer = {
@@ -476,3 +420,4 @@ const link = {
   color: '#007AFF',
   textDecoration: 'underline',
 };
+
