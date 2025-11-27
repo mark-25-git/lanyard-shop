@@ -983,6 +983,53 @@ export default function CheckoutPage() {
                       </div>
                     )}
                   </div>
+                  {/* Subtotal (Price before discount) */}
+                  <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between',
+                    marginTop: 'var(--space-4)',
+                    paddingTop: 'var(--space-4)',
+                    borderTop: '1px solid var(--color-gray-200)'
+                  }}>
+                    <span style={{ color: 'var(--text-bright-secondary)' }}>Subtotal</span>
+                    <span style={{ color: 'var(--text-bright-primary)' }}>
+                      {formatCurrency(orderData.totalPrice)}
+                    </span>
+                  </div>
+                  {/* Discount (if promo code applied) */}
+                  {discountInfo && discountInfo.discount_amount > 0 && (
+                    <div style={{ 
+                      marginTop: 'var(--space-3)'
+                    }}>
+                      <p style={{ 
+                        fontSize: 'var(--text-sm)', 
+                        color: 'var(--text-bright-secondary)', 
+                        margin: 0, 
+                        marginBottom: 'var(--space-2)' 
+                      }}>
+                        Promo Code Applied
+                      </p>
+                      <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}>
+                        <span style={{ 
+                          fontSize: 'var(--text-base)', 
+                          color: 'var(--text-bright-primary)' 
+                        }}>
+                          {discountInfo.code}
+                        </span>
+                        <span style={{ 
+                          fontSize: 'var(--text-base)', 
+                          color: 'var(--text-bright-primary)' 
+                        }}>
+                          -{formatCurrency(discountInfo.discount_amount)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  {/* Final Total */}
                   <div style={{ 
                     display: 'flex', 
                     justifyContent: 'space-between',
@@ -992,7 +1039,7 @@ export default function CheckoutPage() {
                     fontSize: 'var(--text-xl)',
                     fontWeight: 'var(--font-weight-bold)'
                   }}>
-                    <span>Total Price</span>
+                    <span>Total</span>
                     <span style={{ color: 'var(--text-bright-primary)' }}>
                       {formatCurrency(discountInfo?.final_total ?? orderData.totalPrice)}
                     </span>

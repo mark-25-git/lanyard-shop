@@ -341,7 +341,7 @@ export default function ConfirmationPageClient() {
           <div style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', marginBottom: 'var(--space-4)' }}>
             <div>
               <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
-                Total Price
+                Total
               </p>
               <p style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-weight-bold)', color: 'var(--text-bright-primary)', margin: 0 }}>
                 {formatCurrency(order.total_price)}

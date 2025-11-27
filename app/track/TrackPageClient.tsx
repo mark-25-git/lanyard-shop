@@ -556,7 +556,7 @@ export default function TrackPageClient() {
                   borderTop: '2px solid var(--color-gray-200)'
                 }}>
                   <p style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                    Total Price
+                    Total
                   </p>
                   <p style={{ fontSize: 'var(--text-xl)', fontWeight: 'var(--font-weight-bold)', color: 'var(--text-bright-primary)', margin: 0 }}>
                     {formatCurrency(order.total_price)}

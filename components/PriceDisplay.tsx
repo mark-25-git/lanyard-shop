@@ -98,7 +98,7 @@ export default function PriceDisplay({
           fontSize: 'var(--text-xl)',
           fontWeight: 'var(--font-weight-bold)'
         }}>
-          <span>Total Price</span>
+          <span>Total</span>
           <span style={{ color: 'var(--text-bright-primary)' }}>
             {formatCurrency(totalPrice)}
           </span>
