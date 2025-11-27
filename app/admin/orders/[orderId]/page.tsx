@@ -5,6 +5,9 @@ import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { formatCurrency } from '@/lib/utils';
 import { Order, OrderStatus } from '@/types/order';
+import { OrderEmail, EmailType } from '@/types/order-email';
+import { Shipment, CourierWebsite } from '@/types/shipment';
+import { generateTrackingUrl } from '@/lib/tracking-url';
 
 const statusOptions: OrderStatus[] = [
   'pending',
@@ -31,6 +34,27 @@ export default function OrderDetailPage() {
   const [paymentReference, setPaymentReference] = useState('');
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
+  
+  // Email and shipment tracking
+  const [orderEmails, setOrderEmails] = useState<OrderEmail[]>([]);
+  const [shipments, setShipments] = useState<Shipment[]>([]);
+  const [couriers, setCouriers] = useState<CourierWebsite[]>([]);
+  const [loadingEmails, setLoadingEmails] = useState(false);
+  const [loadingShipments, setLoadingShipments] = useState(false);
+  
+  // Modals
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [pendingEmailType, setPendingEmailType] = useState<EmailType | null>(null);
+  const [showShipmentModal, setShowShipmentModal] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [creatingShipment, setCreatingShipment] = useState(false);
+  
+  // Shipment form
+  const [shipmentForm, setShipmentForm] = useState({
+    courier: '',
+    trackingNumber: '',
+    trackingUrl: '',
+  });
 
   useEffect(() => {
     // Check Supabase authentication
@@ -62,6 +86,66 @@ export default function OrderDetailPage() {
 
     checkAuth();
   }, [orderId, router]);
+
+  // Fetch emails and shipments when order is loaded
+  useEffect(() => {
+    if (order) {
+      fetchOrderEmails();
+      fetchShipments();
+      fetchCouriers();
+    }
+  }, [order]);
+
+  const fetchOrderEmails = async () => {
+    if (!order) return;
+    setLoadingEmails(true);
+    try {
+      const response = await fetch(`/api/get-order-emails?order_number=${encodeURIComponent(order.order_number)}`);
+      const data = await response.json();
+      if (data.success) {
+        setOrderEmails(data.data || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch order emails:', err);
+    } finally {
+      setLoadingEmails(false);
+    }
+  };
+
+  const fetchShipments = async () => {
+    if (!order) return;
+    setLoadingShipments(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data, error } = await supabase
+        .from('shipments')
+        .select('*')
+        .eq('order_number', order.order_number)
+        .order('shipped_at', { ascending: false });
+
+      if (!error && data) {
+        setShipments(data as Shipment[]);
+      }
+    } catch (err) {
+      console.error('Failed to fetch shipments:', err);
+    } finally {
+      setLoadingShipments(false);
+    }
+  };
+
+  const fetchCouriers = async () => {
+    try {
+      const response = await fetch('/api/get-courier-websites');
+      const data = await response.json();
+      if (data.success) {
+        setCouriers(data.data || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch couriers:', err);
+    }
+  };
 
   const fetchOrder = async () => {
     setLoading(true);
@@ -100,6 +184,50 @@ export default function OrderDetailPage() {
   };
 
   const handleUpdateStatus = async () => {
+    if (!order) return;
+
+    // Check if status change requires email approval
+    if (selectedStatus === 'paid' && order.status !== 'paid') {
+      setPendingEmailType('payment_confirmed');
+      setShowEmailModal(true);
+      return;
+    }
+
+    if (selectedStatus === 'order_shipped' && order.status !== 'order_shipped') {
+      // Show shipment creation modal first
+      setShowShipmentModal(true);
+      return;
+    }
+
+    if (selectedStatus === 'completed' && order.status !== 'completed') {
+      setPendingEmailType('order_completed');
+      setShowEmailModal(true);
+      return;
+    }
+
+    // No email required, proceed with status update
+    await performStatusUpdate();
+  };
+
+  const handleCancelEmailModal = () => {
+    setShowEmailModal(false);
+    setPendingEmailType(null);
+    // Reset status to current order status
+    if (order) {
+      setSelectedStatus(order.status);
+    }
+  };
+
+  const handleCancelShipmentModal = () => {
+    setShowShipmentModal(false);
+    setShipmentForm({ courier: '', trackingNumber: '', trackingUrl: '' });
+    // Reset status to current order status
+    if (order) {
+      setSelectedStatus(order.status);
+    }
+  };
+
+  const performStatusUpdate = async () => {
     if (!order) return;
 
     setUpdating(true);
@@ -151,6 +279,126 @@ export default function OrderDetailPage() {
     } finally {
       setUpdating(false);
     }
+  };
+
+  const handleCreateShipment = async () => {
+    if (!order || !shipmentForm.courier || !shipmentForm.trackingNumber) {
+      setNotificationMessage('Please fill in all required fields.');
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3000);
+      return;
+    }
+
+    setCreatingShipment(true);
+    try {
+      const response = await fetch('/api/create-shipment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: order.id,
+          courier: shipmentForm.courier,
+          courier_tracking_number: shipmentForm.trackingNumber,
+          courier_tracking_url: shipmentForm.trackingUrl || undefined,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to create shipment');
+      }
+
+      // Refresh shipments
+      await fetchShipments();
+
+      // Update order status to order_shipped if not already
+      if (order.status !== 'order_shipped') {
+        await performStatusUpdate();
+      }
+
+      // Close shipment modal and show email modal
+      setShowShipmentModal(false);
+      setPendingEmailType('order_shipped');
+      setShowEmailModal(true);
+      
+      // Reset form
+      setShipmentForm({ courier: '', trackingNumber: '', trackingUrl: '' });
+    } catch (err) {
+      setNotificationMessage(err instanceof Error ? err.message : 'Failed to create shipment.');
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3000);
+    } finally {
+      setCreatingShipment(false);
+    }
+  };
+
+  const handleSendEmail = async (emailType: EmailType) => {
+    if (!order) return;
+
+    setSendingEmail(true);
+    try {
+      const response = await fetch('/api/manual-send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: order.id,
+          email_type: emailType,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to send email');
+      }
+
+      // Refresh emails
+      await fetchOrderEmails();
+
+      setNotificationMessage('Email sent successfully.');
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3000);
+    } catch (err) {
+      setNotificationMessage(err instanceof Error ? err.message : 'Failed to send email.');
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 3000);
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
+  const handleEmailModalConfirm = async () => {
+    if (!pendingEmailType) return;
+
+    // If status needs to be updated (not already updated), do it first
+    if (selectedStatus !== order?.status) {
+      await performStatusUpdate();
+    }
+    
+    // Send email
+    await handleSendEmail(pendingEmailType);
+
+    // Close modal
+    setShowEmailModal(false);
+    setPendingEmailType(null);
+  };
+
+  const handleCourierChange = (courierName: string) => {
+    const courier = couriers.find(c => c.courier_name === courierName);
+    setShipmentForm(prev => ({
+      ...prev,
+      courier: courierName,
+      trackingUrl: courier ? generateTrackingUrl(courier.tracking_url_template, prev.trackingNumber || '') : prev.trackingUrl,
+    }));
+  };
+
+  const handleTrackingNumberChange = (trackingNumber: string) => {
+    const courier = couriers.find(c => c.courier_name === shipmentForm.courier);
+    setShipmentForm(prev => ({
+      ...prev,
+      trackingNumber,
+      trackingUrl: courier ? generateTrackingUrl(courier.tracking_url_template, trackingNumber) : prev.trackingUrl,
+    }));
   };
 
   const formatDate = (dateString: string | null) => {
@@ -289,7 +537,11 @@ export default function OrderDetailPage() {
                 onClick={handleUpdateStatus}
                 disabled={updating || selectedStatus === order.status}
                 className="btn-primary"
-                style={{ width: '100%', padding: 'var(--space-4)' }}
+                style={{ 
+                  width: '100%', 
+                  padding: 'var(--space-3) var(--space-6)',
+                  borderRadius: 'var(--radius-lg)'
+                }}
               >
                 {updating ? 'Updating...' : 'Update Order'}
               </button>
@@ -393,7 +645,7 @@ export default function OrderDetailPage() {
 
             {/* Shipping Address */}
             {order.shipping_name && (
-              <div className="card" style={{ padding: 'var(--space-6)' }}>
+              <div className="card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
                 <h2 style={{ 
                   fontSize: 'var(--text-2xl)', 
                   fontWeight: 'var(--font-weight-semibold)',
@@ -427,6 +679,214 @@ export default function OrderDetailPage() {
                 </div>
               </div>
             )}
+
+            {/* Email Tracking */}
+            <div className="card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
+              <h2 style={{ 
+                fontSize: 'var(--text-2xl)', 
+                fontWeight: 'var(--font-weight-semibold)',
+                marginBottom: 'var(--space-6)'
+              }}>
+                Email Tracking
+              </h2>
+
+              {loadingEmails ? (
+                <p style={{ color: 'var(--text-bright-secondary)' }}>Loading emails...</p>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid var(--color-gray-200)' }}>
+                        <th style={{ 
+                          textAlign: 'left', 
+                          padding: 'var(--space-3)', 
+                          fontSize: 'var(--text-sm)',
+                          fontWeight: 'var(--font-weight-semibold)',
+                          color: 'var(--text-bright-tertiary)'
+                        }}>
+                          Email Type
+                        </th>
+                        <th style={{ 
+                          textAlign: 'left', 
+                          padding: 'var(--space-3)', 
+                          fontSize: 'var(--text-sm)',
+                          fontWeight: 'var(--font-weight-semibold)',
+                          color: 'var(--text-bright-tertiary)'
+                        }}>
+                          Status
+                        </th>
+                        <th style={{ 
+                          textAlign: 'left', 
+                          padding: 'var(--space-3)', 
+                          fontSize: 'var(--text-sm)',
+                          fontWeight: 'var(--font-weight-semibold)',
+                          color: 'var(--text-bright-tertiary)'
+                        }}>
+                          Sent At
+                        </th>
+                        <th style={{ 
+                          textAlign: 'center', 
+                          padding: 'var(--space-3)', 
+                          fontSize: 'var(--text-sm)',
+                          fontWeight: 'var(--font-weight-semibold)',
+                          color: 'var(--text-bright-tertiary)'
+                        }}>
+                          Action
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { type: 'order_confirmation' as EmailType, label: 'Order Confirmation' },
+                        { type: 'payment_confirmed' as EmailType, label: 'Payment Confirmed' },
+                        { type: 'order_shipped' as EmailType, label: 'Order Shipped' },
+                        { type: 'order_completed' as EmailType, label: 'Order Completed' },
+                      ].map(({ type, label }) => {
+                        const email = orderEmails.find(e => e.email_type === type);
+                        return (
+                          <tr key={type} style={{ borderBottom: '1px solid var(--color-gray-100)' }}>
+                            <td style={{ padding: 'var(--space-3)', fontSize: 'var(--text-sm)' }}>
+                              {label}
+                            </td>
+                            <td style={{ padding: 'var(--space-3)' }}>
+                              {email?.status === 'sent' ? (
+                                <span style={{
+                                  display: 'inline-block',
+                                  padding: 'var(--space-1) var(--space-3)',
+                                  borderRadius: '9999px',
+                                  fontSize: 'var(--text-xs)',
+                                  fontWeight: 'var(--font-weight-medium)',
+                                  background: '#d1fae5',
+                                  color: '#065f46'
+                                }}>
+                                  Sent
+                                </span>
+                              ) : (
+                                <span style={{
+                                  display: 'inline-block',
+                                  padding: 'var(--space-1) var(--space-3)',
+                                  borderRadius: '9999px',
+                                  fontSize: 'var(--text-xs)',
+                                  fontWeight: 'var(--font-weight-medium)',
+                                  background: '#fef3c7',
+                                  color: '#92400e'
+                                }}>
+                                  Pending
+                                </span>
+                              )}
+                            </td>
+                            <td style={{ padding: 'var(--space-3)', fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)' }}>
+                              {email?.sent_at ? formatDate(email.sent_at) : '-'}
+                            </td>
+                            <td style={{ padding: 'var(--space-3)', textAlign: 'center' }}>
+                              <button
+                                onClick={() => handleSendEmail(type)}
+                                disabled={sendingEmail}
+                                style={{
+                                  padding: 'var(--space-2) var(--space-4)',
+                                  fontSize: 'var(--text-sm)',
+                                  border: '1px solid var(--color-primary)',
+                                  borderRadius: 'var(--radius-lg)',
+                                  background: 'transparent',
+                                  color: 'var(--color-primary)',
+                                  cursor: sendingEmail ? 'not-allowed' : 'pointer',
+                                  opacity: sendingEmail ? 0.6 : 1
+                                }}
+                              >
+                                Send
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* Shipments */}
+            <div className="card" style={{ padding: 'var(--space-6)' }}>
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                marginBottom: 'var(--space-6)'
+              }}>
+                <h2 style={{ 
+                  fontSize: 'var(--text-2xl)', 
+                  fontWeight: 'var(--font-weight-semibold)'
+                }}>
+                  Shipments
+                </h2>
+                {order.status === 'order_shipped' || order.status === 'completed' ? (
+                  <button
+                    onClick={() => setShowShipmentModal(true)}
+                    style={{
+                      padding: 'var(--space-2) var(--space-4)',
+                      fontSize: 'var(--text-sm)',
+                      border: '1px solid var(--color-primary)',
+                      borderRadius: 'var(--radius-lg)',
+                      background: 'var(--color-primary)',
+                      color: 'var(--color-white)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    + Add Shipment
+                  </button>
+                ) : null}
+              </div>
+
+              {loadingShipments ? (
+                <p style={{ color: 'var(--text-bright-secondary)' }}>Loading shipments...</p>
+              ) : shipments.length === 0 ? (
+                <p style={{ color: 'var(--text-bright-secondary)' }}>No shipments yet.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                  {shipments.map((shipment) => (
+                    <div
+                      key={shipment.id}
+                      style={{
+                        padding: 'var(--space-4)',
+                        background: 'var(--bg-bright-secondary)',
+                        borderRadius: 'var(--radius-lg)',
+                        border: '1px solid var(--color-gray-200)'
+                      }}
+                    >
+                      <div style={{ marginBottom: 'var(--space-2)' }}>
+                        <strong style={{ fontSize: 'var(--text-base)' }}>Courier:</strong>{' '}
+                        <span style={{ fontSize: 'var(--text-base)' }}>{shipment.courier}</span>
+                      </div>
+                      <div style={{ marginBottom: 'var(--space-2)' }}>
+                        <strong style={{ fontSize: 'var(--text-base)' }}>Tracking Number:</strong>{' '}
+                        <span style={{ fontSize: 'var(--text-base)' }}>{shipment.courier_tracking_number}</span>
+                      </div>
+                      <div style={{ marginBottom: 'var(--space-2)' }}>
+                        <strong style={{ fontSize: 'var(--text-base)' }}>Shipped At:</strong>{' '}
+                        <span style={{ fontSize: 'var(--text-base)' }}>{formatDate(shipment.shipped_at)}</span>
+                      </div>
+                      <a
+                        href={shipment.courier_tracking_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'inline-block',
+                          marginTop: 'var(--space-2)',
+                          padding: 'var(--space-2) var(--space-4)',
+                          background: 'var(--color-primary)',
+                          color: 'var(--color-white)',
+                          borderRadius: 'var(--radius-lg)',
+                          textDecoration: 'none',
+                          fontSize: 'var(--text-sm)'
+                        }}
+                      >
+                        Track Package →
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Right Column: Order Summary */}
@@ -587,6 +1047,254 @@ export default function OrderDetailPage() {
         </div>
       </div>
 
+      {/* Email Approval Modal */}
+      {showEmailModal && pendingEmailType && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: 'var(--space-4)'
+          }}
+          onClick={() => {
+            setShowEmailModal(false);
+            setPendingEmailType(null);
+          }}
+        >
+          <div
+            style={{
+              background: 'var(--bg-bright-primary)',
+              borderRadius: 'var(--radius-xl)',
+              padding: 'var(--space-6)',
+              maxWidth: '500px',
+              width: '100%',
+              position: 'relative'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleCancelEmailModal}
+              style={{
+                position: 'absolute',
+                top: 'var(--space-4)',
+                right: 'var(--space-4)',
+                background: 'none',
+                border: 'none',
+                fontSize: 'var(--text-2xl)',
+                color: 'var(--text-bright-secondary)',
+                cursor: 'pointer',
+                padding: 0,
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              ×
+            </button>
+            <h3 style={{
+              fontSize: 'var(--text-2xl)',
+              fontWeight: 'var(--font-weight-semibold)',
+              marginBottom: 'var(--space-4)'
+            }}>
+              Send Email?
+            </h3>
+            <p style={{ marginBottom: 'var(--space-6)', color: 'var(--text-bright-secondary)' }}>
+              Do you want to send the {pendingEmailType.replace('_', ' ')} email to the customer?
+            </p>
+            <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end' }}>
+              <button
+                onClick={handleCancelEmailModal}
+                style={{
+                  padding: 'var(--space-3) var(--space-6)',
+                  border: '1px solid var(--color-gray-300)',
+                  borderRadius: 'var(--radius-lg)',
+                  background: 'transparent',
+                  color: 'var(--text-bright-primary)',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEmailModalConfirm}
+                disabled={sendingEmail || updating}
+                style={{
+                  padding: 'var(--space-3) var(--space-6)',
+                  border: 'none',
+                  borderRadius: 'var(--radius-lg)',
+                  background: 'var(--color-primary)',
+                  color: 'var(--color-white)',
+                  cursor: (sendingEmail || updating) ? 'not-allowed' : 'pointer',
+                  opacity: (sendingEmail || updating) ? 0.6 : 1
+                }}
+              >
+                {sendingEmail || updating ? 'Sending...' : 'Send Email'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shipment Creation Modal */}
+      {showShipmentModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: 'var(--space-4)'
+          }}
+          onClick={handleCancelShipmentModal}
+        >
+          <div
+            style={{
+              background: 'var(--bg-bright-primary)',
+              borderRadius: 'var(--radius-xl)',
+              padding: 'var(--space-6)',
+              maxWidth: '600px',
+              width: '100%',
+              position: 'relative'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+              <button
+                onClick={handleCancelShipmentModal}
+                style={{
+                  position: 'absolute',
+                  top: 'var(--space-4)',
+                  right: 'var(--space-4)',
+                  background: 'none',
+                  border: 'none',
+                  fontSize: 'var(--text-2xl)',
+                  color: 'var(--text-bright-secondary)',
+                  cursor: 'pointer',
+                  padding: 0,
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                ×
+              </button>
+            <h3 style={{
+              fontSize: 'var(--text-2xl)',
+              fontWeight: 'var(--font-weight-semibold)',
+              marginBottom: 'var(--space-6)'
+            }}>
+              Create Shipment
+            </h3>
+
+            <div style={{ marginBottom: 'var(--space-4)' }}>
+              <label style={{
+                display: 'block',
+                marginBottom: 'var(--space-2)',
+                fontWeight: 'var(--font-weight-semibold)'
+              }}>
+                Courier *
+              </label>
+              <select
+                value={shipmentForm.courier}
+                onChange={(e) => handleCourierChange(e.target.value)}
+                className="input-field"
+                style={{ width: '100%' }}
+              >
+                <option value="">Select courier...</option>
+                {couriers.map((courier) => (
+                  <option key={courier.id} value={courier.courier_name}>
+                    {courier.courier_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div style={{ marginBottom: 'var(--space-4)' }}>
+              <label style={{
+                display: 'block',
+                marginBottom: 'var(--space-2)',
+                fontWeight: 'var(--font-weight-semibold)'
+              }}>
+                Tracking Number *
+              </label>
+              <input
+                type="text"
+                value={shipmentForm.trackingNumber}
+                onChange={(e) => handleTrackingNumberChange(e.target.value)}
+                className="input-field"
+                placeholder="Enter tracking number"
+                style={{ width: '100%' }}
+              />
+            </div>
+
+            <div style={{ marginBottom: 'var(--space-6)' }}>
+              <label style={{
+                display: 'block',
+                marginBottom: 'var(--space-2)',
+                fontWeight: 'var(--font-weight-semibold)'
+              }}>
+                Tracking URL {!shipmentForm.courier && '(Required if courier not in list)'}
+              </label>
+              <input
+                type="text"
+                value={shipmentForm.trackingUrl}
+                onChange={(e) => setShipmentForm(prev => ({ ...prev, trackingUrl: e.target.value }))}
+                className="input-field"
+                placeholder="Will auto-fill if courier is selected"
+                style={{ width: '100%' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end' }}>
+              <button
+                onClick={handleCancelShipmentModal}
+                style={{
+                  padding: 'var(--space-3) var(--space-6)',
+                  border: '1px solid var(--color-gray-300)',
+                  borderRadius: 'var(--radius-lg)',
+                  background: 'transparent',
+                  color: 'var(--text-bright-primary)',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateShipment}
+                disabled={creatingShipment || !shipmentForm.courier || !shipmentForm.trackingNumber}
+                style={{
+                  padding: 'var(--space-3) var(--space-6)',
+                  border: 'none',
+                  borderRadius: 'var(--radius-lg)',
+                  background: 'var(--color-primary)',
+                  color: 'var(--color-white)',
+                  cursor: (creatingShipment || !shipmentForm.courier || !shipmentForm.trackingNumber) ? 'not-allowed' : 'pointer',
+                  opacity: (creatingShipment || !shipmentForm.courier || !shipmentForm.trackingNumber) ? 0.6 : 1
+                }}
+              >
+                {creatingShipment ? 'Creating...' : 'Create Shipment'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Floating notification */}
       {showNotification && (
         <div style={{
@@ -600,7 +1308,7 @@ export default function OrderDetailPage() {
           padding: 'var(--space-3) var(--space-6)',
           borderRadius: '9999px',
           fontSize: 'var(--text-sm)',
-          zIndex: 1000,
+          zIndex: 1001,
           whiteSpace: 'nowrap',
           WebkitAnimation: 'slideUpFade 0.3s ease-out, fadeOut 0.3s ease-in 2.7s',
           animation: 'slideUpFade 0.3s ease-out, fadeOut 0.3s ease-in 2.7s',

@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { formatCurrency } from '@/lib/utils';
 import { Order, OrderStatus } from '@/types/order';
+import { Shipment } from '@/types/shipment';
+import { supabase } from '@/lib/supabase';
 import HelpSection from '@/components/HelpSection';
 
 const statusSteps: { status: OrderStatus; label: string; description: string }[] = [
@@ -33,6 +35,8 @@ export default function TrackPageClient() {
   const [error, setError] = useState<string | null>(null);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [downloadingInvoice, setDownloadingInvoice] = useState(false);
+  const [shipment, setShipment] = useState<Shipment | null>(null);
+  const [loadingShipment, setLoadingShipment] = useState(false);
 
   const normalizeOrderNumber = (value: string) => {
     const trimmed = value.trim().toUpperCase();
@@ -93,6 +97,11 @@ export default function TrackPageClient() {
         setOrder(data.data);
         setIsVerified(true);
         setError(null);
+        
+        // Fetch shipment if order is shipped
+        if (data.data.status === 'order_shipped' || data.data.status === 'completed') {
+          fetchShipment(data.data.order_number);
+        }
       } else {
         setIsVerified(false);
         setError('Order not found.');
@@ -159,6 +168,11 @@ export default function TrackPageClient() {
       setSessionToken(data.session_token);
       setError(null);
       
+      // Fetch shipment if order is shipped
+      if (data.data.status === 'order_shipped' || data.data.status === 'completed') {
+        fetchShipment(data.data.order_number);
+      }
+      
       // Update URL to include order number
       router.push(`/track?order_number=${encodeURIComponent(normalizedOrderNumber)}`, { scroll: false });
     } catch (err) {
@@ -170,6 +184,27 @@ export default function TrackPageClient() {
     }
   };
 
+  const fetchShipment = async (orderNumber: string) => {
+    setLoadingShipment(true);
+    try {
+      // Fetch the most recent shipment for this order
+      const { data: shipments, error } = await supabase
+        .from('shipments')
+        .select('*')
+        .eq('order_number', orderNumber)
+        .order('shipped_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      if (!error && shipments) {
+        setShipment(shipments as Shipment);
+      }
+    } catch (err) {
+      console.error('Failed to fetch shipment:', err);
+    } finally {
+      setLoadingShipment(false);
+    }
+  };
 
   if (loading && !order) {
     return (
@@ -347,11 +382,9 @@ export default function TrackPageClient() {
                   {order.order_number}
                 </p>
               </div>
-              {(() => {
-                const currentStatus = statusSteps.find(s => s.status === order.status);
-                if (!currentStatus) return null;
-                
-                return (
+              {order.status === 'order_shipped' ? (
+                <>
+                  {/* Shipped Status Banner */}
                   <div style={{ 
                     textAlign: 'center',
                     background: 'var(--bg-bright-secondary)',
@@ -365,47 +398,142 @@ export default function TrackPageClient() {
                       color: 'var(--color-primary)',
                       marginBottom: 'var(--space-1)'
                     }}>
-                      {currentStatus.label}
+                      Shipped
                     </h3>
                     <p style={{
                       fontSize: 'var(--text-base)',
                       color: 'var(--text-bright-secondary)',
                       margin: 0
                     }}>
-                      {currentStatus.description}
+                      Your order has been shipped.
                     </p>
                   </div>
-                );
-              })()}
-              
-              {/* Estimated Delivery Date Banner */}
-              <div style={{
-                padding: 'var(--space-3)',
-                background: 'var(--bg-bright-secondary)',
-                borderRadius: 'var(--radius-lg)',
-                textAlign: 'center'
-              }}>
-                <p style={{
-                  fontSize: 'var(--text-sm)',
-                  color: 'var(--text-bright-secondary)',
-                  margin: 0,
-                  lineHeight: '1.5'
-                }}>
-                  <i className="bi bi-truck" style={{
-                    marginRight: 'var(--space-2)',
-                    color: 'var(--color-primary)'
-                  }}></i>
-                  Estimated delivery: {(() => {
-                    const deliveryDate = new Date(order.created_at);
-                    deliveryDate.setDate(deliveryDate.getDate() + 14); // 2 weeks from order date
-                    return deliveryDate.toLocaleDateString('en-US', { 
-                      month: 'long', 
-                      day: 'numeric', 
-                      year: 'numeric' 
-                    });
+
+                  {/* Estimated Delivery Date Banner */}
+                  {shipment && (
+                    <>
+                      <div style={{
+                        padding: 'var(--space-3)',
+                        background: 'var(--bg-bright-secondary)',
+                        borderRadius: 'var(--radius-lg)',
+                        textAlign: 'center',
+                        marginBottom: 'var(--space-4)'
+                      }}>
+                        <p style={{
+                          fontSize: 'var(--text-sm)',
+                          color: 'var(--text-bright-secondary)',
+                          margin: 0,
+                          lineHeight: '1.5'
+                        }}>
+                          <i className="bi bi-truck" style={{
+                            marginRight: 'var(--space-2)',
+                            color: 'var(--color-primary)'
+                          }}></i>
+                          Estimated delivery: {(() => {
+                            const shippedDate = new Date(shipment.shipped_at);
+                            const deliveryDate1 = new Date(shippedDate);
+                            deliveryDate1.setDate(shippedDate.getDate() + 1);
+                            const deliveryDate2 = new Date(shippedDate);
+                            deliveryDate2.setDate(shippedDate.getDate() + 2);
+                            
+                            const formatDate = (date: Date) => {
+                              return date.toLocaleDateString('en-US', { 
+                                month: 'long', 
+                                day: 'numeric', 
+                                year: 'numeric' 
+                              });
+                            };
+                            
+                            return `${formatDate(deliveryDate1)} - ${formatDate(deliveryDate2)}`;
+                          })()}
+                        </p>
+                      </div>
+
+                      {/* Track Order Button */}
+                      <div style={{ textAlign: 'center', marginBottom: 'var(--space-4)' }}>
+                        <a
+                          href={shipment.courier_tracking_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-primary"
+                          style={{
+                            display: 'inline-block',
+                            padding: 'var(--space-3) var(--space-6)',
+                            borderRadius: '9999px',
+                            textDecoration: 'none'
+                          }}
+                        >
+                          Track Order on {shipment.courier}
+                        </a>
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  {(() => {
+                    const currentStatus = statusSteps.find(s => s.status === order.status);
+                    if (!currentStatus) return null;
+                    
+                    return (
+                      <div style={{ 
+                        textAlign: 'center',
+                        background: 'var(--bg-bright-secondary)',
+                        padding: 'var(--space-4)',
+                        borderRadius: 'var(--radius-lg)',
+                        marginBottom: 'var(--space-4)'
+                      }}>
+                        <h3 style={{
+                          fontSize: 'var(--text-lg)',
+                          fontWeight: 'var(--font-weight-semibold)',
+                          color: 'var(--color-primary)',
+                          marginBottom: 'var(--space-1)'
+                        }}>
+                          {currentStatus.label}
+                        </h3>
+                        <p style={{
+                          fontSize: 'var(--text-base)',
+                          color: 'var(--text-bright-secondary)',
+                          margin: 0
+                        }}>
+                          {currentStatus.description}
+                        </p>
+                      </div>
+                    );
                   })()}
-                </p>
-              </div>
+                  
+                  {/* Estimated Delivery Date Banner - Hide for completed orders */}
+                  {order.status !== 'completed' && (
+                    <div style={{
+                      padding: 'var(--space-3)',
+                      background: 'var(--bg-bright-secondary)',
+                      borderRadius: 'var(--radius-lg)',
+                      textAlign: 'center'
+                    }}>
+                      <p style={{
+                        fontSize: 'var(--text-sm)',
+                        color: 'var(--text-bright-secondary)',
+                        margin: 0,
+                        lineHeight: '1.5'
+                      }}>
+                        <i className="bi bi-truck" style={{
+                          marginRight: 'var(--space-2)',
+                          color: 'var(--color-primary)'
+                        }}></i>
+                        Estimated delivery: {(() => {
+                          const deliveryDate = new Date(order.created_at);
+                          deliveryDate.setDate(deliveryDate.getDate() + 14); // 2 weeks from order date
+                          return deliveryDate.toLocaleDateString('en-US', { 
+                            month: 'long', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                          });
+                        })()}
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
 
             {/* Order Details Card - Full Width */}
