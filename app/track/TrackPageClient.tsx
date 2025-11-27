@@ -736,7 +736,7 @@ export default function TrackPageClient() {
                     fontWeight: 'var(--font-weight-semibold)',
                     marginBottom: 'var(--space-4)'
                   }}>
-                    Billing Address
+                    Billing
                   </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                     {order.event_or_organization_name && (
@@ -750,25 +750,20 @@ export default function TrackPageClient() {
                     <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
                       {order.billing_phone || order.customer_phone}
                     </p>
+                    {order.customer_email && (
+                      <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                        {order.customer_email}
+                      </p>
+                    )}
                     {order.billing_address_line1 && (
-                      <>
-                        <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                          {order.billing_address_line1}
-                        </p>
-                        {order.billing_address_line2 && (
-                          <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                            {order.billing_address_line2}
-                          </p>
-                        )}
-                        <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                          {[order.billing_postal_code, order.billing_city, order.billing_state].filter(Boolean).join(', ')}
-                        </p>
-                        {order.billing_country && (
-                          <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                            {order.billing_country}
-                          </p>
-                        )}
-                      </>
+                      <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                        {[
+                          order.billing_address_line1,
+                          order.billing_address_line2,
+                          [order.billing_postal_code, order.billing_city, order.billing_state].filter(Boolean).join(', '),
+                          order.billing_country
+                        ].filter(Boolean).join(', ')}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -782,7 +777,7 @@ export default function TrackPageClient() {
                     fontWeight: 'var(--font-weight-semibold)',
                     marginBottom: 'var(--space-4)'
                   }}>
-                    Shipping Address
+                    Shipping
                   </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                     {order.event_or_organization_name && (
@@ -796,25 +791,20 @@ export default function TrackPageClient() {
                     <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
                       {order.shipping_phone}
                     </p>
+                    {order.customer_email && (
+                      <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                        {order.customer_email}
+                      </p>
+                    )}
                     {order.shipping_address_line1 && (
-                      <>
-                        <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                          {order.shipping_address_line1}
-                        </p>
-                        {order.shipping_address_line2 && (
-                          <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                            {order.shipping_address_line2}
-                          </p>
-                        )}
-                        <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                          {[order.shipping_postal_code, order.shipping_city, order.shipping_state].filter(Boolean).join(', ')}
-                        </p>
-                        {order.shipping_country && (
-                          <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                            {order.shipping_country}
-                          </p>
-                        )}
-                      </>
+                      <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                        {[
+                          order.shipping_address_line1,
+                          order.shipping_address_line2,
+                          [order.shipping_postal_code, order.shipping_city, order.shipping_state].filter(Boolean).join(', '),
+                          order.shipping_country
+                        ].filter(Boolean).join(', ')}
+                      </p>
                     )}
                   </div>
                 </div>

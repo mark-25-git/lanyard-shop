@@ -611,7 +611,7 @@ export default function OrderDetailPage() {
               </div>
             </div>
 
-            {/* Billing Address */}
+            {/* Billing */}
             {order.billing_name && (
               <div className="card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
                 <h2 style={{ 
@@ -619,30 +619,43 @@ export default function OrderDetailPage() {
                   fontWeight: 'var(--font-weight-semibold)',
                   marginBottom: 'var(--space-6)'
                 }}>
-                  Billing Address
+                  Billing
                 </h2>
 
-                <div style={{ lineHeight: '1.8', color: 'var(--text-bright-secondary)' }}>
-                  <p style={{ fontWeight: 'var(--font-weight-semibold)', marginBottom: 'var(--space-2)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                  {order.event_or_organization_name && (
+                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                      {order.event_or_organization_name}
+                    </p>
+                  )}
+                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
                     {order.billing_name}
                   </p>
-                  <p>{order.billing_address_line1}</p>
-                  {order.billing_address_line2 && <p>{order.billing_address_line2}</p>}
-                  <p>
-                    {order.billing_postal_code} {order.billing_city}, {order.billing_state}
-                  </p>
-                  <p>{order.billing_country}</p>
-                  <p style={{ marginTop: 'var(--space-2)' }}>
-                    <strong>Phone:</strong> {order.billing_phone}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {order.billing_email}
-                  </p>
+                  {order.billing_phone && (
+                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                      {order.billing_phone}
+                    </p>
+                  )}
+                  {order.billing_address_line1 && (
+                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                      {[
+                        order.billing_address_line1,
+                        order.billing_address_line2,
+                        [order.billing_postal_code, order.billing_city, order.billing_state].filter(Boolean).join(' '),
+                        order.billing_country
+                      ].filter(Boolean).join(', ')}
+                    </p>
+                  )}
+                  {order.billing_email && (
+                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                      {order.billing_email}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* Shipping Address */}
+            {/* Shipping */}
             {order.shipping_name && (
               <div className="card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
                 <h2 style={{ 
@@ -650,31 +663,33 @@ export default function OrderDetailPage() {
                   fontWeight: 'var(--font-weight-semibold)',
                   marginBottom: 'var(--space-6)'
                 }}>
-                  Shipping Address
+                  Shipping
                 </h2>
 
-                <div style={{ lineHeight: '1.8', color: 'var(--text-bright-secondary)' }}>
-                  {order.event_or_organization_name && (
-                    <p style={{ 
-                      fontWeight: 'var(--font-weight-semibold)', 
-                      marginBottom: 'var(--space-2)',
-                      color: 'var(--text-bright-primary)'
-                    }}>
-                      {order.event_or_organization_name}
-                    </p>
-                  )}
-                  <p style={{ fontWeight: 'var(--font-weight-semibold)', marginBottom: 'var(--space-2)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
                     {order.shipping_name}
                   </p>
-                  <p>{order.shipping_address_line1}</p>
-                  {order.shipping_address_line2 && <p>{order.shipping_address_line2}</p>}
-                  <p>
-                    {order.shipping_postal_code} {order.shipping_city}, {order.shipping_state}
-                  </p>
-                  <p>{order.shipping_country}</p>
-                  <p style={{ marginTop: 'var(--space-2)' }}>
-                    <strong>Phone:</strong> {order.shipping_phone}
-                  </p>
+                  {order.shipping_phone && (
+                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                      {order.shipping_phone}
+                    </p>
+                  )}
+                  {order.shipping_address_line1 && (
+                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                      {[
+                        order.shipping_address_line1,
+                        order.shipping_address_line2,
+                        [order.shipping_postal_code, order.shipping_city, order.shipping_state].filter(Boolean).join(' '),
+                        order.shipping_country
+                      ].filter(Boolean).join(', ')}
+                    </p>
+                  )}
+                  {order.customer_email && (
+                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
+                      {order.customer_email}
+                    </p>
+                  )}
                 </div>
               </div>
             )}

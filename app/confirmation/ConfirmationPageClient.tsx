@@ -402,11 +402,16 @@ export default function ConfirmationPageClient() {
               {order.shipping_name && (
                 <div>
                   <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
-                    Shipping Name
+                    Recipient Name
                   </p>
                   <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
                     {order.shipping_name}
                   </p>
+                  {order.shipping_phone && (
+                    <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 'var(--space-1) 0 0 0' }}>
+                      {order.shipping_phone}
+                    </p>
+                  )}
                 </div>
               )}
               {order.shipping_address_line1 && (
