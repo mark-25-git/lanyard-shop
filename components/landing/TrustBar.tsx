@@ -1,0 +1,51 @@
+// Note: These logos need to be added to public/images/event-logos/
+// For now using placeholder paths - update when images are available
+const eventLogos = [
+  { src: '/images/event-logos/01-tedxutar.svg', alt: 'TEDxUTAR' },
+  { src: '/images/event-logos/02-aiesec.svg', alt: 'AIESEC' },
+  { src: '/images/event-logos/03-fms-kl&p.svg', alt: 'FMS KL&P' },
+  { src: '/images/event-logos/7-icheme.svg', alt: 'ICHEME' },
+  { src: '/images/event-logos/3-voichestra.svg', alt: 'Voichestra' },
+  { src: '/images/event-logos/8-ses.svg', alt: 'SES' },
+];
+
+interface TrustBarProps {
+  lanyardsDelivered: number;
+}
+
+export default function TrustBar({ lanyardsDelivered }: TrustBarProps) {
+  // Format number with commas
+  const formatNumber = (num: number): string => {
+    return num.toLocaleString('en-US');
+  };
+
+  return (
+    <section className="landing-section section-padding event-logos-section">
+      <div className="container">
+        <div className="section-header">
+          <p className="section-subtitle fade-in" style={{ 
+            fontSize: 'var(--text-lg)', 
+            color: 'var(--text-bright-primary)',
+            fontWeight: 'var(--font-weight-bold)',
+            textTransform: 'none',
+            letterSpacing: '0',
+            marginBottom: 'var(--space-6)'
+          }}>
+            {formatNumber(lanyardsDelivered)} lanyards delivered. Quality trusted by event organizers.
+          </p>
+        </div>
+        
+        <div className="event-logos-grid">
+          {eventLogos.map((logo, logoIndex) => (
+            <div 
+              key={logoIndex} 
+              className="event-logo"
+            >
+              <img src={logo.src} alt={logo.alt} className="logo-image" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

@@ -35,6 +35,7 @@ export default function TrackPageClient() {
   const [error, setError] = useState<string | null>(null);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [downloadingInvoice, setDownloadingInvoice] = useState(false);
+  const [downloadingReceipt, setDownloadingReceipt] = useState(false);
   const [shipment, setShipment] = useState<Shipment | null>(null);
   const [loadingShipment, setLoadingShipment] = useState(false);
 
@@ -811,8 +812,8 @@ export default function TrackPageClient() {
               )}
             </div>
 
-            {/* Download Invoice Button */}
-            <div style={{ marginTop: 'var(--space-6)', textAlign: 'center' }}>
+            {/* Download Invoice and Receipt Buttons */}
+            <div style={{ marginTop: 'var(--space-6)', textAlign: 'center', display: 'flex', gap: 'var(--space-4)', justifyContent: 'center', flexWrap: 'wrap' }}>
               <button
                 onClick={async () => {
                   if (!order || downloadingInvoice) return;
@@ -883,6 +884,75 @@ export default function TrackPageClient() {
                   'Download Invoice'
                 )}
               </button>
+              
+              <button
+                onClick={async () => {
+                  if (!order || downloadingReceipt || !order.payment_confirmed_at) return;
+                  
+                  setDownloadingReceipt(true);
+                  
+                  try {
+                    // Generate download token
+                    const response = await fetch('/api/generate-receipt-token', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      credentials: 'include', // Include cookies for session
+                      body: JSON.stringify({
+                        order_number: order.order_number
+                      })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.success || !data.token) {
+                      alert('Failed to generate download link. Please try again.');
+                      setDownloadingReceipt(false);
+                      return;
+                    }
+
+                    // Create temporary anchor element for download (works on mobile Safari)
+                    const downloadUrl = `/api/receipt/${data.token}`;
+                    const link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.download = `receipt-${order.order_number}.pdf`;
+                    link.target = '_blank';
+                    link.style.display = 'none';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Reset loading state after a short delay
+                    setTimeout(() => {
+                      setDownloadingReceipt(false);
+                    }, 1000);
+                  } catch (err) {
+                    alert('Failed to download receipt. Please try again.');
+                    console.error('Receipt download error:', err);
+                    setDownloadingReceipt(false);
+                  }
+                }}
+                disabled={downloadingReceipt || !order.payment_confirmed_at}
+                className="btn-secondary"
+                style={{ 
+                  display: 'inline-block',
+                  textAlign: 'center',
+                  padding: 'var(--space-3) var(--space-6)',
+                  fontSize: 'var(--text-base)',
+                  borderRadius: '9999px',
+                  width: '220px',
+                  cursor: (downloadingReceipt || !order.payment_confirmed_at) ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {downloadingReceipt ? (
+                  <div className="modern-spinner" style={{ display: 'inline-flex' }}>
+                    <div className="modern-spinner-dot"></div>
+                    <div className="modern-spinner-dot"></div>
+                    <div className="modern-spinner-dot"></div>
+                  </div>
+                ) : (
+                  'Download Receipt'
+                )}
+              </button>
             </div>
 
             {/* Track Another Order Button */}
@@ -897,28 +967,30 @@ export default function TrackPageClient() {
                   router.push('/track');
                 }}
                 style={{ 
-                  display: 'inline-block',
-                  padding: 'var(--space-3) var(--space-6)',
-                  fontSize: 'var(--text-base)',
-                  borderRadius: '9999px',
-                  border: '2px solid var(--color-primary)',
-                  color: 'var(--color-primary)',
-                  fontWeight: 'var(--font-weight-medium)',
                   background: 'transparent',
+                  border: 'none',
+                  color: 'var(--color-primary)',
+                  fontSize: 'var(--text-base)',
+                  fontWeight: 'var(--font-weight-medium)',
+                  textDecoration: 'underline',
                   cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  width: '220px'
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 'var(--space-2)',
+                  padding: 'var(--space-2)',
+                  transition: 'opacity var(--transition-base)'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--color-primary)';
-                  e.currentTarget.style.color = 'var(--color-white)';
+                  e.currentTarget.style.opacity = '0.7';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = 'var(--color-primary)';
+                  e.currentTarget.style.opacity = '1';
                 }}
               >
                 Track Another Order
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'inline-block' }}>
+                  <path d="M6 12L10 8L6 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </button>
             </div>
           </>

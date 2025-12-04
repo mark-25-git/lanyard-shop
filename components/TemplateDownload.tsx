@@ -2,7 +2,7 @@
 
 export default function TemplateDownload() {
   // Template URLs - Google Drive direct download links and Canva template
-  const canvaTemplateUrl = process.env.NEXT_PUBLIC_CANVA_TEMPLATE_URL || 'https://www.canva.com/design/DAG0v9qj66Q/OqVlysXsXwM5umcfnTQraw/edit?utm_content=DAG0v9qj66Q&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton';
+  const canvaTemplateUrl = process.env.NEXT_PUBLIC_CANVA_TEMPLATE_URL || 'https://www.canva.com/design/DAG587WOoLU/lop1q3BFx1sqp3N219pEDQ/view?utm_content=DAG587WOoLU&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink&mode=preview';
   
   // Google Drive direct download links
   // AI file: 1VAaxqrVQgvx4lKlS2N36Nwzzw2eqEF4f

@@ -81,10 +81,10 @@ export async function POST(request: NextRequest) {
     // We'll allow resending for now, but you can add this check later
 
     // Use main domain (teevent.my) for email links to match Resend sending domain
-    // This improves deliverability - links will redirect to lanyard.teevent.my via vercel.json
+    // This improves deliverability - email links point directly to teevent.my
     const emailDomain = 'https://teevent.my';
 
-    // Generate URLs using main domain (will redirect to subdomain via vercel.json)
+    // Generate URLs using main domain
     // Query parameters will be preserved in the redirect
     const confirmationUrl = order.confirmation_token
       ? `${emailDomain}/confirmation?token=${encodeURIComponent(order.confirmation_token)}`

@@ -7,8 +7,8 @@ import { Analytics } from '@vercel/analytics/next';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Custom Lanyard Ordering | Teevent',
-  description: 'Order custom lanyards with 2cm width, 2-sided color printing, and single lobster hook. Fast and reliable service.',
+  title: 'Custom Lanyard Ordering | Teevent - Modern Event Merchandise Platform',
+  description: 'Built to save your time and effort. Stop waiting for manual quotes. Teevent is the modern way to customize and order event lanyards in Malaysia.',
 };
 
 export default function RootLayout({

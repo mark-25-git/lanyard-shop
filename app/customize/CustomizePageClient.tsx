@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import QuantitySelector from '@/components/QuantitySelector';
 import PriceDisplay from '@/components/PriceDisplay';
 import TemplateDownload from '@/components/TemplateDownload';
@@ -23,7 +23,14 @@ interface CustomizePageClientProps {
 
 export default function CustomizePageClient({ initialStats }: CustomizePageClientProps) {
   const router = useRouter();
-  const [quantity, setQuantity] = useState(100);
+  const searchParams = useSearchParams();
+  
+  // Initialize quantity from URL param if available, otherwise default to 100
+  const initialQuantity = searchParams.get('quantity');
+  const [quantity, setQuantity] = useState(
+    initialQuantity ? parseInt(initialQuantity, 10) : 100
+  );
+  
   const [priceData, setPriceData] = useState<{
     unitPrice: number;
     totalPrice: number;

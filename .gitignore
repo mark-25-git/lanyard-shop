@@ -35,8 +35,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Local reference documents (not for version control)
-GITHUB_INFO.md
+# All documentation files (not for version control)
+*.md
 
 # Google service account credentials
 config/google-service-account.json
@@ -46,7 +46,16 @@ credentials/google-service-account.json
 !package-lock.json
 !tsconfig.json
 
-# Database migration files (not for version control)
-migrations/*.sql
+# All SQL files (migrations and database scripts)
 *.sql
+migrations/
+
+# Test API routes (development/testing only)
+app/api/test-*/
+
+# Example files (not for production)
+*.example.ts
+
+# Test directory
+/test/
 

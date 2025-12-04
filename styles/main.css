@@ -37,7 +37,7 @@
     --hero-bg: radial-gradient(circle at 50% 30%, rgba(50, 50, 50, 0.2), rgba(0, 0, 0, 0) 40%), var(--bg-primary);
     
     /* Bright Theme Background Colors */
-    --bg-bright-primary: var(--color-white);
+    --bg-bright-primary: #fafafa;
     --bg-bright-secondary: #f8f9fa;
     --bg-bright-tertiary: #e9ecef;
     --bg-bright-card: var(--color-white);
@@ -147,9 +147,9 @@
     --container-padding: var(--space-4);
     
     /* Section Spacing */
-    --section-padding-y: var(--space-32);
+    --section-padding-y: var(--space-20);
     --section-padding-x: var(--space-4);
-    --section-padding-y-mobile: var(--space-16);
+    --section-padding-y-mobile: var(--space-12);
     --section-padding-x-mobile: var(--space-4);
 }
 
@@ -172,9 +172,110 @@ body {
     padding: var(--section-padding-y) var(--section-padding-x);
 }
 
+/* Tablet styles (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .section-padding {
+        padding: var(--space-16) var(--section-padding-x);
+    }
+
+    /* Add top margin to hero content for tablet to account for fixed header */
+    .landing-section .hero-content {
+        margin-top: var(--space-10);
+    }
+}
+
 @media (max-width: 768px) {
     .section-padding {
         padding: var(--section-padding-y-mobile) var(--section-padding-x-mobile);
+    }
+
+    /* Landing page sections - generic class for mobile padding */
+    .landing-section.section-padding {
+        padding-left: var(--space-3);
+        padding-right: var(--space-3);
+    }
+}
+
+/* ===================================
+   GENERIC LANDING SECTION CONTENT RULES
+   =================================== */
+
+/* All content inside landing sections: no side padding or margin, but center aligned */
+.landing-section > div,
+.landing-section > div > div,
+.landing-section .container,
+.landing-section .hero-content,
+.landing-section .lanyard-landing-hero-image,
+.landing-section .features-container,
+.landing-section .feature-content,
+.landing-section .why-us-content,
+.landing-section .testimonials-grid-landing,
+.landing-section .final-cta-content {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Hero content text alignment */
+.landing-section .hero-content {
+    text-align: center;
+    /* Add top margin to hero content for desktop to account for fixed header */
+    margin-top: var(--space-12);
+}
+
+/* Hero CTA button - ensure it stays inline and centered */
+.landing-section .hero-cta {
+    display: inline-block;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Mobile responsive styles for landing sections */
+@media (max-width: 768px) {
+    /* Mobile: TrustBar - ensure all 6 logos are visible and fit in grid */
+    .landing-section .event-logos-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-2);
+        margin-top: var(--space-8);
+        width: 100%;
+        overflow: visible;
+    }
+
+    .landing-section .event-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-1);
+        min-height: 140px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .landing-section .logo-image {
+        max-width: 100%;
+        max-height: 120px;
+        width: auto;
+    }
+
+    /* Make hero image scale vertically to fit preview on mobile with equal gaps */
+    .landing-section .lanyard-landing-hero-image {
+        position: relative;
+        display: flex;
+        align-items: stretch;
+        padding: var(--space-4) var(--space-3); /* Equal top/bottom, side padding from screen edge */
+    }
+
+    /* Hero preview wrapper uses same pattern as feature section */
+    .landing-section .lanyard-landing-hero-image .feature-preview-wrapper {
+        width: 100%;
+    }
+
+    /* Add top margin to hero content for mobile to account for fixed header */
+    .landing-section .hero-content {
+        margin-top: var(--space-8);
     }
 }
 
@@ -240,17 +341,34 @@ body {
 /* ===================================
    BUTTONS
    =================================== */
-.btn-primary {
-    background: var(--color-primary);
-    color: var(--color-white);
+/* Base button styles - shared by all button variants */
+.btn-primary,
+.btn-secondary,
+button.btn-secondary,
+a.btn-secondary {
     font-weight: var(--font-weight-semibold);
     padding: var(--space-3) var(--space-6);
     border-radius: var(--radius-full);
     text-decoration: none;
     display: inline-block;
     transition: all var(--transition-base);
-    border: none;
     cursor: pointer;
+    font-size: inherit; /* Ensure consistent font size */
+    font-family: inherit; /* Ensure consistent font family */
+    line-height: inherit; /* Ensure consistent line height */
+    border: 2px solid var(--color-primary); /* Explicit border for consistency */
+    background: transparent; /* Explicit background for consistency */
+    color: var(--color-primary); /* Explicit color for consistency */
+    box-sizing: border-box; /* Include border in sizing */
+    margin: 0; /* Reset any default margins */
+    width: auto; /* Prevent full width on buttons */
+}
+
+/* Primary button variant */
+.btn-primary {
+    background: var(--color-primary);
+    color: var(--color-white);
+    border: none;
 }
 
 .nav .btn-primary {
@@ -264,6 +382,21 @@ body {
 
 .btn-primary:active {
     background: var(--color-primary);
+}
+
+/* Secondary button variant - styles already defined above, this is just for specificity */
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: transparent;
+    color: var(--color-gray-400);
+    border-color: var(--color-gray-300);
 }
 
 /* Black variant for nav referral button */
@@ -1983,19 +2116,7 @@ body {
 /* ===================================
    FEATURE CARDS
    =================================== */
-.feature-card {
-    background: var(--bg-bright-card);
-    padding: var(--space-8);
-    border-radius: var(--radius-3xl);
-    text-align: center;
-    transition: all var(--transition-base);
-    box-shadow: var(--shadow-bright-sm);
-}
-
-.feature-card:hover {
-    background: var(--bg-bright-secondary);
-    box-shadow: var(--shadow-bright-lg);
-}
+/* Note: Landing page cards use .landing-card class - see landing page styles section */
 
 .feature-icon {
     width: 40px;
@@ -2009,10 +2130,6 @@ body {
    =================================== */
 @media (max-width: 768px) {
     .product-card {
-        margin-bottom: var(--space-8);
-    }
-    
-    .feature-card {
         margin-bottom: var(--space-8);
     }
 }
@@ -2094,9 +2211,14 @@ a:focus {
     left: 0;
     right: 0;
     z-index: var(--z-50);
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: #fafafa;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    width: 100%;
+}
+
+.header-sticky {
+    position: sticky;
 }
 
 .nav {
@@ -2126,6 +2248,13 @@ a:focus {
     color: var(--text-primary);
     position: relative;
     overflow: hidden;
+}
+
+/* Landing Page Hero - Override styles */
+.lanyard-landing-hero {
+    background: #fafafa;
+    color: var(--text-bright-primary);
+    flex-direction: column;
 }
 
 /* Hero Video Background */
@@ -2178,12 +2307,183 @@ a:focus {
     z-index: 1;
 }
 
-.hero-content {
-    max-width: var(--container-max-width);
-    margin: 0 auto;
-    padding: 0 var(--container-padding);
+.lanyard-landing-hero::before {
+    display: none;
+}
+
+/* Landing Page Hero Image */
+.lanyard-landing-hero-image {
+    width: 100%;
+    max-width: 1200px;
+    margin: var(--space-16) auto 0;
+    padding: var(--space-4) var(--container-padding);
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
     position: relative;
     z-index: 2;
+    min-height: fit-content;
+}
+
+/* Hero section uses the same preview wrapper pattern as feature section */
+.lanyard-landing-hero-image .feature-preview-wrapper {
+    width: 100%;
+    aspect-ratio: 4 / 2.1; /* Reduced height by 40%: was 4/3.5, now 4/2.1 (height = 60% of original) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: visible;
+    border-radius: var(--radius-2xl);
+    box-shadow: none; /* No outer shadow on hero preview card */
+}
+
+.lanyard-landing-hero-image .feature-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    border-radius: var(--radius-2xl);
+}
+
+/* Legacy class for backward compatibility - now uses feature-image */
+.lanyard-landing-hero-img {
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-bright-lg);
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+/* Landing Page Hero Preview Overlay */
+/* Hero section now uses white-card-overlay wrapper, same as feature section */
+.lanyard-landing-hero-image .white-card-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    background: var(--bg-bright-card);
+    border-radius: var(--radius-2xl);
+    box-shadow: none; /* No inner card shadow in hero section */
+    z-index: 2;
+    padding: var(--space-4);
+    box-sizing: border-box;
+    overflow: hidden; /* Contain the scrolling preview */
+}
+
+.lanyard-landing-hero-preview {
+    position: static; /* Override old absolute positioning */
+    width: 100%;
+    height: 100%;
+    transform: scale(1); /* Full scale on desktop */
+    transform-origin: top left;
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden;
+    padding-right: var(--space-2); /* Space for scrollbar */
+}
+
+.lanyard-landing-hero-preview-content {
+    background: var(--bg-bright-card); /* Fully opaque white to match card */
+    border-radius: var(--radius-2xl); /* Match hero image corner radius */
+    padding: var(--space-6);
+    box-shadow: var(--shadow-bright-2xl);
+    text-align: left; /* Left align all content */
+}
+
+/* Card class for preview - matches customize page */
+.lanyard-landing-hero-preview .card {
+    background: var(--bg-bright-card);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-bright-sm);
+}
+
+/* Make preview more compact - reduce spacing */
+.lanyard-landing-hero-preview .page-title {
+    text-align: left;
+    margin-bottom: var(--space-6) !important; /* Reduced from space-8 */
+}
+
+.lanyard-landing-hero-preview h2 {
+    text-align: left;
+}
+
+.lanyard-landing-hero-preview > div > div {
+    margin-bottom: var(--space-4) !important; /* Reduced from space-8 */
+}
+
+.lanyard-landing-hero-preview > div > div > div {
+    margin-bottom: var(--space-6) !important; /* Reduced from 5rem */
+}
+
+.lanyard-landing-hero-preview .card {
+    padding: var(--space-4) !important; /* Reduced from space-6 */
+}
+
+/* Responsive adjustments for preview */
+/* Tablet styles (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .lanyard-landing-hero-image {
+        margin-top: var(--space-12);
+        padding: var(--space-4) var(--space-6);
+    }
+
+    /* Increase hero image height by 10% on tablet by adjusting aspect ratio */
+    .lanyard-landing-hero-image .feature-preview-wrapper {
+        aspect-ratio: 4 / 2.31; /* Taller than desktop: 10% more height vs 4/2.1 */
+    }
+
+    .lanyard-landing-hero-image .white-card-overlay .lanyard-landing-hero-preview {
+        width: 117.65%; /* 100 / 0.85 */
+        height: 117.65%;
+        transform: scale(0.85);
+    }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .lanyard-landing-hero-image .feature-preview-wrapper {
+        aspect-ratio: 4 / 3.93; /* Increase hero preview height by 20% on mobile vs previous 4/3.276 */
+    }
+
+    .lanyard-landing-hero-image .white-card-overlay .lanyard-landing-hero-preview {
+        width: 133.33%; /* 100 / 0.75 */
+        height: 133.33%;
+        transform: scale(0.75);
+    }
+
+    .lanyard-landing-hero-preview-title {
+        font-size: var(--text-xl);
+    }
+
+    .lanyard-landing-hero-preview-section-title {
+        font-size: var(--text-lg);
+    }
+
+    .lanyard-landing-hero-preview-features {
+        flex-direction: column;
+        gap: var(--space-4);
+    }
+
+    .lanyard-landing-hero-preview-carousel {
+        max-width: 100%;
+        height: 200px;
+    }
+}
+
+.hero-content {
+    max-width: none;
+    padding: 0;
+    position: relative;
+    z-index: 2;
+    width: 100%;
 }
 
 .hero-title {
@@ -2201,8 +2501,36 @@ a:focus {
     color: var(--text-secondary);
 }
 
+/* Landing Page Hero Title & Subtitle - Override styles */
+.lanyard-landing-hero .hero-title {
+    font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.02em;
+    color: var(--text-bright-primary);
+    line-height: var(--leading-tight);
+}
+
+.lanyard-landing-hero .hero-subtitle {
+    font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
+    color: var(--text-bright-secondary);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--leading-relaxed);
+}
+
 .hero-cta {
     margin-top: var(--space-10);
+    display: inline-block;
+    width: auto;
+    max-width: none;
+}
+
+/* Ensure hero CTA stays inline on all screen sizes */
+@media (max-width: 768px) {
+    .hero-cta {
+        display: inline-block;
+        width: auto;
+        max-width: none;
+    }
 }
 
 /* Container */
@@ -2238,39 +2566,35 @@ a:focus {
     color: var(--text-bright-primary);
 }
 
+/* Event Logos Grid - Responsive Layout */
+/* Mobile First: 3 columns (2 rows) - shows all 6 logos */
 .event-logos-grid {
-    display: flex;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
     margin-top: var(--space-16);
-    overflow: hidden;
-    position: relative;
     width: 100%;
     user-select: none;
-    /* Gradient fade on both sides */
-    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-}
-
-/* Infinite scroll animation container */
-.event-logos-scroll {
-    display: flex;
     align-items: center;
-    gap: 80px;
-    animation: scroll-logos 45s linear infinite; /* Longer duration for 3 sets */
-    width: max-content; /* Ensure track width equals intrinsic content width */
+    justify-items: center;
 }
 
-/* Pause animation on hover */
-.event-logos-grid:hover .event-logos-scroll {
-    animation-play-state: paused;
-}
-
-@keyframes scroll-logos {
-    from {
-        transform: translateX(0);
+/* Tablet: 4 columns for better spacing */
+@media (min-width: 480px) {
+    .event-logos-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-3);
     }
-    to {
-        transform: translateX(calc(-33.333% - 26.667px)); /* Move 1/3 of total width (3 sets) */
+}
+
+/* Desktop: 6 columns (1 row) - all 6 logos in one row */
+@media (min-width: 768px) {
+    .event-logos-grid {
+        grid-template-columns: repeat(6, 1fr);
+        gap: var(--space-4);
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
@@ -2278,29 +2602,48 @@ a:focus {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--space-4);
+    padding: var(--space-2);
     transition: all var(--transition-base);
     opacity: 0.6;
-    flex: 0 0 auto; /* Prevent flex shrink on mobile browsers */
+    width: 100%;
+    height: 100%;
+    min-height: 140px;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .event-logo:hover {
     opacity: 1;
-    transform: scale(1.05);
 }
 
 .logo-image {
-    width: 200px; /* Fixed width for consistent spacing */
-    height: 100px; /* Fixed height for consistent spacing */
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
     object-fit: contain;
     filter: grayscale(100%);
     transition: all var(--transition-base);
-    flex-shrink: 0;
+    box-sizing: border-box;
+    /* Mobile: doubled logo size */
+    max-height: 120px;
+    max-width: 100%;
 }
 
-/* Avoid global img { max-width:100% } from shrinking these logos */
-.event-logos-grid .logo-image {
-    max-width: none;
+/* Tablet: medium logos */
+@media (min-width: 480px) {
+    .logo-image {
+        max-height: 110px;
+        max-width: 100%;
+    }
+}
+
+/* Desktop: larger logo size */
+@media (min-width: 768px) {
+    .logo-image {
+        max-height: 100px;
+        max-width: 100%;
+    }
 }
 
 .event-logo:hover .logo-image {
@@ -2309,8 +2652,12 @@ a:focus {
 
 /* Testimonials Section */
 .testimonials-section {
-    background: var(--bg-bright-secondary);
+    background: var(--bg-bright-primary);
     color: var(--text-bright-primary);
+}
+
+.testimonials-section .container {
+    max-width: 100%;
 }
 
 .testimonials-grid {
@@ -2363,8 +2710,8 @@ a:focus {
 }
 
 .testimonial-author {
-    border-top: 1px solid var(--color-gray-200);
-    padding-top: var(--space-4);
+    border-top: none; /* Was 1px solid var(--color-gray-200) */
+    padding-top: 0; /* Was var(--space-4) */
 }
 
 .author-info {
@@ -2372,10 +2719,10 @@ a:focus {
 }
 
 .author-name {
-    font-size: var(--text-lg);
-    font-weight: var(--font-weight-semibold);
-    color: var(--text-bright-primary);
-    margin: 0 0 var(--space-1) 0;
+    font-weight: var(--font-semibold);
+    display: block;
+    margin-bottom: var(--space-1);
+    color: var(--text-bright-primary); /* Darker color */
 }
 
 .author-role {
@@ -2383,6 +2730,12 @@ a:focus {
     color: var(--text-bright-secondary);
     margin: 0;
     font-weight: var(--font-weight-medium);
+}
+
+.author-details {
+    font-size: var(--text-sm);
+    color: var(--text-bright-secondary);
+    line-height: 1.4;
 }
 
 /* Pain Points Section */
@@ -3112,7 +3465,10 @@ a:focus {
 }
 
 .feature-description {
-    color: var(--text-bright-secondary);
+    font-size: var(--text-lg);
+    line-height: var(--leading-relaxed);
+    color: var(--text-bright-primary);
+    margin: 0;
 }
 
 /* Vision Section */
@@ -3273,7 +3629,7 @@ a:focus {
 
 /* Footer */
 .footer {
-    background: var(--bg-bright-primary);
+    background: var(--bg-bright-tertiary); /* Slightly darker gray for footer */
     padding: var(--space-8) 0;
     color: var(--text-bright-primary);
 }
@@ -5013,6 +5369,738 @@ a:focus {
         font-size: var(--text-sm);
     }
 }
+/* ===================================
+   LANDING PAGE SPECIFIC STYLES
+   =================================== */
+
+/* Feature Section - Zig-Zag Layout */
+.features-section {
+    background: var(--bg-bright-primary);
+    color: var(--text-bright-primary);
+}
+
+.features-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-32);
+}
+
+.feature-section {
+    width: 100%;
+}
+
+.feature-section .container {
+    max-width: none;
+    padding: 0;
+    width: 100%;
+}
+
+/* ===================================
+   LANDING PAGE CARDS - GENERIC BASE
+   =================================== */
+.landing-card {
+    background: rgba(0, 122, 255, 0.05);
+    padding: var(--space-8);
+    border-radius: var(--radius-2xl);
+}
+
+/* Sample assurance section - reuse light blue feature card background */
+/* Note: background overridden later for simplicity variant */
+.sample-assurance-section {
+    background: rgba(0, 122, 255, 0.05);
+    color: var(--text-bright-primary);
+}
+
+/* ===================================
+   FEATURE CARD - Extends landing-card
+   =================================== */
+.feature-card {
+    width: 100%;
+}
+
+.feature-content {
+    display: grid;
+    grid-template-columns: 2fr 3fr; /* 40% text (2/5), 60% image (3/5) - matches HTML order: text first, visual second */
+    gap: var(--space-16);
+    align-items: center;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+}
+
+.feature-reverse .feature-content {
+    direction: rtl;
+}
+
+.feature-reverse .feature-text,
+.feature-reverse .feature-visual {
+    direction: ltr;
+}
+
+.feature-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.feature-title {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-bright-primary);
+    margin: 0 0 var(--space-4) 0;
+}
+
+.feature-problem,
+.feature-solution {
+    margin-top: var(--space-6);
+}
+
+.feature-label {
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-bright-muted);
+    text-transform: uppercase;
+    letter-spacing: '0.05em';
+    margin: 0 0 var(--space-2) 0;
+}
+
+.solution-label {
+    color: var(--color-primary);
+}
+
+.feature-solution-title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-bright-primary);
+    margin: var(--space-2) 0 var(--space-4) 0;
+}
+
+.feature-description {
+    font-size: var(--text-lg);
+    line-height: var(--leading-relaxed);
+    color: var(--text-bright-primary);
+    margin: 0;
+}
+
+.feature-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature-image-wrapper {
+    width: 100%; /* 100% of grid column (which is 60% of card) */
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 4 / 3.5; /* Reduced height by 30%: was 4/5, now 4/3.5 (height = 70% of original) */
+}
+
+.feature-preview-wrapper {
+    width: 100%; /* 100% of grid column (which is 60% of card) */
+    aspect-ratio: 4 / 3.5; /* Reduced height by 30%: was 4/5, now 4/3.5 (height = 70% of original) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: visible; /* Allow white card overlay to be visible */
+    border-radius: var(--radius-2xl); /* Add rounded corners */
+}
+
+.feature-preview-wrapper .feature-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    border-radius: var(--radius-2xl); /* Ensure image itself is rounded */
+}
+
+.white-card-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    background: var(--bg-bright-card);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-bright-sm);
+    z-index: 2;
+    padding: var(--space-4);
+    box-sizing: border-box;
+    overflow: hidden; /* Contain the scrolling preview */
+}
+
+.white-card-overlay .lanyard-landing-hero-preview {
+    width: 100%;
+    height: 100%;
+    position: static; /* Override hero positioning */
+    transform: scale(1); /* Full scale on desktop */
+    transform-origin: top left;
+    overflow-y: hidden; /* Disable internal scrolling for previews by default */
+    overflow-x: hidden;
+    padding-right: 0; /* No extra space needed since scrollbar is removed */
+}
+
+/* Allow scrolling inside feature section previews so price card is reachable */
+.features-section .white-card-overlay .lanyard-landing-hero-preview {
+    overflow-y: auto;
+    padding-right: var(--space-2); /* Space for scrollbar in feature preview */
+}
+
+/* Hide scrollbar visually for FeaturePricing auto-play preview, but keep scroll behavior */
+.feature-pricing-preview {
+    scrollbar-width: none; /* Firefox */
+    padding-right: 0 !important; /* Remove right padding as scrollbar is hidden */
+}
+
+.feature-pricing-preview::-webkit-scrollbar {
+    display: none; /* WebKit browsers */
+}
+
+.white-card-overlay .lanyard-landing-hero-preview-content {
+    padding: 0;
+    box-shadow: none;
+    border-radius: 0;
+    height: 100%;
+    width: 100%;
+}
+
+/* Commented out preview - replaced with white card overlay */
+/* .feature-preview-wrapper .lanyard-landing-hero-preview {
+    position: relative;
+    z-index: 2;
+    width: 80%;
+    height: 80%;
+    max-width: none;
+    transform: none;
+    transform-origin: center center;
+    top: auto;
+    left: auto;
+    margin: 0 auto;
+} */
+
+.feature-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.feature-placeholder {
+    width: 100%;
+    height: 400px;
+    background: var(--bg-bright-secondary);
+    border-radius: var(--radius-2xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-bright-muted);
+}
+
+/* Why Us Section */
+.why-us-section {
+    background: var(--bg-bright-secondary);
+    color: var(--text-bright-primary);
+}
+
+/* Testimonials Section Title */
+.testimonials-section .hero-title,
+.testimonials-title {
+    font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.02em;
+    color: var(--text-bright-primary);
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-16);
+    text-align: center;
+}
+
+/* Testimonials Landing Page - 2 Column Grid */
+.testimonials-grid-landing {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-8);
+    margin-top: var(--space-16);
+    align-items: stretch;
+    width: 100%;
+}
+
+/* ===================================
+   TESTIMONIAL CARD - Extends landing-card
+   =================================== */
+.testimonial-card-landing {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    min-height: 300px; /* Taller, fixed height */
+}
+
+.testimonial-text {
+    font-size: var(--text-lg);
+    font-style: normal; /* Remove italics */
+    margin-bottom: var(--space-6);
+    flex-grow: 1; /* Allow text to take available space */
+}
+
+.author-name {
+    font-size: var(--text-lg);
+    font-weight: var(--font-weight-semibold);
+    display: block;
+    margin-bottom: var(--space-1);
+    color: var(--text-bright-primary); /* Darker color */
+}
+
+.author-details {
+    font-size: var(--text-base);
+    color: var(--text-bright-secondary);
+    line-height: 1.4;
+}
+
+
+.testimonial-author {
+    margin-top: auto;
+}
+
+/* ===================================
+   LANYARD SHOWCASE SECTION
+   =================================== */
+.lanyard-showcase-section {
+    background: var(--bg-bright-primary);
+    color: var(--text-bright-primary);
+}
+
+.lanyard-showcase-title {
+    font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.02em;
+    color: var(--text-bright-primary);
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-16);
+    text-align: center;
+}
+
+/* Beehive Container */
+.beehive-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.beehive-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+/* Product Card */
+.product-card {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    background: var(--bg-bright-secondary);
+    border-radius: 50%;
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin: 0 24px; /* Further increased horizontal spacing between images */
+    z-index: 10;
+    box-shadow: none; /* No shadow on circular frames */
+}
+
+.product-card:hover {
+    transform: scale(1.1);
+    z-index: 20;
+    box-shadow: none; /* Ensure no shadow on hover */
+}
+
+.product-card.tucked {
+    margin-top: -22px;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Always show full lanyard in the circular frame */
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.product-card::after {
+    content: '';
+    position: absolute;
+    inset: -30px;
+    z-index: 10;
+}
+
+/* Break for line wrapping */
+.break {
+    flex-basis: 100%;
+    height: 0;
+}
+
+/* Backdrop */
+.backdrop {
+    position: fixed;
+    inset: 0;
+    background: transparent; /* No color overlay */
+    backdrop-filter: blur(5px); /* Keep only blur for subtle depth */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 40;
+}
+
+.backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Product Clone / Modal */
+.product-clone {
+    position: fixed;
+    z-index: 50;
+    background: transparent; /* Start transparent at origin */
+    box-shadow: none; /* Remove any shadow from the expanded image frame */
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    padding: 0;
+}
+
+.product-clone.expanded {
+    border-radius: var(--radius-2xl); /* Match card radius */
+    cursor: default;
+    border: none; /* No border color around expanded modal */
+}
+
+.product-clone-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Always show full lanyard in the expanded frame */
+    border-radius: 50%;
+    transition: all 0.5s ease;
+}
+
+.product-clone.expanded .product-clone-image {
+    border-radius: 0;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .product-card {
+        width: 80px;
+        height: 80px;
+        margin: 0 16px; /* Further increased spacing on mobile as well */
+    }
+
+    .product-card.tucked {
+        margin-top: -18px;
+    }
+
+    .beehive-container {
+        max-width: 100%;
+    }
+}
+
+/* Simplicity Section */
+.simplicity-section {
+    background: var(--bg-bright-primary);
+    color: var(--text-bright-primary);
+}
+
+/* Variant: sample assurance uses the same light blue as landing cards/feature cards */
+.simplicity-section.sample-assurance-section {
+    background: rgba(0, 122, 255, 0.05);
+}
+
+.simplicity-content {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.simplicity-title {
+    font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.02em;
+    color: var(--text-bright-primary);
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-6);
+}
+
+.simplicity-subtitle {
+    font-size: var(--text-lg);
+    color: var(--text-bright-secondary);
+    line-height: var(--leading-relaxed);
+    margin: 0 0 var(--space-12) 0;
+}
+
+/* Founder Note - Clean centered text block */
+.founder-note {
+    margin-top: var(--space-16);
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+}
+
+.founder-note-title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-bright-primary);
+    margin-bottom: var(--space-8);
+    text-align: center;
+}
+
+.founder-note-content {
+    font-size: var(--text-lg);
+    line-height: var(--leading-relaxed);
+    color: var(--text-bright-primary);
+    position: relative;
+    max-height: 12rem;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out;
+}
+
+.founder-note-content.expanded {
+    max-height: none;
+}
+
+.founder-note-content p {
+    margin-bottom: var(--space-6);
+    margin-top: 0;
+}
+
+.founder-note-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Fade overlay for expandable text */
+.founder-note-content::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4rem;
+    background: linear-gradient(to bottom, transparent, var(--bg-bright-primary));
+    pointer-events: none;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.founder-note-content.expanded::after {
+    display: none;
+}
+
+/* Read More button styling */
+.founder-note .simplicity-read-more {
+    margin-top: var(--space-6);
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--color-primary);
+    text-decoration: underline;
+    font-size: inherit;
+    font-family: inherit;
+    cursor: pointer;
+    display: inline-block;
+    transition: color var(--transition-base);
+    text-align: center;
+    width: 100%;
+    outline: none;
+}
+
+.founder-note .simplicity-read-more:hover {
+    color: var(--color-primary-light);
+}
+
+.founder-note .simplicity-read-more:focus,
+.founder-note .simplicity-read-more:focus-visible {
+    outline: none;
+    border: none;
+}
+
+/* Simplicity Modal */
+.simplicity-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+}
+
+.simplicity-modal .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+}
+
+.simplicity-modal-content {
+    position: relative;
+    background: var(--bg-bright-primary);
+    border-radius: var(--radius-3xl);
+    max-width: 700px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-bright-xl);
+    animation: modalSlideIn 0.3s ease-out;
+    z-index: 1001;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.simplicity-modal-content::-webkit-scrollbar {
+    display: none; /* WebKit browsers (Chrome, Safari, Edge) */
+}
+
+.simplicity-modal-body {
+    padding: var(--space-8);
+    padding-top: calc(var(--space-8) + 48px); /* Extra top padding for close button */
+    width: 100%;
+}
+
+.simplicity-modal-header {
+    margin-bottom: var(--space-8);
+}
+
+.simplicity-modal-title {
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-4);
+    color: var(--text-bright-primary);
+    line-height: var(--leading-tight);
+}
+
+.simplicity-modal-article {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.simplicity-modal-article p {
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+    color: var(--text-bright-secondary);
+    margin: 0;
+}
+
+.simplicity-modal-article p:first-of-type {
+    font-size: var(--text-lg);
+    color: var(--text-bright-primary);
+    font-weight: var(--font-weight-medium);
+}
+
+/* Final CTA Section */
+.final-cta-section {
+    background: var(--bg-bright-primary);
+    color: var(--text-bright-primary);
+}
+
+
+/* Responsive Styles for Landing Page */
+@media (max-width: 968px) {
+    .landing-card {
+        padding: var(--space-6);
+    }
+
+    .white-card-overlay .lanyard-landing-hero-preview {
+        width: 117.65%; /* 100 / 0.85 */
+        height: 117.65%;
+        transform: scale(0.85);
+    }
+
+    .feature-content {
+        grid-template-columns: 1fr;
+        gap: var(--space-8);
+    }
+
+    .feature-image-wrapper,
+    .feature-preview-wrapper {
+        width: 100%; /* Full width on mobile */
+        max-width: 100%;
+    }
+
+    .feature-reverse .feature-content {
+        direction: ltr;
+    }
+
+    .feature-title {
+        font-size: var(--text-3xl);
+    }
+
+    .testimonials-grid-landing {
+        grid-template-columns: 1fr;
+        gap: var(--space-6);
+    }
+}
+
+@media (max-width: 768px) {
+    .landing-card {
+        padding: var(--space-4);
+    }
+
+    /* Feature section previews - reduce height by 40% on mobile (vs previous 4/5.46) */
+    .features-section .feature-image-wrapper,
+    .features-section .feature-preview-wrapper {
+        aspect-ratio: 4 / 3.276; /* height = 60% of original mobile height */
+    }
+
+    .white-card-overlay .lanyard-landing-hero-preview {
+        width: 133.33%; /* 100 / 0.75 */
+        height: 133.33%;
+        transform: scale(0.75);
+    }
+
+    .white-card-overlay .lanyard-landing-hero-preview:has(div > h1:contains("Track Your Order")) {
+        transform: scale(0.65);
+        width: 153.85%; /* 100 / 0.65 */
+        height: 153.85%;
+    }
+
+    .feature-title {
+        font-size: var(--text-2xl);
+    }
+
+    .feature-solution-title {
+        font-size: var(--text-xl);
+    }
+
+    .feature-description {
+        font-size: var(--text-base);
+    }
+
+    .features-container {
+        gap: var(--space-16);
+    }
+}
+
 @media print {
     .fade-in {
         opacity: 1;
@@ -5023,4 +6111,42 @@ a:focus {
     .feature-card:hover {
         transform: none;
     }
+}
+
+.white-card-overlay .lanyard-landing-hero-preview:has(.track-preview-container) {
+    transform: scale(1);
+    width: 100%;
+    height: 100%;
+}
+
+.white-card-overlay .track-preview-content {
+    transform: scale(0.75);
+    transform-origin: top left;
+    width: 133.33%;
+    height: 133.33%;
+}
+
+/* Remove bottom margin for floating label wrapper inside hero preview */
+.lanyard-landing-hero-preview .floating-label-wrapper {
+    margin-bottom: 0;
+}
+
+/* Unified Preview Scaling */
+.preview-content-scaler {
+    transform: scale(1); /* Full scale on desktop & tablet */
+    transform-origin: top left;
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 768px) {
+    /* ... */
+    /* Unified Preview Scaling for Mobile */
+    .preview-content-scaler {
+        transform: scale(0.65);
+        transform-origin: top left;
+        width: 153.85%; /* 100 / 0.65 */
+        height: 153.85%;
+    }
+    /* ... */
 }
