@@ -3,12 +3,17 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import QuantitySelector from '@/components/QuantitySelector';
+import { trackEvent } from '@/lib/ga';
 
 export default function HeroPreview() {
   const router = useRouter();
   const [quantity, setQuantity] = useState(100);
 
   const handleGetStarted = () => {
+    trackEvent('hero_get_started_click', {
+      location: 'hero_preview',
+      quantity,
+    });
     router.push(`/customize?quantity=${quantity}`);
   };
 

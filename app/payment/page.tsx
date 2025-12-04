@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { formatCurrency } from '@/lib/utils';
 import { generateOrderNumber } from '@/lib/pricing';
 import HelpSection from '@/components/HelpSection';
+import { trackEvent } from '@/lib/ga';
 
 const BANK_NAME = process.env.NEXT_PUBLIC_BANK_NAME || 'MAYBANK';
 // BANK_ACCOUNT is validated server-side when needed
@@ -710,6 +711,10 @@ export default function PaymentPage() {
               setSubmitting(true);
               
               try {
+                trackEvent('payment_confirm_click', {
+                  location: 'payment_page',
+                  quantity: paymentData.quantity,
+                });
                 // Create order in Supabase with the order number
                 const response = await fetch('/api/create-order', {
                   method: 'POST',

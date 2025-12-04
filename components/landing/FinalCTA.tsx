@@ -1,6 +1,13 @@
 import Link from 'next/link';
+import { trackEvent } from '@/lib/ga';
 
 export default function FinalCTA() {
+  const handleClick = () => {
+    trackEvent('final_cta_get_started_click', {
+      location: 'final_cta_section',
+    });
+  };
+
   return (
     <section className="landing-section section-padding final-cta-section">
       <div className="container">
@@ -18,7 +25,11 @@ export default function FinalCTA() {
           }}>
             Check if we fit your budget instantly. No sign-up needed.
           </p>
-          <Link href="/customize" className="btn-primary hero-cta fade-in">
+          <Link
+            href="/customize"
+            className="btn-primary hero-cta fade-in"
+            onClick={handleClick}
+          >
             Get Started
           </Link>
         </div>

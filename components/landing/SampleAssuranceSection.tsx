@@ -1,8 +1,16 @@
 'use client';
 
+import { trackEvent } from '@/lib/ga';
+
 export default function SampleAssuranceSection() {
   const whatsappUrl =
     'https://wa.me/60137482481?text=Please%20enter%20your%20details%20for%20free%20lanyard%20sample%20delivery.%0ARecipient%20Name:%0APhone%20Number:%0AAddress:';
+
+  const handleClick = () => {
+    trackEvent('sample_free_lanyard_click', {
+      location: 'sample_assurance_section',
+    });
+  };
 
   return (
     <section
@@ -26,6 +34,7 @@ export default function SampleAssuranceSection() {
             target="_blank"
             rel="noopener noreferrer"
             className="btn-secondary simplicity-read-more fade-in"
+            onClick={handleClick}
           >
             Get Free Sample
           </a>

@@ -7,6 +7,7 @@ import { formatCurrency } from '@/lib/utils';
 import { BillingAddress, ShippingAddress } from '@/types/order';
 import HelpSection from '@/components/HelpSection';
 import CustomCheckbox from '@/components/CustomCheckbox';
+import { trackEvent } from '@/lib/ga';
 
 const MALAYSIAN_STATES = [
   'Johor',
@@ -290,6 +291,11 @@ export default function CheckoutPage() {
     }
 
     setSubmitting(true);
+    trackEvent('checkout_continue_to_payment_click', {
+      location: 'checkout_page',
+      quantity: orderData.quantity,
+      has_promo: !!discountInfo,
+    });
 
     try {
       // Store only non-sensitive checkout data in sessionStorage

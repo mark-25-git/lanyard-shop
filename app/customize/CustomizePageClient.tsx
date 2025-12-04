@@ -8,6 +8,7 @@ import TemplateDownload from '@/components/TemplateDownload';
 import LanyardCarousel from '@/components/LanyardCarousel';
 import HelpSection from '@/components/HelpSection';
 import CustomCheckbox from '@/components/CustomCheckbox';
+import { trackEvent } from '@/lib/ga';
 
 interface SocialProofStats {
   text: string;
@@ -106,6 +107,11 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
 
   const handleCheckout = () => {
     if (priceData && quantity >= 50) {
+      trackEvent('customize_checkout_click', {
+        location: 'customize_page',
+        quantity,
+        has_canva_link: !!canvaLink.trim(),
+      });
       // Store quantity and price in sessionStorage for checkout
       sessionStorage.setItem('orderQuantity', quantity.toString());
       sessionStorage.setItem('orderUnitPrice', priceData.unitPrice.toString());
