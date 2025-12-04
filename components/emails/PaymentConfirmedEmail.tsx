@@ -37,7 +37,7 @@ export function PaymentConfirmedEmail({
     day: 'numeric'
   });
 
-  // Format payment confirmed date
+  // Format payment confirmed date (use Asia/Kuala_Lumpur timezone)
   const paymentConfirmedDate = order.payment_confirmed_at
     ? new Date(order.payment_confirmed_at).toLocaleDateString('en-US', {
         year: 'numeric',
@@ -45,6 +45,7 @@ export function PaymentConfirmedEmail({
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
+        timeZone: 'Asia/Kuala_Lumpur',
       })
     : null;
 
