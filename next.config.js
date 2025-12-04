@@ -36,11 +36,13 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline'", // unsafe-eval needed for Next.js, unsafe-inline for inline scripts
+              // Allow Next.js scripts plus Google Analytics / Tag Manager
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
               "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net", // Bootstrap Icons CSS
               "font-src 'self' https://cdn.jsdelivr.net data:", // Bootstrap Icons fonts
               "img-src 'self' data: https: blob:", // Images from any HTTPS source
-              "connect-src 'self' https://*.supabase.co https://*.supabase.in", // Supabase API
+              // Supabase API + Google Analytics beacons
+              "connect-src 'self' https://*.supabase.co https://*.supabase.in https://www.google-analytics.com https://www.googletagmanager.com",
               "frame-src 'self'", // Allow same-origin iframes only
               "object-src 'none'", // Block plugins
               "base-uri 'self'", // Restrict base tag
