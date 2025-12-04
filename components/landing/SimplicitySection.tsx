@@ -35,13 +35,13 @@ export default function SimplicitySection() {
   }, []);
 
   return (
-    <section className="landing-section section-padding simplicity-section">
-      <div className="container">
-        <div className="simplicity-content">
-          <h2 className="hero-title simplicity-title fade-in">
+      <section className="landing-section section-padding simplicity-section">
+        <div className="container">
+          <div className="simplicity-content">
+            <h2 className="hero-title simplicity-title fade-in">
             It's easy.
-          </h2>
-          <p className="simplicity-subtitle fade-in">
+            </h2>
+            <p className="simplicity-subtitle fade-in">
             Tell us how many you need.<br />
             Send your design.<br />
             And we make them.<br />
@@ -88,8 +88,8 @@ export default function SimplicitySection() {
             </button>
           </div> */}
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
   );
 }
 

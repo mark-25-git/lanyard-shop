@@ -17,27 +17,27 @@ export default function HeroPreview() {
       <div className="preview-content-scaler">
         <div className="lanyard-landing-hero-preview-content">
           <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-            
+
             {/* Quantity Card */}
-            <div style={{ marginBottom: 'var(--space-6)' }}>
+              <div style={{ marginBottom: 'var(--space-6)' }}>
               <h2
                 style={{
-                  fontSize: 'var(--text-2xl)',
+                  fontSize: 'var(--text-2xl)', 
                   fontWeight: 'var(--font-weight-semibold)',
                   marginBottom: 'var(--space-4)',
                   textAlign: 'center',
                 }}
               >
                 Enter the quantity you need and see the price instantly. No sign-up needed.
-              </h2>
-              <div className="card" style={{ padding: 'var(--space-4)' }}>
-                <QuantitySelector
-                  value={quantity}
-                  onChange={setQuantity}
-                  min={50}
-                  max={undefined}
+                </h2>
+                <div className="card" style={{ padding: 'var(--space-4)' }}>
+                  <QuantitySelector
+                    value={quantity}
+                    onChange={setQuantity}
+                    min={50}
+                    max={undefined}
                   showVolumeBenefits={false}
-                />
+                  />
               </div>
             </div>
 
