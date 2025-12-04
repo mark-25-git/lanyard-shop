@@ -6,14 +6,14 @@ export default function HeroSection() {
       <div className="hero-content">
         <h1 className="hero-title fade-in" itemProp="headline">
           Built to save your time and effort.<br />
-          Teevent is the best place to order custom lanyard.
+          Teevent is the best place to order custom lanyards.
         </h1>
       </div>
       <div className="lanyard-landing-hero-image fade-in">
         <div className="feature-image-wrapper feature-preview-wrapper">
           <img 
             src="/images/landing/lanyard-landing-hero-bg.webp" 
-            alt="Custom lanyard product showcase" 
+            alt="Custom lanyards product showcase" 
             className="feature-image"
           />
           <div className="white-card-overlay">
