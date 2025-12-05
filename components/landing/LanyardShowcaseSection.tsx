@@ -16,8 +16,8 @@ const LANYARD_IMAGES = [
   '/images/landing/lanyard/sdgxi.webp',
   '/images/landing/lanyard/ses9.webp',
   '/images/landing/lanyard/upo.webp',
-  // Second TEDx UTAR appears in the last row (kept far apart)
-  '/images/landing/lanyard/tedxutar.webp',
+  // The Santa Village appears in the last row
+  '/images/landing/lanyard/thesantavillage.webp',
 ];
 
 // Pattern: 2, 3, 2, 3, 2 (12 items total) for a balanced honeycomb effect
@@ -36,6 +36,7 @@ const LANYARD_GRADIENTS: Record<string, string> = {
   '/images/landing/lanyard/choralexchange8.webp': 'linear-gradient(135deg, #d5d0ce, #726d8a)',
   '/images/landing/lanyard/bloodmooncircus.webp': 'linear-gradient(135deg, #b9b3b1, #5a2e2a)',
   '/images/landing/lanyard/sdgxi.webp': 'linear-gradient(135deg, #bab4b3, #384147)',
+  '/images/landing/lanyard/thesantavillage.webp': 'linear-gradient(135deg, #cbcbc4, #ae8267)',
 };
 
 interface ActiveItem {
