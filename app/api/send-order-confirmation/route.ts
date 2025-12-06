@@ -139,24 +139,29 @@ export async function POST(request: NextRequest) {
       }
 
       // Send notification email to admin addresses (same body as customer email)
-      // Send asynchronously - don't block the response
-      Promise.all(
-        adminEmails.map((adminEmail) =>
-          resend.emails.send({
-            from: `Teevent <${fromEmail}>`,
-            to: adminEmail,
-            subject: `New Order Received: ${order.order_number}`,
-            html: emailHtml,
-            replyTo: 'team.teevent@gmail.com',
-          }).catch((adminEmailError) => {
-            // Log error but don't fail - admin notification is non-critical
-            console.error(`Failed to send admin notification to ${adminEmail}:`, adminEmailError);
-          })
-        )
-      ).catch((adminError) => {
-        // Log error but don't fail
+      // Await to ensure emails are sent before function returns (important for serverless)
+      try {
+        await Promise.all(
+          adminEmails.map((adminEmail) =>
+            resend.emails.send({
+              from: `Teevent <${fromEmail}>`,
+              to: adminEmail,
+              subject: `New Order Received: ${order.order_number}`,
+              html: emailHtml,
+              replyTo: 'team.teevent@gmail.com',
+            }).catch((adminEmailError) => {
+              // Log error but don't fail - admin notification is non-critical
+              console.error(`Failed to send admin notification to ${adminEmail}:`, adminEmailError);
+              // Return null so Promise.all doesn't fail
+              return null;
+            })
+          )
+        );
+        console.log('Admin notification emails sent successfully to:', adminEmails);
+      } catch (adminError) {
+        // Log error but don't fail the request
         console.error('Error sending admin notifications:', adminError);
-      });
+      }
 
       // Track email sent in order_emails table
       await trackEmailSent(order.id, order.order_number, 'order_confirmation');
