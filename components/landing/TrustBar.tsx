@@ -1,3 +1,7 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+
 // Note: These logos need to be added to public/images/event-logos/
 // For now using placeholder paths - update when images are available
 const eventLogos = [
@@ -13,7 +17,40 @@ interface TrustBarProps {
   lanyardsDelivered: number;
 }
 
-export default function TrustBar({ lanyardsDelivered }: TrustBarProps) {
+export default function TrustBar({ lanyardsDelivered: initialLanyardsDelivered }: TrustBarProps) {
+  const [lanyardsDelivered, setLanyardsDelivered] = useState(initialLanyardsDelivered);
+
+  // Fetch latest stats client-side as a fallback/update
+  useEffect(() => {
+    const fetchLatestStats = async () => {
+      try {
+        const response = await fetch('/api/stats', {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.data?.lanyards_delivered) {
+            const latestValue = data.data.lanyards_delivered;
+            // Update if different from initial value
+            if (latestValue !== initialLanyardsDelivered) {
+              setLanyardsDelivered(latestValue);
+            }
+          }
+        }
+      } catch (error) {
+        // Silently fail - keep using the initial value on error
+      }
+    };
+
+    // Fetch after a short delay to allow page to render first
+    const timer = setTimeout(fetchLatestStats, 100);
+    return () => clearTimeout(timer);
+  }, [initialLanyardsDelivered]);
+
   // Format number with commas
   const formatNumber = (num: number): string => {
     return num.toLocaleString('en-US');
