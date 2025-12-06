@@ -111,6 +111,10 @@ export async function POST(request: NextRequest) {
       const resend = getResendClient();
       const fromEmail = getFromEmail();
 
+      // Admin email addresses to notify
+      const adminEmails = ['team.teevent@gmail.com', 'tanjj80@gmail.com'];
+
+      // Send email to customer
       const { data: emailData, error: emailError } = await resend.emails.send({
         from: `Teevent <${fromEmail}>`,
         to: order.customer_email,
@@ -134,6 +138,26 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      // Send notification email to admin addresses (same body as customer email)
+      // Send asynchronously - don't block the response
+      Promise.all(
+        adminEmails.map((adminEmail) =>
+          resend.emails.send({
+            from: `Teevent <${fromEmail}>`,
+            to: adminEmail,
+            subject: `New Order Received: ${order.order_number}`,
+            html: emailHtml,
+            replyTo: 'team.teevent@gmail.com',
+          }).catch((adminEmailError) => {
+            // Log error but don't fail - admin notification is non-critical
+            console.error(`Failed to send admin notification to ${adminEmail}:`, adminEmailError);
+          })
+        )
+      ).catch((adminError) => {
+        // Log error but don't fail
+        console.error('Error sending admin notifications:', adminError);
+      });
+
       // Track email sent in order_emails table
       await trackEmailSent(order.id, order.order_number, 'order_confirmation');
 
@@ -142,6 +166,7 @@ export async function POST(request: NextRequest) {
         orderNumber: order.order_number,
         recipient: order.customer_email,
         resendId: emailData?.id,
+        adminNotificationsSent: adminEmails,
       });
 
       return addCorsHeaders(

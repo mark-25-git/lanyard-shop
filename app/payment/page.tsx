@@ -781,7 +781,7 @@ export default function PaymentPage() {
                 <div className="modern-spinner-dot"></div>
               </div>
             ) : (
-              "I've Made the Payment"
+              "I've made the payment"
             )}
           </button>
           <p style={{
