@@ -139,28 +139,26 @@ export async function POST(request: NextRequest) {
       }
 
       // Send notification email to admin addresses (same body as customer email)
-      // Await to ensure emails are sent before function returns (important for serverless)
-      try {
-        await Promise.all(
-          adminEmails.map((adminEmail) =>
-            resend.emails.send({
-              from: `Teevent <${fromEmail}>`,
-              to: adminEmail,
-              subject: `New Order Received: ${order.order_number}`,
-              html: emailHtml,
-              replyTo: 'team.teevent@gmail.com',
-            }).catch((adminEmailError) => {
-              // Log error but don't fail - admin notification is non-critical
-              console.error(`Failed to send admin notification to ${adminEmail}:`, adminEmailError);
-              // Return null so Promise.all doesn't fail
-              return null;
-            })
-          )
-        );
-        console.log('Admin notification emails sent successfully to:', adminEmails);
-      } catch (adminError) {
-        // Log error but don't fail the request
-        console.error('Error sending admin notifications:', adminError);
+      // Send each email separately to ensure both are sent
+      for (const adminEmail of adminEmails) {
+        try {
+          const { data: adminEmailData, error: adminEmailError } = await resend.emails.send({
+            from: `Teevent <${fromEmail}>`,
+            to: adminEmail,
+            subject: `New Order Received: ${order.order_number}`,
+            html: emailHtml,
+            replyTo: 'team.teevent@gmail.com',
+          });
+
+          if (adminEmailError) {
+            console.error(`Failed to send admin notification to ${adminEmail}:`, adminEmailError);
+          } else {
+            console.log(`Admin notification email sent successfully to ${adminEmail}:`, adminEmailData?.id);
+          }
+        } catch (adminEmailException) {
+          // Log error but don't fail - admin notification is non-critical
+          console.error(`Exception sending admin notification to ${adminEmail}:`, adminEmailException);
+        }
       }
 
       // Track email sent in order_emails table
