@@ -101,7 +101,6 @@ export default function AdminLoginPage() {
                 className="input-field"
                 required
                 autoFocus
-                placeholder="admin@teevent.my"
               />
             </div>
 
