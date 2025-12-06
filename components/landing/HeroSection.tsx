@@ -8,17 +8,8 @@ export default function HeroSection() {
           Built to save your time and effort.<br />
           Teevent is the best place to order custom lanyards.
         </h1>
-      </div>
-      <div className="lanyard-landing-hero-image fade-in">
-        <div className="feature-image-wrapper feature-preview-wrapper">
-          <img 
-            src="/images/landing/lanyard-landing-hero-bg.webp" 
-            alt="Custom lanyards product showcase" 
-            className="feature-image"
-          />
-          <div className="white-card-overlay">
-            <HeroPreview />
-          </div>
+        <div className="lanyard-landing-hero-preview-wrapper fade-in">
+          <HeroPreview />
         </div>
       </div>
     </section>

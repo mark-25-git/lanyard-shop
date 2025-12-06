@@ -9,6 +9,7 @@ interface QuantitySelectorProps {
   max?: number; // Optional max limit (removed default 599 limit)
   readOnly?: boolean; // Optional read-only mode for auto-play
   showVolumeBenefits?: boolean; // Optional flag to show/hide 600+ volume benefits card
+  showButtons?: boolean; // Optional flag to show/hide increment/decrement buttons
 }
 
 export default function QuantitySelector({ 
@@ -17,7 +18,8 @@ export default function QuantitySelector({
   min = 50, 
   max,
   readOnly = false,
-  showVolumeBenefits = true
+  showVolumeBenefits = true,
+  showButtons = true
 }: QuantitySelectorProps) {
   const [localValue, setLocalValue] = useState(value.toString());
 
@@ -76,31 +78,72 @@ export default function QuantitySelector({
       gap: 'var(--space-4)',
       flexWrap: 'wrap'
     }}>
-      <div style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: 'var(--space-2)',
-        border: '1px solid var(--color-gray-300)',
-        borderRadius: 'var(--radius-xl)',
-        padding: 'var(--space-1)'
-      }}>
-        <button
-          type="button"
-          onClick={decrement}
-          disabled={value <= 1 || readOnly}
-          style={{
-            padding: 'var(--space-2) var(--space-4)',
-            border: 'none',
-            background: 'transparent',
-            cursor: (value <= 1 || readOnly) ? 'not-allowed' : 'pointer',
-            opacity: (value <= 1 || readOnly) ? 0.5 : 1,
-            fontSize: 'var(--text-xl)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-primary)'
-          }}
-        >
-          −
-        </button>
+      {showButtons ? (
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 'var(--space-2)',
+          border: '1px solid var(--color-gray-300)',
+          borderRadius: 'var(--radius-xl)',
+          padding: 'var(--space-1)'
+        }}>
+          <button
+            type="button"
+            onClick={decrement}
+            disabled={value <= 1 || readOnly}
+            style={{
+              padding: 'var(--space-2) var(--space-4)',
+              border: 'none',
+              background: 'transparent',
+              cursor: (value <= 1 || readOnly) ? 'not-allowed' : 'pointer',
+              opacity: (value <= 1 || readOnly) ? 0.5 : 1,
+              fontSize: 'var(--text-xl)',
+              fontWeight: 'var(--font-weight-bold)',
+              color: 'var(--color-primary)'
+            }}
+          >
+            −
+          </button>
+          <input
+            type="number"
+            value={localValue}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            min={1}
+            max={max}
+            step={10}
+            readOnly={readOnly}
+            className="quantity-input-no-spinner"
+            style={{
+              width: '100px',
+              textAlign: 'center',
+              border: 'none',
+              outline: 'none',
+              fontSize: 'var(--text-lg)',
+              fontWeight: 'var(--font-weight-semibold)',
+              padding: 'var(--space-2)',
+              cursor: readOnly ? 'default' : 'text'
+            }}
+          />
+          <button
+            type="button"
+            onClick={increment}
+            disabled={(max !== undefined && value >= max) || readOnly}
+            style={{
+              padding: 'var(--space-2) var(--space-4)',
+              border: 'none',
+              background: 'transparent',
+              cursor: ((max !== undefined && value >= max) || readOnly) ? 'not-allowed' : 'pointer',
+              opacity: ((max !== undefined && value >= max) || readOnly) ? 0.5 : 1,
+              fontSize: 'var(--text-xl)',
+              fontWeight: 'var(--font-weight-bold)',
+              color: 'var(--color-primary)'
+            }}
+          >
+            +
+          </button>
+        </div>
+      ) : (
         <input
           type="number"
           value={localValue}
@@ -114,7 +157,8 @@ export default function QuantitySelector({
           style={{
             width: '100px',
             textAlign: 'center',
-            border: 'none',
+            border: '1px solid var(--color-gray-300)',
+            borderRadius: 'var(--radius-xl)',
             outline: 'none',
             fontSize: 'var(--text-lg)',
             fontWeight: 'var(--font-weight-semibold)',
@@ -122,24 +166,7 @@ export default function QuantitySelector({
             cursor: readOnly ? 'default' : 'text'
           }}
         />
-        <button
-          type="button"
-          onClick={increment}
-          disabled={(max !== undefined && value >= max) || readOnly}
-          style={{
-            padding: 'var(--space-2) var(--space-4)',
-            border: 'none',
-            background: 'transparent',
-            cursor: ((max !== undefined && value >= max) || readOnly) ? 'not-allowed' : 'pointer',
-            opacity: ((max !== undefined && value >= max) || readOnly) ? 0.5 : 1,
-            fontSize: 'var(--text-xl)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-primary)'
-          }}
-        >
-          +
-        </button>
-      </div>
+      )}
       {showVolumeBenefits && value >= 600 && (
         <div style={{ 
           width: '100%',

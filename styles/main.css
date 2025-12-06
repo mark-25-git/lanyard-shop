@@ -205,7 +205,7 @@ body {
 .landing-section > div > div,
 .landing-section .container,
 .landing-section .hero-content,
-.landing-section .lanyard-landing-hero-image,
+.landing-section .lanyard-landing-hero-preview-wrapper,
 .landing-section .features-container,
 .landing-section .feature-content,
 .landing-section .why-us-content,
@@ -221,7 +221,7 @@ body {
 .landing-section .hero-content {
     text-align: center;
     /* Add top margin to hero content for desktop to account for fixed header */
-    margin-top: var(--space-12);
+    margin-top: var(--space-8); /* Reduced to match mobile spacing */
 }
 
 /* Hero CTA button - ensure it stays inline and centered */
@@ -261,16 +261,11 @@ body {
     }
 
     /* Make hero image scale vertically to fit preview on mobile with equal gaps */
-    .landing-section .lanyard-landing-hero-image {
+    .landing-section .lanyard-landing-hero-preview-wrapper {
         position: relative;
         display: flex;
         align-items: stretch;
         padding: var(--space-4) var(--space-3); /* Equal top/bottom, side padding from screen edge */
-    }
-
-    /* Hero preview wrapper uses same pattern as feature section */
-    .landing-section .lanyard-landing-hero-image .feature-preview-wrapper {
-        width: 100%;
     }
 
     /* Add top margin to hero content for mobile to account for fixed header */
@@ -2251,10 +2246,16 @@ a:focus {
 }
 
 /* Landing Page Hero - Override styles */
-.lanyard-landing-hero {
+.hero.lanyard-landing-hero {
     background: #fafafa;
     color: var(--text-bright-primary);
-    flex-direction: column;
+    padding-top: var(--space-8); /* Reduced to match mobile spacing */
+    
+    /* Reset hero flex/grid properties for standard flow */
+    display: block;
+    min-height: auto;
+    height: auto;
+    padding-bottom: var(--space-16); /* Add bottom spacing since vertical centering is gone */
 }
 
 /* Hero Video Background */
@@ -2311,104 +2312,117 @@ a:focus {
     display: none;
 }
 
-/* Landing Page Hero Image */
-.lanyard-landing-hero-image {
+/* Landing Page Hero Preview Wrapper - Directly embedded below title */
+.lanyard-landing-hero-preview-wrapper {
     width: 100%;
-    max-width: 1200px;
+    max-width: 800px;
     margin: var(--space-16) auto 0;
-    padding: var(--space-4) var(--container-padding);
+    padding: 0 var(--container-padding);
     display: flex;
     justify-content: center;
-    align-items: stretch;
+    align-items: center;
     position: relative;
     z-index: 2;
-    min-height: fit-content;
 }
 
-/* Hero section uses the same preview wrapper pattern as feature section */
-.lanyard-landing-hero-image .feature-preview-wrapper {
+/* ===================================
+   PREVIEW COMPONENTS - Base Styles
+   =================================== */
+
+/* Base preview container - shared by hero and feature previews */
+.hero-preview,
+.feature-preview {
+    position: static;
     width: 100%;
-    aspect-ratio: 4 / 2.1; /* Reduced height by 40%: was 4/3.5, now 4/2.1 (height = 60% of original) */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: visible;
-    border-radius: var(--radius-2xl);
-    box-shadow: none; /* No outer shadow on hero preview card */
+    max-width: 100%;
+    transform: scale(1);
+    transform-origin: top left;
 }
 
-.lanyard-landing-hero-image .feature-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 1;
-    border-radius: var(--radius-2xl);
+/* Hero Preview - No card styling (embedded directly in hero section) */
+.hero-preview-content {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+    text-align: center;
 }
 
-/* Legacy class for backward compatibility - now uses feature-image */
-.lanyard-landing-hero-img {
-    width: 100%;
-    height: auto;
-    min-height: 100%;
-    border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-bright-lg);
-    object-fit: cover;
-    object-position: center;
-    display: block;
-}
-
-/* Landing Page Hero Preview Overlay */
-/* Hero section now uses white-card-overlay wrapper, same as feature section */
-.lanyard-landing-hero-image .white-card-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    height: 80%;
+/* Feature Preview - Card styling (inside white overlay) */
+.feature-preview-content {
     background: var(--bg-bright-card);
     border-radius: var(--radius-2xl);
-    box-shadow: none; /* No inner card shadow in hero section */
-    z-index: 2;
-    padding: var(--space-4);
-    box-sizing: border-box;
-    overflow: hidden; /* Contain the scrolling preview */
-}
-
-.lanyard-landing-hero-preview {
-    position: static; /* Override old absolute positioning */
-    width: 100%;
-    height: 100%;
-    transform: scale(1); /* Full scale on desktop */
-    transform-origin: top left;
-    overflow-y: auto; /* Enable vertical scrolling */
-    overflow-x: hidden;
-    padding-right: var(--space-2); /* Space for scrollbar */
-}
-
-.lanyard-landing-hero-preview-content {
-    background: var(--bg-bright-card); /* Fully opaque white to match card */
-    border-radius: var(--radius-2xl); /* Match hero image corner radius */
     padding: var(--space-6);
     box-shadow: var(--shadow-bright-2xl);
-    text-align: left; /* Left align all content */
+    text-align: left;
 }
 
-/* Card class for preview - matches customize page */
-.lanyard-landing-hero-preview .card {
+/* Preview content spacing - semantic selectors */
+.hero-preview-content > *,
+.feature-preview-content > * {
+    margin-bottom: var(--space-4);
+}
+
+.hero-preview-content > *:last-child,
+.feature-preview-content > *:last-child {
+    margin-bottom: 0;
+}
+
+/* Hero preview specific - no margin on content wrapper */
+.hero-preview-content > div {
+    margin-bottom: 0;
+}
+
+/* Feature preview specific - nested content spacing */
+.feature-preview-content > div > div {
+    margin-bottom: var(--space-6);
+}
+
+/* Preview typography */
+.hero-preview .page-title,
+.feature-preview .page-title {
+    text-align: left;
+    margin-bottom: var(--space-6);
+}
+
+.hero-preview h2,
+.feature-preview h2 {
+    text-align: left;
+}
+
+/* Preview cards */
+.hero-preview .card,
+.feature-preview .card {
     background: var(--bg-bright-card);
     border-radius: var(--radius-2xl);
     box-shadow: var(--shadow-bright-sm);
+    padding: var(--space-4);
 }
 
-/* Make preview more compact - reduce spacing */
+/* ===================================
+   BACKWARD COMPATIBILITY - Legacy Classes
+   =================================== */
+/* Keep old classes for gradual migration */
+.lanyard-landing-hero-preview {
+    position: static;
+    width: 100%;
+    max-width: 100%;
+    transform: scale(1);
+    transform-origin: top left;
+}
+
+.lanyard-landing-hero-preview-content {
+    background: var(--bg-bright-card);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-bright-2xl);
+    text-align: left;
+}
+
+/* Legacy nested selectors - will be removed after component updates */
 .lanyard-landing-hero-preview .page-title {
     text-align: left;
-    margin-bottom: var(--space-6) !important; /* Reduced from space-8 */
+    margin-bottom: var(--space-6);
 }
 
 .lanyard-landing-hero-preview h2 {
@@ -2416,47 +2430,38 @@ a:focus {
 }
 
 .lanyard-landing-hero-preview > div > div {
-    margin-bottom: var(--space-4) !important; /* Reduced from space-8 */
+    margin-bottom: var(--space-4);
 }
 
 .lanyard-landing-hero-preview > div > div > div {
-    margin-bottom: var(--space-6) !important; /* Reduced from 5rem */
+    margin-bottom: var(--space-6);
+}
+
+.lanyard-landing-hero-preview-content > div {
+    margin-bottom: 0;
 }
 
 .lanyard-landing-hero-preview .card {
-    padding: var(--space-4) !important; /* Reduced from space-6 */
+    background: var(--bg-bright-card);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-bright-sm);
+    padding: var(--space-4);
 }
 
 /* Responsive adjustments for preview */
 /* Tablet styles (769px - 1024px) */
 @media (min-width: 769px) and (max-width: 1024px) {
-    .lanyard-landing-hero-image {
+    .lanyard-landing-hero-preview-wrapper {
         margin-top: var(--space-12);
-        padding: var(--space-4) var(--space-6);
-    }
-
-    /* Increase hero image height by 10% on tablet by adjusting aspect ratio */
-    .lanyard-landing-hero-image .feature-preview-wrapper {
-        aspect-ratio: 4 / 2.31; /* Taller than desktop: 10% more height vs 4/2.1 */
-    }
-
-    .lanyard-landing-hero-image .white-card-overlay .lanyard-landing-hero-preview {
-        width: 117.65%; /* 100 / 0.85 */
-        height: 117.65%;
-        transform: scale(0.85);
+        padding: 0 var(--space-6);
     }
 }
 
 /* Mobile styles */
 @media (max-width: 768px) {
-    .lanyard-landing-hero-image .feature-preview-wrapper {
-        aspect-ratio: 4 / 3.93; /* Increase hero preview height by 20% on mobile vs previous 4/3.276 */
-    }
-
-    .lanyard-landing-hero-image .white-card-overlay .lanyard-landing-hero-preview {
-        width: 133.33%; /* 100 / 0.75 */
-        height: 133.33%;
-        transform: scale(0.75);
+    .lanyard-landing-hero-preview-wrapper {
+        margin-top: var(--space-8);
+        padding: 0 var(--space-4);
     }
 
     .lanyard-landing-hero-preview-title {
@@ -2508,6 +2513,7 @@ a:focus {
     letter-spacing: -0.02em;
     color: var(--text-bright-primary);
     line-height: var(--leading-tight);
+    margin-top: var(--space-6); /* Match bottom margin */
 }
 
 .lanyard-landing-hero .hero-subtitle {
@@ -5534,31 +5540,53 @@ a:focus {
     overflow: hidden; /* Contain the scrolling preview */
 }
 
-.white-card-overlay .lanyard-landing-hero-preview {
+/* White card overlay - feature previews only (hero doesn't use overlay) */
+.white-card-overlay .feature-preview {
     width: 100%;
     height: 100%;
-    position: static; /* Override hero positioning */
-    transform: scale(1); /* Full scale on desktop */
+    position: static;
+    transform: scale(1);
     transform-origin: top left;
-    overflow-y: hidden; /* Disable internal scrolling for previews by default */
+    overflow-y: auto; /* Allow scrolling for feature previews */
     overflow-x: hidden;
-    padding-right: 0; /* No extra space needed since scrollbar is removed */
-}
-
-/* Allow scrolling inside feature section previews so price card is reachable */
-.features-section .white-card-overlay .lanyard-landing-hero-preview {
-    overflow-y: auto;
-    padding-right: var(--space-2); /* Space for scrollbar in feature preview */
+    padding-right: var(--space-2); /* Space for scrollbar */
 }
 
 /* Hide scrollbar visually for FeaturePricing auto-play preview, but keep scroll behavior */
-.feature-pricing-preview {
+.white-card-overlay .feature-preview.feature-pricing-preview {
     scrollbar-width: none; /* Firefox */
-    padding-right: 0 !important; /* Remove right padding as scrollbar is hidden */
+    padding-right: 0; /* Remove right padding as scrollbar is hidden */
 }
 
-.feature-pricing-preview::-webkit-scrollbar {
+.white-card-overlay .feature-preview.feature-pricing-preview::-webkit-scrollbar {
     display: none; /* WebKit browsers */
+}
+
+.white-card-overlay .feature-preview-content {
+    padding: 0;
+    box-shadow: none;
+    border-radius: 0;
+    height: 100%;
+    width: 100%;
+}
+
+/* ===================================
+   BACKWARD COMPATIBILITY - Legacy White Card Overlay
+   =================================== */
+.white-card-overlay .lanyard-landing-hero-preview {
+    width: 100%;
+    height: 100%;
+    position: static;
+    transform: scale(1);
+    transform-origin: top left;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    padding-right: 0;
+}
+
+.features-section .white-card-overlay .lanyard-landing-hero-preview {
+    overflow-y: auto;
+    padding-right: var(--space-2);
 }
 
 .white-card-overlay .lanyard-landing-hero-preview-content {
@@ -6030,6 +6058,22 @@ a:focus {
         padding: var(--space-6);
     }
 
+    /* Feature preview scaling on tablet */
+    .white-card-overlay .feature-preview {
+        width: 117.65%; /* 100 / 0.85 */
+        height: 117.65%;
+        transform: scale(0.85);
+    }
+
+    /* Feature pricing preview - avoid double scaling (handled internally by preview-content-scaler) */
+    .white-card-overlay .feature-preview.feature-pricing-preview {
+        width: 100%;
+        height: 100%;
+        transform: none;
+        padding-right: 0;
+    }
+
+    /* Backward compatibility */
     .white-card-overlay .lanyard-landing-hero-preview {
         width: 117.65%; /* 100 / 0.85 */
         height: 117.65%;
@@ -6072,6 +6116,29 @@ a:focus {
         aspect-ratio: 4 / 3.276; /* height = 60% of original mobile height */
     }
 
+    /* Feature preview scaling on mobile */
+    .white-card-overlay .feature-preview {
+        width: 133.33%; /* 100 / 0.75 */
+        height: 133.33%;
+        transform: scale(0.75);
+    }
+
+    /* Feature pricing preview - avoid double scaling (handled internally by preview-content-scaler) */
+    .white-card-overlay .feature-preview.feature-pricing-preview {
+        width: 100%;
+        height: 100%;
+        transform: none;
+        padding-right: 0;
+    }
+
+    /* Track preview specific scaling */
+    .white-card-overlay .feature-preview:has(div > h1:contains("Track Your Order")) {
+        transform: scale(0.65);
+        width: 153.85%; /* 100 / 0.65 */
+        height: 153.85%;
+    }
+
+    /* Backward compatibility */
     .white-card-overlay .lanyard-landing-hero-preview {
         width: 133.33%; /* 100 / 0.75 */
         height: 133.33%;
@@ -6113,7 +6180,8 @@ a:focus {
     }
 }
 
-.white-card-overlay .lanyard-landing-hero-preview:has(.track-preview-container) {
+/* Track preview container - full scale */
+.white-card-overlay .feature-preview:has(.track-preview-container) {
     transform: scale(1);
     width: 100%;
     height: 100%;
@@ -6126,7 +6194,21 @@ a:focus {
     height: 133.33%;
 }
 
+/* Backward compatibility */
+.white-card-overlay .lanyard-landing-hero-preview:has(.track-preview-container) {
+    transform: scale(1);
+    width: 100%;
+    height: 100%;
+}
+
 /* Remove bottom margin for floating label wrapper inside hero preview */
+/* Floating label wrapper - no margin in previews */
+.hero-preview .floating-label-wrapper,
+.feature-preview .floating-label-wrapper {
+    margin-bottom: 0;
+}
+
+/* Backward compatibility */
 .lanyard-landing-hero-preview .floating-label-wrapper {
     margin-bottom: 0;
 }
@@ -6139,6 +6221,13 @@ a:focus {
     height: 100%;
 }
 
+/* Hero preview - no scaling needed since it's directly embedded */
+.hero-preview .preview-content-scaler {
+    transform: scale(1);
+    width: 100%;
+    height: 100%;
+}
+
 @media (max-width: 768px) {
     /* ... */
     /* Unified Preview Scaling for Mobile */
@@ -6147,6 +6236,13 @@ a:focus {
         transform-origin: top left;
         width: 153.85%; /* 100 / 0.65 */
         height: 153.85%;
+    }
+    
+    /* Hero preview - no scaling on mobile since it's directly embedded */
+    .hero-preview .preview-content-scaler {
+        transform: scale(1);
+        width: 100%;
+        height: 100%;
     }
     /* ... */
 }

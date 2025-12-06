@@ -38,48 +38,37 @@ export default function FeaturePricing() {
   const [isAutoPlaying, setIsAutoPlaying] = useState(false); // Start stopped; will enable when in view
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const priceCardRef = useRef<HTMLDivElement>(null);
+  const quantityCardRef = useRef<HTMLDivElement>(null); // Quantity selector card
   const isInCycleRef = useRef(false); // Track if we're in the middle of an auto-play cycle
   const rootRef = useRef<HTMLDivElement | null>(null); // Root container for IntersectionObserver
   const hasRunOnceRef = useRef(false); // Track if auto-player has already run once this session
 
-  // Price calculation effect
+  // Hardcoded price for 100 pieces (for preview demo)
+  const HARDCODED_PRICE_100 = {
+    unitPrice: 2.90, // RM 2.90 per unit
+    totalPrice: 290.00, // RM 290.00 total
+  };
+
+  // Price calculation effect - hardcoded for preview
   useEffect(() => {
-    const calculatePrice = async () => {
-      if (quantity < 50 || quantity >= 600) {
-        setPriceData(null);
-        setLoading(false);
-        return;
-      }
+    if (quantity < 50 || quantity >= 600) {
+      setPriceData(null);
+      setLoading(false);
+      return;
+    }
 
+    // Show loading state while quantity is incrementing (50-90)
+    if (quantity < 100) {
       setLoading(true);
+      setPriceData(null);
+      return;
+    }
 
-      try {
-        const response = await fetch('/api/calculate-price', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ quantity }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to calculate price');
-        }
-
-        setPriceData({
-          unitPrice: data.data.unit_price,
-          totalPrice: data.data.total_price,
-        });
-      } catch (err) {
-        // For the landing preview, silently fail and leave priceData as null
-        console.error('Failed to calculate price for preview', err);
-        setPriceData(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    calculatePrice();
+    // When quantity reaches 100, show hardcoded price
+    if (quantity === 100) {
+      setLoading(false);
+      setPriceData(HARDCODED_PRICE_100);
+    }
   }, [quantity]);
 
   // Auto-player effect - initialize when isAutoPlaying changes
@@ -110,6 +99,24 @@ export default function FeaturePricing() {
       // Set initial quantity to 50
       setQuantity(50);
 
+      // Scroll to center the quantity selector card when auto-play starts
+      setTimeout(() => {
+        if (quantityCardRef.current) {
+          const rect = quantityCardRef.current.getBoundingClientRect();
+          const container = quantityCardRef.current.closest('.feature-pricing-preview') as HTMLElement;
+          
+          if (container) {
+            const containerRect = container.getBoundingClientRect();
+            const currentScroll = container.scrollTop;
+            const elementTop = rect.top - containerRect.top + currentScroll;
+            // Center it: elementTop - (containerHeight/2) + (elementHeight/2)
+            const targetScrollTop = elementTop - (containerRect.height / 2) + (rect.height / 2);
+            
+            smoothScrollTo(container, Math.max(0, targetScrollTop), 1600);
+          }
+        }
+      }, 100); // Small delay to ensure DOM is ready
+
       // Auto-increment from 50 to 100
       intervalRef.current = setInterval(() => {
         setQuantity((prev) => {
@@ -120,12 +127,12 @@ export default function FeaturePricing() {
               intervalRef.current = null;
             }
             
-            // Wait for price calculation (almost immediate), then scroll
+            // Wait for price to be set (hardcoded, immediate), then scroll
             setTimeout(() => {
               if (priceCardRef.current) {
                 // Check if price card is visible
                 const rect = priceCardRef.current.getBoundingClientRect();
-                // Find the scrollable container (either .lanyard-landing-hero-preview or .feature-pricing-preview)
+                // Find the scrollable container (.feature-pricing-preview)
                 const container = priceCardRef.current.closest('.feature-pricing-preview') as HTMLElement;
                 
                 if (container) {
@@ -204,9 +211,9 @@ export default function FeaturePricing() {
   }, []);
 
   return (
-    <div ref={rootRef} className="lanyard-landing-hero-preview feature-pricing-preview">
+    <div ref={rootRef} className="feature-preview feature-pricing-preview">
       <div className="preview-content-scaler">
-        <div className="lanyard-landing-hero-preview-content">
+        <div className="feature-preview-content">
           <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'left' }}>
             {/* Your lanyard will have */}
             <div style={{ marginBottom: 'var(--space-6)' }}>
@@ -260,7 +267,7 @@ export default function FeaturePricing() {
             </div>
 
             {/* Quantity */}
-            <div style={{ marginBottom: 'var(--space-6)' }}>
+            <div ref={quantityCardRef} style={{ marginBottom: 'var(--space-6)' }}>
               <h2
                 style={{
                   fontSize: 'var(--text-xl)', // One tier down from 2xl
