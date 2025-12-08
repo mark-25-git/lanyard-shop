@@ -13,10 +13,28 @@ declare global {
   }
 }
 
+/**
+ * Check if we're running on localhost/development environment
+ * Prevents GA4 from tracking development traffic
+ */
+function isLocalhost(): boolean {
+  if (typeof window === 'undefined') return false;
+  const hostname = window.location.hostname;
+  return (
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname === '[::1]' ||
+    hostname.startsWith('192.168.') ||
+    hostname.startsWith('10.') ||
+    hostname.endsWith('.local')
+  );
+}
+
 function sendPageView(url: string) {
   if (!GA_MEASUREMENT_ID) return;
   if (typeof window === 'undefined') return;
   if (!window.gtag) return;
+  if (isLocalhost()) return; // Skip tracking on localhost
 
   window.gtag('event', 'page_view', {
     page_path: url,
@@ -29,6 +47,11 @@ export default function GoogleAnalytics() {
 
   // Do nothing if GA is not configured
   if (!GA_MEASUREMENT_ID) {
+    return null;
+  }
+
+  // Skip tracking on localhost/development
+  if (typeof window !== 'undefined' && isLocalhost()) {
     return null;
   }
 
