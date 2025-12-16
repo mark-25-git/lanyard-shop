@@ -1,0 +1,91 @@
+{
+  "header": {
+    "blog": "Blog"
+  },
+  "hero": {
+    "title": "Jimat masa, tak pening kepala.",
+    "subtitle": "Teevent adalah tempat terbaik untuk tempah custom lanyard.",
+    "iNeed": "Saya nak",
+    "lanyards": "lanyard.",
+    "getStarted": "Mula Sekarang",
+    "seePriceInstantly": "Tengok harga terus. Tak payah register pun."
+  },
+  "trustBar": {
+    "statement": "{{number}} lanyard telah dihantar. Kualiti pilihan penganjur acara."
+  },
+  "features": {
+    "feature1": "Tak payah tunggu quotation atau layan seller perlahan. Masukkan kuantiti, terus dapat harga. Settle.",
+    "feature2": "Tak pandai guna Adobe AI/PS? Guna template Canva kami je, confirm design anda jadi cantik.",
+    "feature3": "Takut order tercicir dalam WhatsApp? Jangan risau. Track status order anda 'live' di sini."
+  },
+  "pricingPreview": {
+    "sectionTitle": "Apa yang anda akan dapat:",
+    "spec2cm": "Lebar standard 2cm",
+    "spec2sided": "Printing warna depan-belakang",
+    "specHook": "Hook 'lobster' tahan lasak",
+    "quantityTitle": "Kuantiti.",
+    "quantitySubtitle": "Berapa pcs nak order?",
+    "labelQuantity": "Kuantiti",
+    "labelUnitPrice": "Harga Seunit",
+    "labelDelivery": "Penghantaran",
+    "valueFree": "Percuma",
+    "labelTotal": "Total",
+    "loading": "Tengah kira...",
+    "errorMinQuantity": "Minima order 50 unit untuk kira harga.",
+    "errorRange": "Masukkan antara 50-599 unit.",
+    "pieces": "unit"
+  },
+  "canvaPreview": {
+    "title": "Pakai template kami je.",
+    "subtitle": "Design terus dalam template, confirm tak lari alignment."
+  },
+  "trackingPreview": {
+    "pageTitle": "Check Order Anda",
+    "sectionStatus": "Status Terkini",
+    "statusInProduction": "Tengah Dibuat",
+    "statusDescription": "Kilang sedang proses lanyard anda.",
+    "sectionDetails": "Info Order",
+    "subsectionSpecs": "Specs Lanyard",
+    "labelOrderNumber": "No. Order",
+    "labelOrderDate": "Tarikh",
+    "labelQuantity": "Kuantiti",
+    "labelUnitPrice": "Harga Seunit",
+    "labelDelivery": "Pos",
+    "labelTotal": "Total"
+  },
+  "showcase": {
+    "title": "Kualiti lanyard sebaik sistem."
+  },
+  "testimonials": {
+    "title": "Cara moden tempah lanyard.",
+    "testimonial1": "Servis Teevent memang laju, tepat, dan boleh dipercayai.",
+    "testimonial1Author": "Penganjur, The Santa Village, UTAR",
+    "testimonial2": "Sebagai introvert, saya suka gila cara ni! Semua info dah ada kat website Teevent... Tak yah WhatsApp tanya orang dan tunggu reply. Memang jimat masa dan 'introvert friendly'.",
+    "testimonial2Author": "Pelajar, CSMU"
+  },
+  "simplicity": {
+    "title": "Senang je.",
+    "step1": "Bagitahu nak berapa.",
+    "step2": "Upload design.",
+    "step3": "Kami buatkan.",
+    "done": "Siap.",
+    "why": "Sebab benda boleh senang, buat apa susah?"
+  },
+  "sample": {
+    "title": "Pegang dulu, baru percaya.",
+    "subtitle1": "Takut kualiti tak 'ngam'?",
+    "subtitle2": "Kami pos sampel lanyard free kat anda.",
+    "button": "Nak Sampel Free"
+  },
+  "finalCTA": {
+    "title": "Penat kejar supplier untuk quotation?",
+    "subtitle": "Check harga terus kat sini. Tak payah register pun.",
+    "button": "Mula Sekarang"
+  },
+  "footer": {
+    "instagram": "Instagram",
+    "email": "E-mel",
+    "whatsapp": "WhatsApp",
+    "copyright": "© 2025 Teevent Enterprise. Hak cipta terpelihara."
+  }
+}

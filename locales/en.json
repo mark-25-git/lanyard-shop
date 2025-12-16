@@ -1,0 +1,91 @@
+{
+  "header": {
+    "blog": "Blog"
+  },
+  "hero": {
+    "title": "Built to save your time and effort.",
+    "subtitle": "Teevent is the best place to order custom lanyards.",
+    "iNeed": "I need",
+    "lanyards": "lanyards.",
+    "getStarted": "Get Started",
+    "seePriceInstantly": "See price instantly. No sign-up needed."
+  },
+  "trustBar": {
+    "statement": "{{number}} lanyards delivered. Quality trusted by event organizers."
+  },
+  "features": {
+    "feature1": "No more \"Contact for quotation,\" slow replies, or pushy sales chats. Input your quantity and see the exact price instantly.",
+    "feature2": "No more complex Adobe AI/PS files. Use our one-click Canva template and design easily.",
+    "feature3": "No more lost order details in messy WhatsApp chats. Track your order status with one Order ID in one place."
+  },
+  "pricingPreview": {
+    "sectionTitle": "Your lanyard will have",
+    "spec2cm": "2cm width",
+    "spec2sided": "2-sided color printing",
+    "specHook": "Single lobster hook",
+    "quantityTitle": "Quantity.",
+    "quantitySubtitle": "How many do you need?",
+    "labelQuantity": "Quantity",
+    "labelUnitPrice": "Unit Price",
+    "labelDelivery": "Delivery",
+    "valueFree": "Free",
+    "labelTotal": "Total",
+    "loading": "Calculating price...",
+    "errorMinQuantity": "Enter a quantity of at least 50 pieces to see pricing.",
+    "errorRange": "Enter a quantity of 50-599 pieces to see pricing.",
+    "pieces": "pieces"
+  },
+  "canvaPreview": {
+    "title": "Use our template.",
+    "subtitle": "Design directly in our template to avoid misalignment."
+  },
+  "trackingPreview": {
+    "pageTitle": "Track Your Order",
+    "sectionStatus": "Order Status",
+    "statusInProduction": "In Production",
+    "statusDescription": "Your lanyards are being manufactured.",
+    "sectionDetails": "Order Details",
+    "subsectionSpecs": "Lanyard Specs",
+    "labelOrderNumber": "Order Number",
+    "labelOrderDate": "Order Date",
+    "labelQuantity": "Quantity",
+    "labelUnitPrice": "Unit Price",
+    "labelDelivery": "Delivery",
+    "labelTotal": "Total"
+  },
+  "showcase": {
+    "title": "Hardware as good as Software."
+  },
+  "testimonials": {
+    "title": "The new way to make custom lanyards.",
+    "testimonial1": "I find Teevent fast, accurate, and very trustworthy.",
+    "testimonial1Author": "Organizer, The Santa Village Event, UTAR",
+    "testimonial2": "As an introvert, I like it better than the old way! The Teevent website has every information I need... I don't have to ask and wait for the answer. Truly time-efficient and introvert-friendly.",
+    "testimonial2Author": "Student, CSMU"
+  },
+  "simplicity": {
+    "title": "It's easy.",
+    "step1": "Tell us how many you need.",
+    "step2": "Send your design.",
+    "step3": "And we make them.",
+    "done": "Done.",
+    "why": "Because it shouldn't be hard."
+  },
+  "sample": {
+    "title": "Try it in your hands first.",
+    "subtitle1": "Want to be sure?",
+    "subtitle2": "We send you a lanyard sample. Free.",
+    "button": "Get Free Sample"
+  },
+  "finalCTA": {
+    "title": "Stop chasing suppliers for quotes.",
+    "subtitle": "Check if we fit your budget instantly. No sign-up needed.",
+    "button": "Get Started"
+  },
+  "footer": {
+    "instagram": "Instagram",
+    "email": "Email",
+    "whatsapp": "WhatsApp",
+    "copyright": "© 2025 Teevent Enterprise. All rights reserved."
+  }
+}

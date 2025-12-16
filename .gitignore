@@ -45,6 +45,7 @@ credentials/google-service-account.json
 !package.json
 !package-lock.json
 !tsconfig.json
+!locales/*.json
 
 # All SQL files (migrations and database scripts)
 *.sql
