@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import FeaturePricing from './FeaturePricing';
 import FeatureCanva from './FeatureCanva';
 import FeatureTracking from './FeatureTracking';
@@ -76,30 +79,22 @@ function Feature({ title, problem, solution, copy, description, visual, visualAl
 }
 
 export default function FeatureSection() {
+  const { t } = useTranslation();
+
   return (
     <section className="landing-section features-section section-padding">
       <div className="features-container">
         {/* Note: Images need to be added to public/images/landing/ */}
         <Feature
           merged={true}
-          description={
-            <>
-              <strong>No more "Contact for quotation," slow replies, or pushy sales chats.</strong>{' '}
-              Input your quantity and see the exact price instantly.
-            </>
-          }
+          description={t('features.feature1')}
           visual="/images/landing/feature1.webp"
           visualAlt="Instant pricing preview"
           visualComponent={<FeaturePricing />}
         />
         <Feature
           merged={true}
-          description={
-            <>
-              <strong>No more complex Adobe AI/PS files.</strong>{' '}
-              Use our one-click Canva template and design easily.
-            </>
-          }
+          description={t('features.feature2')}
           visual="/images/landing/feature2.webp"
           visualAlt="Design workflow preview"
           visualComponent={<FeatureCanva />}
@@ -107,12 +102,7 @@ export default function FeatureSection() {
         />
         <Feature
           merged={true}
-          description={
-            <>
-              <strong>No more lost order details in messy WhatsApp chats.</strong>{' '}
-              Track your order status with one Order ID in one place.
-            </>
-          }
+          description={t('features.feature3')}
           visual="/images/landing/feature3.webp"
           visualAlt="Order tracking preview"
           visualComponent={<FeatureTracking />}

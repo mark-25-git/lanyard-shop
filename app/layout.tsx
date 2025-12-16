@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import { Analytics } from '@vercel/analytics/next';
 import StructuredData from '@/components/StructuredData';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
+import I18nProvider from '@/components/I18nProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -91,12 +92,14 @@ export default function RootLayout({
         <StructuredData />
       </head>
       <body className={inter.className}>
-        <Suspense fallback={null}>
-          <GoogleAnalytics />
-        </Suspense>
-        <Header />
-        {children}
-        <Analytics />
+        <I18nProvider>
+          <Suspense fallback={null}>
+            <GoogleAnalytics />
+          </Suspense>
+          <Header />
+          {children}
+          <Analytics />
+        </I18nProvider>
       </body>
     </html>
   );

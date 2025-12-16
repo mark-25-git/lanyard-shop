@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 
 const LANYARD_IMAGES = [
   '/images/landing/lanyard/bdcjuly2025.webp',
@@ -45,6 +46,7 @@ interface ActiveItem {
 }
 
 export default function LanyardShowcaseSection() {
+  const { t } = useTranslation();
   const [activeItem, setActiveItem] = useState<ActiveItem | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   
@@ -273,7 +275,7 @@ export default function LanyardShowcaseSection() {
       <section className="landing-section section-padding lanyard-showcase-section">
         <div className="container">
           <h2 className="hero-title lanyard-showcase-title fade-in">
-            Hardware as good as Software.
+            {t('showcase.title')}
           </h2>
           <div className="beehive-container" id="gallery-root">
             {rows.map((rowImages, rowIndex) => (

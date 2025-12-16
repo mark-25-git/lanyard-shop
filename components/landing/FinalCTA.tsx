@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { trackEvent } from '@/lib/ga';
+import { useTranslation } from 'react-i18next';
 
 export default function FinalCTA() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -26,14 +28,14 @@ export default function FinalCTA() {
           maxWidth: '700px', 
           margin: '0 auto' 
         }}>
-          <h2 className="section-title fade-in">Stop chasing suppliers for quotes.</h2>
+          <h2 className="section-title fade-in">{t('finalCTA.title')}</h2>
           <p className="section-subtitle fade-in" style={{ 
             fontSize: 'var(--text-lg)',
             color: 'var(--text-bright-secondary)',
             marginTop: 'var(--space-6)',
             marginBottom: 0
           }}>
-            Check if we fit your budget instantly. No sign-up needed.
+            {t('finalCTA.subtitle')}
           </p>
           <button
             onClick={handleClick}
@@ -51,7 +53,7 @@ export default function FinalCTA() {
                 <div className="modern-spinner-dot"></div>
               </div>
             ) : (
-              'Get Started'
+              t('finalCTA.button')
             )}
           </button>
         </div>

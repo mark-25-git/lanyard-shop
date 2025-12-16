@@ -1,8 +1,10 @@
 'use client';
 
 import { formatCurrency } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export default function FeatureTracking() {
+  const { t } = useTranslation();
   const order = {
     order_number: 'INV-2511255ZX50E',
     status: 'in_production',
@@ -13,7 +15,11 @@ export default function FeatureTracking() {
   };
 
   const statusSteps = [
-    { status: 'in_production', label: 'In Production', description: 'Your lanyards are being manufactured.' },
+    { 
+      status: 'in_production', 
+      label: t('trackingPreview.statusInProduction'), 
+      description: t('trackingPreview.statusDescription') 
+    },
   ];
 
   const currentStatus = statusSteps.find(s => s.status === order.status);
@@ -26,7 +32,7 @@ export default function FeatureTracking() {
           marginBottom: 'var(--space-8)',
           textAlign: 'left'
         }}>
-          Track Your Order
+          {t('trackingPreview.pageTitle')}
         </h1>
 
         <div className="card" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
@@ -41,7 +47,7 @@ export default function FeatureTracking() {
               fontWeight: 'var(--font-weight-semibold)',
               margin: 0
             }}>
-              Order Status
+              {t('trackingPreview.sectionStatus')}
             </h2>
             <p style={{ 
               fontSize: 'var(--text-base)', 
@@ -84,7 +90,7 @@ export default function FeatureTracking() {
             fontWeight: 'var(--font-weight-semibold)',
             marginBottom: 'var(--space-4)'
           }}>
-            Order Details
+            {t('trackingPreview.sectionDetails')}
           </h3>
           
           <div style={{ 
@@ -97,7 +103,7 @@ export default function FeatureTracking() {
               color: 'var(--text-bright-tertiary)',
               marginBottom: 'var(--space-2)'
             }}>
-              Lanyard Specs
+              {t('trackingPreview.subsectionSpecs')}
             </p>
             <ul style={{
               listStyle: 'none',
@@ -106,37 +112,37 @@ export default function FeatureTracking() {
               fontSize: 'var(--text-sm)',
               color: 'var(--text-bright-secondary)'
             }}>
-              <li style={{ marginBottom: 'var(--space-1)' }}>• 2cm width</li>
-              <li style={{ marginBottom: 'var(--space-1)' }}>• 2-sided color printing</li>
-              <li>• Single lobster hook</li>
+              <li style={{ marginBottom: 'var(--space-1)' }}>• {t('pricingPreview.spec2cm')}</li>
+              <li style={{ marginBottom: 'var(--space-1)' }}>• {t('pricingPreview.spec2sided')}</li>
+              <li>• {t('pricingPreview.specHook')}</li>
             </ul>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>Order Number</p>
+                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>{t('trackingPreview.labelOrderNumber')}</p>
                   <p style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-bright-primary)', margin: 0 }}>{order.order_number}</p>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>Order Date</p>
+                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>{t('trackingPreview.labelOrderDate')}</p>
                   <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
                       {new Date(order.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                   </p>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>Quantity</p>
-                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>{order.quantity} pieces</p>
+                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>{t('trackingPreview.labelQuantity')}</p>
+                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>{order.quantity} {t('pricingPreview.pieces')}</p>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>Unit Price</p>
+                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>{t('trackingPreview.labelUnitPrice')}</p>
                   <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>{formatCurrency(order.unit_price)}</p>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>Delivery</p>
-                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>Free</p>
+                  <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', margin: 0 }}>{t('trackingPreview.labelDelivery')}</p>
+                  <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>{t('pricingPreview.valueFree')}</p>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 'var(--space-3)', marginTop: 'var(--space-2)', borderTop: '2px solid var(--color-gray-200)' }}>
-                  <p style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-bright-primary)', margin: 0 }}>Total</p>
+                  <p style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--text-bright-primary)', margin: 0 }}>{t('trackingPreview.labelTotal')}</p>
                   <p style={{ fontSize: 'var(--text-xl)', fontWeight: 'var(--font-weight-bold)', color: 'var(--text-bright-primary)', margin: 0 }}>{formatCurrency(order.total_price)}</p>
               </div>
           </div>

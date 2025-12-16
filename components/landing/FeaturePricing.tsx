@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import QuantitySelector from '@/components/QuantitySelector';
 import LanyardCarousel from '@/components/LanyardCarousel';
 import PriceDisplay from '@/components/PriceDisplay';
@@ -32,6 +33,7 @@ function smoothScrollTo(container: HTMLElement, targetScrollTop: number, duratio
 }
 
 export default function FeaturePricing() {
+  const { t } = useTranslation();
   const [quantity, setQuantity] = useState(50); // Start at 50 for auto-player
   const [priceData, setPriceData] = useState<{ unitPrice: number; totalPrice: number } | null>(null);
   const [loading, setLoading] = useState(false);
@@ -225,7 +227,7 @@ export default function FeaturePricing() {
                   textAlign: 'left',
                 }}
               >
-                Your lanyard will have
+                {t('pricingPreview.sectionTitle')}
               </h2>
               <div className="card" style={{ padding: 'var(--space-4)' }}>
                 <div
@@ -247,9 +249,9 @@ export default function FeaturePricing() {
                       textAlign: 'left',
                     }}
                   >
-                    <li style={{ marginBottom: 'var(--space-2)' }}>2cm width</li>
-                    <li style={{ marginBottom: 'var(--space-2)' }}>2-sided color printing</li>
-                    <li style={{ marginBottom: 'var(--space-2)' }}>Single lobster hook</li>
+                    <li style={{ marginBottom: 'var(--space-2)' }}>{t('pricingPreview.spec2cm')}</li>
+                    <li style={{ marginBottom: 'var(--space-2)' }}>{t('pricingPreview.spec2sided')}</li>
+                    <li style={{ marginBottom: 'var(--space-2)' }}>{t('pricingPreview.specHook')}</li>
                   </ul>
                   <div
                     style={{
@@ -276,9 +278,9 @@ export default function FeaturePricing() {
                   textAlign: 'left',
                 }}
               >
-                Quantity.{' '}
+                {t('pricingPreview.quantityTitle')}{' '}
                 <span style={{ color: 'var(--text-bright-tertiary)' }}>
-                  How many do you need?
+                  {t('pricingPreview.quantitySubtitle')}
                 </span>
               </h2>
               <div className="card" style={{ padding: 'var(--space-4)' }}>

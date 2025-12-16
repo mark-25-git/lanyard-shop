@@ -1,6 +1,9 @@
 'use client';
 
+import { useTranslation } from 'react-i18next';
+
 export default function FeatureCanva() {
+  const { t } = useTranslation();
   // Template URLs - Google Drive direct download links and Canva template
   const canvaTemplateUrl = process.env.NEXT_PUBLIC_CANVA_TEMPLATE_URL || 'https://www.canva.com/design/DAG587WOoLU/lop1q3BFx1sqp3N219pEDQ/view?utm_content=DAG587WOoLU&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink&mode=preview';
   
@@ -17,9 +20,9 @@ export default function FeatureCanva() {
             marginBottom: 'var(--space-4)',
             textAlign: 'left'
         }}>
-            Use our template.{' '}
+            {t('canvaPreview.title')}{' '}
             <span style={{ color: 'var(--text-bright-tertiary)' }}>
-                Design directly in our template to avoid misalignment.
+                {t('canvaPreview.subtitle')}
             </span>
         </h2>
         <div className="card" style={{ padding: 'var(--space-6)', textAlign: 'center' }}>

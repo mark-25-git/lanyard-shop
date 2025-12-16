@@ -1,8 +1,11 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function SimplicitySection() {
+  const { t } = useTranslation();
+
   useEffect(() => {
     const textContainer = document.getElementById('textContainer');
     const hiddenContent = document.getElementById('hiddenContent');
@@ -39,15 +42,15 @@ export default function SimplicitySection() {
         <div className="container">
           <div className="simplicity-content">
             <h2 className="hero-title simplicity-title fade-in">
-            It's easy.
+            {t('simplicity.title')}
             </h2>
             <p className="simplicity-subtitle fade-in">
-            Tell us how many you need.<br />
-            Send your design.<br />
-            And we make them.<br />
-            Done.<br />
+            {t('simplicity.step1')}<br />
+            {t('simplicity.step2')}<br />
+            {t('simplicity.step3')}<br />
+            {t('simplicity.done')}<br />
             <br />
-            Because it shouldn't be hard.
+            {t('simplicity.why')}
           </p>
           
           {/* <div className="founder-note fade-in">

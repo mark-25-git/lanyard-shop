@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // Note: These logos need to be added to public/images/event-logos/
 // For now using placeholder paths - update when images are available
@@ -18,6 +19,7 @@ interface TrustBarProps {
 }
 
 export default function TrustBar({ lanyardsDelivered: initialLanyardsDelivered }: TrustBarProps) {
+  const { t } = useTranslation();
   const [lanyardsDelivered, setLanyardsDelivered] = useState(initialLanyardsDelivered);
 
   // Fetch latest stats client-side as a fallback/update
@@ -68,7 +70,7 @@ export default function TrustBar({ lanyardsDelivered: initialLanyardsDelivered }
             letterSpacing: '0',
             marginBottom: 'var(--space-6)'
           }}>
-            {formatNumber(lanyardsDelivered)} lanyards delivered. Quality trusted by event organizers.
+            {t('trustBar.statement', { number: formatNumber(lanyardsDelivered) })}
           </p>
         </div>
         

@@ -10,6 +10,7 @@ interface QuantitySelectorProps {
   readOnly?: boolean; // Optional read-only mode for auto-play
   showVolumeBenefits?: boolean; // Optional flag to show/hide 600+ volume benefits card
   showButtons?: boolean; // Optional flag to show/hide increment/decrement buttons
+  placeholder?: number; // Optional placeholder value for the input (used in hero)
 }
 
 export default function QuantitySelector({ 
@@ -19,25 +20,40 @@ export default function QuantitySelector({
   max,
   readOnly = false,
   showVolumeBenefits = true,
-  showButtons = true
+  showButtons = true,
+  placeholder,
 }: QuantitySelectorProps) {
-  const [localValue, setLocalValue] = useState(value.toString());
+  const [isDirty, setIsDirty] = useState(false);
+  const [localValue, setLocalValue] = useState(
+    placeholder !== undefined ? '' : value.toString()
+  );
 
   // Sync localValue when value prop changes
   useEffect(() => {
+    // If we have a placeholder and the user hasn't typed yet,
+    // keep the input visually empty so the placeholder shows.
+    if (placeholder !== undefined && !isDirty) {
+      return;
+    }
     setLocalValue(value.toString());
-  }, [value]);
+  }, [value, placeholder, isDirty]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setLocalValue(newValue);
+    setIsDirty(true);
     
     const numValue = parseInt(newValue, 10);
     if (!isNaN(numValue) && numValue >= 1 && (max === undefined || numValue <= max)) {
       onChange(numValue);
     } else if (newValue === '' || newValue === '0') {
-      // Allow empty or 0 for user input, but don't update the value
-      onChange(0);
+      // For placeholder usage, falling back to the placeholder keeps UX simple.
+      if (placeholder !== undefined) {
+        onChange(placeholder);
+      } else {
+        // Allow empty or 0 for user input, but don't update the value meaningfully
+        onChange(0);
+      }
     } else if (!isNaN(numValue) && numValue > 0) {
       // Allow any positive number (no max limit)
       onChange(numValue);
@@ -46,6 +62,13 @@ export default function QuantitySelector({
 
   const handleBlur = () => {
     const numValue = parseInt(localValue, 10);
+    if (placeholder !== undefined && (localValue === '' || isNaN(numValue))) {
+      // If nothing entered, keep the field visually empty and rely on placeholder.
+      setLocalValue('');
+      onChange(placeholder);
+      return;
+    }
+
     if (isNaN(numValue) || numValue < 1) {
       setLocalValue('1');
       onChange(1);
@@ -113,6 +136,7 @@ export default function QuantitySelector({
             max={max}
             step={10}
             readOnly={readOnly}
+            placeholder={placeholder !== undefined ? placeholder.toString() : undefined}
             className="quantity-input-no-spinner"
             style={{
               width: '100px',
@@ -153,6 +177,7 @@ export default function QuantitySelector({
           max={max}
           step={10}
           readOnly={readOnly}
+          placeholder={placeholder !== undefined ? placeholder.toString() : undefined}
           className="quantity-input-no-spinner"
           style={{
             width: '100px',

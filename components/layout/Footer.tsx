@@ -1,6 +1,10 @@
 'use client';
 
+import { useTranslation } from 'react-i18next';
+
 export default function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="footer">
       <div className="container">
@@ -12,14 +16,14 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="footer-link"
             >
-              Instagram
+              {t('footer.instagram')}
             </a>
             <a
               href="mailto:team.teevent@gmail.com"
               className="footer-link"
               id="emailLink"
             >
-              Email
+              {t('footer.email')}
             </a>
             <a
               href="https://wa.me/60137482481"
@@ -27,7 +31,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="footer-link"
             >
-              WhatsApp
+              {t('footer.whatsapp')}
             </a>
           </div>
           <div className="footer-center">
@@ -44,7 +48,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="footer-copyright">
-          <p>© 2025 Teevent Enterprise. All rights reserved.</p>
+          <p>{t('footer.copyright')}</p>
         </div>
       </div>
     </footer>

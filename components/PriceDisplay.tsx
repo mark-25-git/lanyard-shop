@@ -1,6 +1,7 @@
 'use client';
 
 import { formatCurrency } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface PriceDisplayProps {
   quantity: number;
@@ -15,6 +16,8 @@ export default function PriceDisplay({
   totalPrice, 
   isLoading = false 
 }: PriceDisplayProps) {
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <div style={{ 
@@ -29,7 +32,7 @@ export default function PriceDisplay({
           <div className="modern-spinner-dot"></div>
           <div className="modern-spinner-dot"></div>
         </div>
-        <p style={{ color: 'var(--text-bright-tertiary)' }}>Calculating price...</p>
+        <p style={{ color: 'var(--text-bright-tertiary)' }}>{t('pricingPreview.loading')}</p>
       </div>
     );
   }
@@ -41,7 +44,7 @@ export default function PriceDisplay({
         padding: 'var(--space-8)'
       }}>
         <p style={{ color: 'var(--text-bright-tertiary)' }}>
-          Enter a quantity of at least 50 pieces to see pricing.
+          {t('pricingPreview.errorMinQuantity')}
         </p>
       </div>
     );
@@ -54,7 +57,7 @@ export default function PriceDisplay({
         padding: 'var(--space-8)'
       }}>
         <p style={{ color: 'var(--text-bright-tertiary)' }}>
-          Enter a quantity of 50-599 pieces to see pricing.
+          {t('pricingPreview.errorRange')}
         </p>
       </div>
     );
@@ -70,15 +73,15 @@ export default function PriceDisplay({
           justifyContent: 'space-between',
           marginBottom: 'var(--space-2)'
         }}>
-          <span style={{ color: 'var(--text-bright-secondary)' }}>Quantity</span>
-          <span>{quantity} pieces</span>
+          <span style={{ color: 'var(--text-bright-secondary)' }}>{t('pricingPreview.labelQuantity')}</span>
+          <span>{quantity} {t('pricingPreview.pieces')}</span>
         </div>
         <div style={{ 
           display: 'flex', 
           justifyContent: 'space-between',
           marginBottom: 'var(--space-2)'
         }}>
-          <span style={{ color: 'var(--text-bright-secondary)' }}>Unit Price</span>
+          <span style={{ color: 'var(--text-bright-secondary)' }}>{t('pricingPreview.labelUnitPrice')}</span>
           <span>{formatCurrency(unitPrice)}</span>
         </div>
         <div style={{ 
@@ -86,8 +89,8 @@ export default function PriceDisplay({
           justifyContent: 'space-between',
           marginBottom: 'var(--space-2)'
         }}>
-          <span style={{ color: 'var(--text-bright-secondary)' }}>Delivery</span>
-          <span>Free</span>
+          <span style={{ color: 'var(--text-bright-secondary)' }}>{t('pricingPreview.labelDelivery')}</span>
+          <span>{t('pricingPreview.valueFree')}</span>
         </div>
         <div style={{ 
           display: 'flex', 
@@ -98,7 +101,7 @@ export default function PriceDisplay({
           fontSize: 'var(--text-xl)',
           fontWeight: 'var(--font-weight-bold)'
         }}>
-          <span>Total</span>
+          <span>{t('pricingPreview.labelTotal')}</span>
           <span style={{ color: 'var(--text-bright-primary)' }}>
             {formatCurrency(totalPrice)}
           </span>

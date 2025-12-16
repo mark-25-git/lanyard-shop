@@ -2,11 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import QuantitySelector from '@/components/QuantitySelector';
 import { trackEvent } from '@/lib/ga';
 
 export default function HeroPreview() {
+  const { t } = useTranslation();
   const router = useRouter();
+  // Internally we still default to 100, but the input will show it as a placeholder.
   const [quantity, setQuantity] = useState(100);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,7 +39,7 @@ export default function HeroPreview() {
                 flexWrap: 'wrap'
               }}>
                 <span style={{ fontSize: 'var(--text-xl)', color: 'var(--text-bright-primary)' }}>
-                  I need
+                  {t('hero.iNeed')}
                 </span>
                 <QuantitySelector
                   value={quantity}
@@ -45,9 +48,10 @@ export default function HeroPreview() {
                   max={undefined}
                   showVolumeBenefits={false}
                   showButtons={false}
+                  placeholder={100}
                 />
                 <span style={{ fontSize: 'var(--text-xl)', color: 'var(--text-bright-primary)' }}>
-                  lanyards.
+                  {t('hero.lanyards')}
                 </span>
               </div>
             </div>
@@ -71,7 +75,7 @@ export default function HeroPreview() {
                 <div className="modern-spinner-dot"></div>
               </div>
             ) : (
-              'Get Started'
+              t('hero.getStarted')
             )}
           </button>
           <p style={{ 
@@ -79,7 +83,7 @@ export default function HeroPreview() {
             fontSize: 'var(--text-sm)', 
             color: 'var(--text-bright-muted)' 
           }}>
-            See price instantly. No sign-up needed.
+            {t('hero.seePriceInstantly')}
           </p>
         </div>
       </div>
