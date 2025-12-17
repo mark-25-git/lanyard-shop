@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 interface QuantitySelectorProps {
   value: number;
@@ -23,6 +24,7 @@ export default function QuantitySelector({
   showButtons = true,
   placeholder,
 }: QuantitySelectorProps) {
+  const { t } = useTranslation();
   const [isDirty, setIsDirty] = useState(false);
   const [localValue, setLocalValue] = useState(
     placeholder !== undefined ? '' : value.toString()
@@ -95,34 +97,34 @@ export default function QuantitySelector({
 
   return (
     <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: 'var(--space-4)',
-      flexWrap: 'wrap'
+      display: "flex", 
+      justifyContent: "center",
+      alignItems: "center",
+      gap: "var(--space-4)",
+      flexWrap: "wrap"
     }}>
       {showButtons ? (
         <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: 'var(--space-2)',
-          border: '1px solid var(--color-gray-300)',
-          borderRadius: 'var(--radius-xl)',
-          padding: 'var(--space-1)'
+          display: "flex", 
+          alignItems: "center", 
+          gap: "var(--space-2)",
+          border: "1px solid var(--color-gray-300)",
+          borderRadius: "var(--radius-xl)",
+          padding: "var(--space-1)"
         }}>
           <button
             type="button"
             onClick={decrement}
             disabled={value <= 1 || readOnly}
             style={{
-              padding: 'var(--space-2) var(--space-4)',
-              border: 'none',
-              background: 'transparent',
-              cursor: (value <= 1 || readOnly) ? 'not-allowed' : 'pointer',
+              padding: "var(--space-2) var(--space-4)",
+              border: "none",
+              background: "transparent",
+              cursor: (value <= 1 || readOnly) ? "not-allowed" : "pointer",
               opacity: (value <= 1 || readOnly) ? 0.5 : 1,
-              fontSize: 'var(--text-xl)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-primary)'
+              fontSize: "var(--text-xl)",
+              fontWeight: "var(--font-weight-bold)",
+              color: "var(--color-primary)"
             }}
           >
             −
@@ -139,14 +141,14 @@ export default function QuantitySelector({
             placeholder={placeholder !== undefined ? placeholder.toString() : undefined}
             className="quantity-input-no-spinner"
             style={{
-              width: '100px',
-              textAlign: 'center',
-              border: 'none',
-              outline: 'none',
-              fontSize: 'var(--text-lg)',
-              fontWeight: 'var(--font-weight-semibold)',
-              padding: 'var(--space-2)',
-              cursor: readOnly ? 'default' : 'text'
+              width: "100px",
+              textAlign: "center",
+              border: "none",
+              outline: "none",
+              fontSize: "var(--text-lg)",
+              fontWeight: "var(--font-weight-semibold)",
+              padding: "var(--space-2)",
+              cursor: readOnly ? "default" : "text"
             }}
           />
           <button
@@ -154,14 +156,14 @@ export default function QuantitySelector({
             onClick={increment}
             disabled={(max !== undefined && value >= max) || readOnly}
             style={{
-              padding: 'var(--space-2) var(--space-4)',
-              border: 'none',
-              background: 'transparent',
-              cursor: ((max !== undefined && value >= max) || readOnly) ? 'not-allowed' : 'pointer',
+              padding: "var(--space-2) var(--space-4)",
+              border: "none",
+              background: "transparent",
+              cursor: ((max !== undefined && value >= max) || readOnly) ? "not-allowed" : "pointer",
               opacity: ((max !== undefined && value >= max) || readOnly) ? 0.5 : 1,
-              fontSize: 'var(--text-xl)',
-              fontWeight: 'var(--font-weight-bold)',
-              color: 'var(--color-primary)'
+              fontSize: "var(--text-xl)",
+              fontWeight: "var(--font-weight-bold)",
+              color: "var(--color-primary)"
             }}
           >
             +
@@ -180,60 +182,54 @@ export default function QuantitySelector({
           placeholder={placeholder !== undefined ? placeholder.toString() : undefined}
           className="quantity-input-no-spinner"
           style={{
-            width: '100px',
-            textAlign: 'center',
-            border: '1px solid var(--color-gray-300)',
-            borderRadius: 'var(--radius-xl)',
-            outline: 'none',
-            fontSize: 'var(--text-lg)',
-            fontWeight: 'var(--font-weight-semibold)',
-            padding: 'var(--space-2)',
-            cursor: readOnly ? 'default' : 'text'
+            width: "100px",
+            textAlign: "center",
+            border: "1px solid var(--color-gray-300)",
+            borderRadius: "var(--radius-xl)",
+            outline: "none",
+            fontSize: "var(--text-lg)",
+            fontWeight: "var(--font-weight-semibold)",
+            padding: "var(--space-2)",
+            cursor: readOnly ? "default" : "text"
           }}
         />
       )}
       {showVolumeBenefits && value >= 600 && (
         <div style={{ 
-          width: '100%',
-          marginTop: 'var(--space-4)',
-          padding: 'var(--space-6)',
-          background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-          borderRadius: 'var(--radius-lg)',
-          textAlign: 'left'
+          width: "100%",
+          marginTop: "var(--space-4)",
+          padding: "var(--space-6)",
+          background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+          borderRadius: "var(--radius-lg)",
+          textAlign: "left"
         }}>
           <p style={{ 
-            color: 'var(--text-bright-primary)', 
-            fontSize: 'var(--text-base)',
-            fontWeight: 'var(--font-weight-semibold)',
-            margin: '0 0 var(--space-4) 0'
+            color: "var(--text-bright-primary)", 
+            fontSize: "var(--text-base)",
+            fontWeight: "var(--font-weight-semibold)",
+            margin: "0 0 var(--space-4) 0"
           }}>
-            Unlock volume benefits:
+            {t("volumeBenefits.title")}
           </p>
           <ul style={{
-            listStyle: 'none',
+            listStyle: "none",
             padding: 0,
-            margin: '0 0 var(--space-4) 0',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 'var(--space-2)'
+            margin: "0 0 var(--space-4) 0",
+            display: "flex",
+            flexDirection: "column",
+            gap: "var(--space-2)"
           }}>
-            {[
-              'Custom quotation',
-              'Flexible billing',
-              'Dedicated manager',
-              'Design assistance',
-              'Priority support via WhatsApp'
-            ].map((item, index) => (
+            {(t("volumeBenefits.items", { returnObjects: true }) as string[]).map((item, index) => (
               <li key={index} style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--space-2)',
-                color: 'var(--text-bright-primary)',
-                fontSize: 'var(--text-base)'
+                display: "flex",
+                alignItems: "center",
+                gap: "var(--space-2)",
+                color: "var(--text-bright-primary)",
+                fontSize: "var(--text-base)"
               }}>
                 <i className="bi bi-check" style={{
-                  color: 'var(--color-primary)',
-                  fontSize: 'var(--text-lg)',
+                  color: "var(--color-primary)",
+                  fontSize: "var(--text-lg)",
                   flexShrink: 0
                 }}></i>
                 <span>{item}</span>
@@ -246,27 +242,27 @@ export default function QuantitySelector({
               target="_blank"
               rel="noopener noreferrer"
               style={{ 
-                display: 'inline-block',
-                textDecoration: 'none',
-                padding: 'var(--space-3) var(--space-6)',
-                fontSize: 'var(--text-base)',
-                borderRadius: '9999px',
-                border: '2px solid var(--color-primary)',
-                color: 'var(--color-primary)',
-                fontWeight: 'var(--font-weight-medium)',
-                background: 'transparent',
-                transition: 'all 0.2s ease'
+                display: "inline-block",
+                textDecoration: "none",
+                padding: "var(--space-3) var(--space-6)",
+                fontSize: "var(--text-base)",
+                borderRadius: "9999px",
+                border: "2px solid var(--color-primary)",
+                color: "var(--color-primary)",
+                fontWeight: "var(--font-weight-medium)",
+                background: "transparent",
+                transition: "all 0.2s ease"
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--color-primary)';
-                e.currentTarget.style.color = 'var(--color-white)';
+                e.currentTarget.style.background = "var(--color-primary)";
+                e.currentTarget.style.color = "var(--color-white)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = 'var(--color-primary)';
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "var(--color-primary)";
               }}
             >
-              Contact Us
+              {t("volumeBenefits.contactButton")}
             </a>
           </div>
         </div>

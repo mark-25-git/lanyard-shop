@@ -87,5 +87,203 @@
     "email": "Email",
     "whatsapp": "WhatsApp",
     "copyright": "© 2025 Teevent Enterprise. All rights reserved."
+  },
+  "customize": {
+    "title": "Customize your lanyard.",
+    "lowQuantity": {
+      "priceLine": "50pcs lanyard is only RM195.",
+      "order50Button": "Order 50?",
+      "contactText": "For quantity less than 50,",
+      "contactLink": "contact us"
+    },
+    "templateInfo": {
+      "line1": "By using our template, we can avoid the size adjustment process.",
+      "line2": "During size adjustment process, your design might be misaligned."
+    },
+    "templateDownload": {
+      "headline": "Download whichever file format you're familiar with."
+    },
+    "canva": {
+      "designedWith": "Designed with",
+      "shareOptional": "Share your design link (optional)",
+      "inputLabel": "Canva Design Link (Optional)",
+      "helper": "If you have used our template and designed in Canva, paste link here.",
+      "reviewCheckbox": "Get free design review by us before production."
+    },
+    "otherToolsHeading": "If you're using PS or AI, you'll be instructed to send it to us after payment.",
+    "delivery": {
+      "estimatedLabel": "Estimated delivery:",
+      "note": "May arrive earlier or later depending on production availability."
+    },
+    "checkoutButton": "Check Out",
+    "largeOrderNote": "Please contact us for orders of 600+ pieces."
+  },
+  "helpSection": {
+    "prompt": "Need more help?",
+    "contactLink": "Contact us"
+  },
+  "volumeBenefits": {
+    "title": "Unlock volume benefits:",
+    "items": [
+      "Custom quotation",
+      "Flexible billing",
+      "Dedicated manager",
+      "Design assistance",
+      "Priority support via WhatsApp"
+    ],
+    "contactButton": "Contact Us"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "billing": {
+      "title": "Billing Address",
+      "eventOrOrg": "Event Title or Organization Name",
+      "fullName": "Full Name *",
+      "email": "Email Address *",
+      "phone": "Phone Number *",
+      "address1": "Address Line 1 *",
+      "address2": "Address Line 2",
+      "city": "City *",
+      "state": "State *",
+      "postalCode": "Postal Code *",
+      "country": "Country *"
+    },
+    "shipping": {
+      "title": "Shipping Address",
+      "sameAsBilling": "Same as billing address",
+      "sameAsBillingInfo": "Shipping address will be the same as billing address.",
+      "recipientName": "Recipient Name *",
+      "phone": "Phone Number *",
+      "address1": "Address Line 1 *",
+      "address2": "Address Line 2",
+      "city": "City *",
+      "state": "State *",
+      "postalCode": "Postal Code *",
+      "country": "Country *"
+    },
+    "summary": {
+      "title": "Order Summary",
+      "estimatedDeliveryLabel": "Estimated delivery",
+      "subtotal": "Subtotal",
+      "promoApplied": "Promo Code Applied",
+      "continueButton": "Continue to Payment"
+    },
+    "promo": {
+      "sectionLabel": "Apply a Promo Code:",
+      "openButton": "Enter your promo code",
+      "inputLabel": "Promo Code",
+      "applyButton": "Apply",
+      "cancelButton": "Cancel",
+      "removeButton": "Remove",
+      "invalidCode": "Invalid promo code",
+      "validateFailed": "Failed to validate promo code. Please try again.",
+      "invalidOrInactive": "Invalid or inactive promo code.",
+      "notAvailableForAccount": "This promo code is not available for your account.",
+      "codeRequired": "Promo code is required.",
+      "invalidFormat": "Invalid promo code format."
+    },
+    "errors": {
+      "billingNameRequired": "Billing name is required",
+      "billingEmailRequired": "Billing email is required",
+      "billingEmailInvalid": "Invalid billing email",
+      "billingPhoneRequired": "Billing phone is required",
+      "billingPhoneInvalid": "Invalid billing phone",
+      "billingAddressRequired": "Address is required",
+      "billingCityRequired": "City is required",
+      "billingStateRequired": "State is required",
+      "billingPostalRequired": "Postal code is required",
+      "shippingNameRequired": "Shipping name is required",
+      "shippingPhoneRequired": "Shipping phone is required",
+      "shippingPhoneInvalid": "Invalid shipping phone",
+      "shippingAddressRequired": "Shipping address is required",
+      "shippingCityRequired": "Shipping city is required",
+      "shippingStateRequired": "Shipping state is required",
+      "shippingPostalRequired": "Shipping postal code is required",
+      "proceedFailed": "Failed to proceed. Please try again."
+    }
+  },
+  "payment": {
+    "title": "Payment",
+    "loading": "Loading payment details...",
+    "returnToCustomize": "Return to Customize",
+    "bankNotConfigured": "Bank account information is not configured. Please contact support.",
+    "totalAmountToPay": "Total Amount to Pay",
+    "orderSummary": "Order Summary",
+    "lanyardSpecs": "Lanyard Specs",
+    "yourCanvaDesignLink": "Your Canva Design Link",
+    "designConfirmation": "We will confirm the design with you again before production.",
+    "paymentMethod": "Payment Method",
+    "duitnowBankTransfer": "DuitNow/Bank Transfer",
+    "step1": "1. Go to your bank's app or website.",
+    "step2": "2. Transfer {{amount}} to the account details provided below. <strong>Use the Order Number as the Recipient Reference.</strong>",
+    "bankName": "Bank Name",
+    "accountNumber": "Account Number",
+    "copy": "Copy",
+    "showQR": "Show QR",
+    "recipientReference": "Recipient Reference",
+    "accountName": "Account Name",
+    "moneyBackGuarantee": "Money-back Guarantee",
+    "guaranteeText": "If we determine your design cannot be produced, you'll receive a full refund.",
+    "confirmPaymentButton": "I've made the payment",
+    "verificationNote": "We will verify your transfer typically within 1-2 business hours. You will receive an email confirmation once the payment is confirmed.",
+    "designFilesNote": "You will be instructed to send your design files in the next step.",
+    "qrModal": {
+      "title": "Payment QR Code",
+      "scanText": "Scan this QR code to make payment"
+    },
+    "notifications": {
+      "accountNumberCopied": "Account number copied.",
+      "recipientReferenceCopied": "Recipient reference copied.",
+      "copyFailed": "Failed to copy. Please copy manually."
+    },
+    "errors": {
+      "loadFailed": "Failed to load payment details. Please try again.",
+      "calculatePriceFailed": "Failed to calculate price",
+      "createOrderFailed": "Failed to create order",
+      "createOrderFailedRetry": "Failed to create order. Please try again."
+    }
+  },
+  "confirmation": {
+    "loading": "Loading order details...",
+    "loadingFallback": "Loading...",
+    "title": "Order Confirmed!",
+    "subtitle": "We've received your order.",
+    "verifyingPayment": {
+      "title": "Verifying Payment",
+      "description": "We're matching your payment with Order Number {{orderNumber}}. Verification typically takes 1–2 business hours. You'll be notified once your payment is confirmed."
+    },
+    "nextStep": {
+      "title": "Next: Send Your Design File",
+      "button": "Send Design File via WhatsApp",
+      "note": "Sending your design now ensures the fastest production timeline."
+    },
+    "orderDetails": {
+      "title": "Order Details",
+      "orderNumber": "Order Number",
+      "total": "Total",
+      "quantity": "Quantity",
+      "promoCodeApplied": "Promo Code Applied",
+      "shippingInformation": "Shipping Information",
+      "recipientName": "Recipient Name",
+      "shippingAddress": "Shipping Address",
+      "emailAddress": "Email Address"
+    },
+    "importantNotice": "Important: This page can only be viewed once. Please save your order number {{orderNumber}} for future reference.",
+    "trackOrderButton": "Track Your Order",
+    "notifications": {
+      "orderNumberCopied": "Order number copied.",
+      "copyFailed": "Failed to copy. Please copy manually."
+    },
+    "errors": {
+      "invalidLink": "Invalid confirmation link. Please check your link and try again.",
+      "linkExpired": "This link has expired or is invalid. Please use the tracking page to view your order status.",
+      "loadFailed": "Failed to load order confirmation. Please try again or use the tracking page.",
+      "fetchFailed": "Failed to fetch order",
+      "loadOrderFailed": "Failed to load order. Please use the tracking page to view your order.",
+      "orderNotFound": "Order not found.",
+      "linkExpiredTitle": "Link Expired",
+      "goToTracking": "Go to Tracking Page"
+    }
   }
 }
+

@@ -1,6 +1,9 @@
-'use client';
+"use client";
+
+import { useTranslation } from "react-i18next";
 
 export default function TemplateDownload() {
+  const { t } = useTranslation();
   // Template URLs - Google Drive direct download links and Canva template
   const canvaTemplateUrl = process.env.NEXT_PUBLIC_CANVA_TEMPLATE_URL || 'https://www.canva.com/design/DAG587WOoLU/lop1q3BFx1sqp3N219pEDQ/view?utm_content=DAG587WOoLU&utm_campaign=designshare&utm_medium=link&utm_source=publishsharelink&mode=preview';
   
@@ -12,13 +15,15 @@ export default function TemplateDownload() {
 
   return (
     <div className="card" style={{ padding: 'var(--space-6)', textAlign: 'center' }}>
-      <p style={{ 
-        color: 'var(--text-bright-secondary)',
-        marginBottom: 'var(--space-4)',
-        fontSize: 'var(--text-base)',
-        lineHeight: '1.5'
-      }}>
-        Download whichever file format you're familiar with.
+      <p
+        style={{
+          color: "var(--text-bright-secondary)",
+          marginBottom: "var(--space-4)",
+          fontSize: "var(--text-base)",
+          lineHeight: "1.5",
+        }}
+      >
+        {t("customize.templateDownload.headline")}
       </p>
       
       <div style={{

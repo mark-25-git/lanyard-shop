@@ -6,6 +6,7 @@ import { formatCurrency } from '@/lib/utils';
 import { generateOrderNumber } from '@/lib/pricing';
 import HelpSection from '@/components/HelpSection';
 import { trackEvent } from '@/lib/ga';
+import { useTranslation } from 'react-i18next';
 
 const BANK_NAME = process.env.NEXT_PUBLIC_BANK_NAME || 'MAYBANK';
 // BANK_ACCOUNT is validated server-side when needed
@@ -35,6 +36,7 @@ interface PaymentData {
 
 export default function PaymentPage() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -109,7 +111,7 @@ export default function PaymentPage() {
       // Generate order number for payment reference
       setOrderNumber(generateOrderNumber());
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load payment details. Please try again.');
+      setError(err instanceof Error ? err.message : t('payment.errors.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -145,7 +147,7 @@ export default function PaymentPage() {
       }, 5000);
     } catch (err) {
       // Copy failed silently
-      alert('Failed to copy. Please copy manually.');
+      alert(t('payment.notifications.copyFailed'));
     }
   };
 
@@ -176,7 +178,7 @@ export default function PaymentPage() {
             onClick={() => router.push('/customize')}
             className="btn-primary"
           >
-            Return to Customize
+            {t('payment.returnToCustomize')}
           </button>
         </div>
       </div>
@@ -188,7 +190,7 @@ export default function PaymentPage() {
       <div className="container section-padding">
         <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
           <p style={{ color: '#dc2626', marginBottom: 'var(--space-4)' }}>
-            Bank account information is not configured. Please contact support.
+            {t('payment.bankNotConfigured')}
           </p>
         </div>
       </div>
@@ -206,7 +208,7 @@ export default function PaymentPage() {
           fontWeight: 'var(--font-weight-bold)',
           marginBottom: 'var(--space-6)'
         }}>
-          Payment
+          {t('payment.title')}
         </h1>
 
         {/* Prominent Total Amount Section */}
@@ -222,7 +224,7 @@ export default function PaymentPage() {
             color: 'var(--text-bright-secondary)',
             marginBottom: 'var(--space-2)'
           }}>
-            Total Amount to Pay
+            {t('payment.totalAmountToPay')}
           </p>
           <p style={{
             fontSize: 'var(--text-5xl)',
@@ -244,7 +246,7 @@ export default function PaymentPage() {
             fontWeight: 'var(--font-weight-semibold)',
             marginBottom: 'var(--space-4)'
           }}>
-            Order Summary
+            {t('payment.orderSummary')}
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
             {/* Lanyard Specs */}
@@ -263,9 +265,9 @@ export default function PaymentPage() {
                 fontSize: 'var(--text-sm)',
                 color: 'var(--text-bright-primary)'
               }}>
-                <li style={{ marginBottom: 'var(--space-1)' }}>• 2cm width</li>
-                <li style={{ marginBottom: 'var(--space-1)' }}>• 2-sided color printing</li>
-                <li>• Single lobster hook</li>
+                <li style={{ marginBottom: 'var(--space-1)' }}>• {t('pricingPreview.spec2cm')}</li>
+                <li style={{ marginBottom: 'var(--space-1)' }}>• {t('pricingPreview.spec2sided')}</li>
+                <li>• {t('pricingPreview.specHook')}</li>
               </ul>
             </div>
             <div style={{ 
@@ -277,14 +279,14 @@ export default function PaymentPage() {
                 fontSize: 'var(--text-base)',
                 color: 'var(--text-bright-secondary)'
               }}>
-                Quantity
+                {t('pricingPreview.labelQuantity')}
               </span>
               <span style={{ 
                 fontSize: 'var(--text-base)',
                 color: 'var(--text-bright-primary)',
                 fontWeight: 'var(--font-weight-medium)'
               }}>
-                {paymentData.quantity} pieces
+                {paymentData.quantity} {t('pricingPreview.pieces')}
               </span>
             </div>
             <div style={{ 
@@ -296,7 +298,7 @@ export default function PaymentPage() {
                 fontSize: 'var(--text-base)',
                 color: 'var(--text-bright-secondary)'
               }}>
-                Unit Price
+                {t('pricingPreview.labelUnitPrice')}
               </span>
               <span style={{ 
                 fontSize: 'var(--text-base)',
@@ -315,14 +317,14 @@ export default function PaymentPage() {
                 fontSize: 'var(--text-base)',
                 color: 'var(--text-bright-secondary)'
               }}>
-                Delivery
+                {t('pricingPreview.labelDelivery')}
               </span>
               <span style={{ 
                 fontSize: 'var(--text-base)',
                 color: 'var(--text-bright-primary)',
                 fontWeight: 'var(--font-weight-medium)'
               }}>
-                Free
+                {t('pricingPreview.valueFree')}
               </span>
             </div>
             {/* Promo Code Discount Display */}
@@ -342,7 +344,7 @@ export default function PaymentPage() {
                     fontSize: 'var(--text-base)',
                     color: 'var(--text-bright-secondary)'
                   }}>
-                    Subtotal
+                    {t('checkout.summary.subtotal')}
                   </span>
                   <span style={{ 
                     fontSize: 'var(--text-base)',
@@ -361,7 +363,7 @@ export default function PaymentPage() {
                     fontSize: 'var(--text-base)',
                     color: 'var(--text-bright-secondary)'
                   }}>
-                    Promo Code ({paymentData.promo_code})
+                    {t('checkout.promo.inputLabel')} ({paymentData.promo_code})
                   </span>
                   <span style={{ 
                     fontSize: 'var(--text-base)',
@@ -386,7 +388,7 @@ export default function PaymentPage() {
                 fontWeight: 'var(--font-weight-semibold)',
                 color: 'var(--text-bright-primary)'
               }}>
-                Total
+                {t('pricingPreview.labelTotal')}
               </span>
               <span style={{ 
                 fontSize: 'var(--text-lg)',
@@ -443,7 +445,7 @@ export default function PaymentPage() {
             margin: 0,
             lineHeight: '1.5'
           }}>
-            We will confirm the design with you again before production.
+            {t('payment.designConfirmation')}
           </p>
         </div>
 
@@ -465,7 +467,7 @@ export default function PaymentPage() {
               marginRight: 'var(--space-2)',
               color: 'var(--color-primary)'
             }}></i>
-            Estimated delivery: {(() => {
+            {t('customize.delivery.estimatedLabel')} {(() => {
               const deliveryDate = new Date();
               deliveryDate.setDate(deliveryDate.getDate() + 14); // 2 weeks from today
               return deliveryDate.toLocaleDateString('en-US', { 
@@ -484,7 +486,7 @@ export default function PaymentPage() {
             fontWeight: 'var(--font-weight-semibold)',
             marginBottom: 'var(--space-6)'
           }}>
-            Payment Method
+            {t('payment.paymentMethod')}
           </h2>
 
           {/* Bank Transfer Option */}
@@ -503,7 +505,7 @@ export default function PaymentPage() {
                 fontSize: 'var(--text-lg)',
                 fontWeight: 'var(--font-weight-semibold)'
               }}>
-                DuitNow/Bank Transfer
+                {t('payment.duitnowBankTransfer')}
               </span>
             </div>
 
@@ -514,7 +516,7 @@ export default function PaymentPage() {
                 color: 'var(--text-bright-primary)',
                 margin: 0
               }}>
-                1. Go to your bank's app or website.
+                {t('payment.step1')}
               </p>
             </div>
 
@@ -524,9 +526,13 @@ export default function PaymentPage() {
                 fontSize: 'var(--text-base)',
                 color: 'var(--text-bright-primary)',
                 margin: '0 0 var(--space-4) 0'
-              }}>
-                2. Transfer <strong>{formatCurrency(paymentData.total_price)}</strong> to the account details provided below. <strong>Use the Order Number as the Recipient Reference.</strong>
-              </p>
+              }}
+                dangerouslySetInnerHTML={{
+                  __html: t('payment.step2', { 
+                    amount: formatCurrency(paymentData.total_price)
+                  }).replace('{{amount}}', `<strong>${formatCurrency(paymentData.total_price)}</strong>`)
+                }}
+              />
 
               {/* Bank Transfer Details */}
               <div style={{ 
@@ -540,7 +546,7 @@ export default function PaymentPage() {
                     fontSize: 'var(--text-sm)',
                     marginBottom: 'var(--space-1)'
                   }}>
-                    Bank Name
+                    {t('payment.bankName')}
                   </p>
                   <p style={{ 
                     fontSize: 'var(--text-xl)',
@@ -556,7 +562,7 @@ export default function PaymentPage() {
                     fontSize: 'var(--text-sm)',
                     marginBottom: 'var(--space-1)'
                   }}>
-                    Account Number
+                    {t('payment.accountNumber')}
                   </p>
                   <p style={{ 
                     fontSize: 'var(--text-xl)',
@@ -568,7 +574,7 @@ export default function PaymentPage() {
                   </p>
                   {' '}
                   <button
-                    onClick={() => handleCopy(BANK_ACCOUNT, 'Account number copied.')}
+                    onClick={() => handleCopy(BANK_ACCOUNT, t('payment.notifications.accountNumberCopied'))}
                     style={{
                       background: 'none',
                       border: 'none',
@@ -580,7 +586,7 @@ export default function PaymentPage() {
                       display: 'inline'
                     }}
                   >
-                    Copy
+                    {t('payment.copy')}
                   </button>
                   <div style={{ marginTop: 'var(--space-2)' }}>
                     <button
@@ -596,7 +602,7 @@ export default function PaymentPage() {
                         display: 'inline'
                       }}
                     >
-                      Show QR
+                      {t('payment.showQR')}
                     </button>
                   </div>
                 </div>
@@ -607,7 +613,7 @@ export default function PaymentPage() {
                     fontSize: 'var(--text-sm)',
                     marginBottom: 'var(--space-1)'
                   }}>
-                    Recipient Reference
+                    {t('payment.recipientReference')}
                   </p>
                   <p style={{ 
                     fontSize: 'var(--text-xl)',
@@ -626,7 +632,7 @@ export default function PaymentPage() {
                       const referencePart = orderNumber.includes('-') 
                         ? orderNumber.substring(orderNumber.indexOf('-') + 1)
                         : orderNumber;
-                      handleCopy(referencePart, 'Recipient reference copied.');
+                      handleCopy(referencePart, t('payment.notifications.recipientReferenceCopied'));
                     }}
                     style={{
                       background: 'none',
@@ -639,7 +645,7 @@ export default function PaymentPage() {
                       display: 'inline'
                     }}
                   >
-                    Copy
+                    {t('payment.copy')}
                   </button>
                 </div>
 
@@ -649,7 +655,7 @@ export default function PaymentPage() {
                     fontSize: 'var(--text-sm)',
                     marginBottom: 'var(--space-1)'
                   }}>
-                    Account Name
+                    {t('payment.accountName')}
                   </p>
                   <p style={{ 
                     fontSize: 'var(--text-xl)',
@@ -685,7 +691,7 @@ export default function PaymentPage() {
             letterSpacing: '-0.02em',
             lineHeight: '1.2'
           }}>
-            Money-back Guarantee
+            {t('payment.moneyBackGuarantee')}
           </h2>
           
           <p style={{ 
@@ -698,8 +704,7 @@ export default function PaymentPage() {
             marginRight: 'auto',
             fontWeight: '400'
           }}>
-            If we determine your design cannot be produced, 
-            you'll receive a full refund. No questions asked.
+            {t('payment.guaranteeText')}
           </p>
         </div>
 
@@ -757,7 +762,7 @@ export default function PaymentPage() {
                   router.push(`/confirmation?order_number=${encodeURIComponent(orderNumber)}`);
                 }
               } catch (err) {
-                alert(err instanceof Error ? err.message : 'Failed to create order. Please try again.');
+                alert(err instanceof Error ? err.message : t('payment.errors.createOrderFailedRetry'));
                 setSubmitting(false);
               }
             }}
@@ -781,7 +786,7 @@ export default function PaymentPage() {
                 <div className="modern-spinner-dot"></div>
               </div>
             ) : (
-              "I've made the payment"
+              t('payment.confirmPaymentButton')
             )}
           </button>
           <p style={{
@@ -791,7 +796,7 @@ export default function PaymentPage() {
             textAlign: 'center',
             lineHeight: '1.6'
           }}>
-            We will verify your transfer typically within 1-2 business hours. You will receive an email confirmation once the payment is confirmed.
+            {t('payment.verificationNote')}
           </p>
           <p style={{
             marginTop: 'var(--space-3)',
@@ -800,7 +805,7 @@ export default function PaymentPage() {
             textAlign: 'center',
             lineHeight: '1.6'
           }}>
-            You will be instructed to send your design files in the next step.
+            {t('payment.designFilesNote')}
           </p>
         </div>
       </div>
@@ -887,7 +892,7 @@ export default function PaymentPage() {
               marginBottom: 'var(--space-4)',
               textAlign: 'center'
             }}>
-              Payment QR Code
+              {t('payment.qrModal.title')}
             </h3>
             <div style={{
               display: 'flex',
@@ -910,7 +915,7 @@ export default function PaymentPage() {
               textAlign: 'center',
               margin: 0
             }}>
-              Scan this QR code to make payment
+              {t('payment.qrModal.scanText')}
             </p>
           </div>
         </div>

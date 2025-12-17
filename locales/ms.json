@@ -33,7 +33,7 @@
     "loading": "Tengah kira...",
     "errorMinQuantity": "Minima order 50 unit untuk kira harga.",
     "errorRange": "Masukkan antara 50-599 unit.",
-    "pieces": "unit"
+    "pieces": "pcs"
   },
   "canvaPreview": {
     "title": "Pakai template kami je.",
@@ -87,5 +87,203 @@
     "email": "E-mel",
     "whatsapp": "WhatsApp",
     "copyright": "© 2025 Teevent Enterprise. Hak cipta terpelihara."
+  },
+  "customize": {
+    "title": "Customize lanyard anda.",
+    "lowQuantity": {
+      "priceLine": "50pcs lanyard cuma RM195.",
+      "order50Button": "Order 50?",
+      "contactText": "Untuk kuantiti bawah 50,",
+      "contactLink": "hubungi kami"
+    },
+    "templateInfo": {
+      "line1": "Bila guna template kami, kita boleh elak proses adjust saiz.",
+      "line2": "Masa adjust saiz, design anda berisiko lari alignment."
+    },
+    "templateDownload": {
+      "headline": "Download dalam format yang anda paling selesa guna."
+    },
+    "canva": {
+      "designedWith": "Design guna",
+      "shareOptional": "Kongsi link design anda (optional)",
+      "inputLabel": "Link Design Canva (Optional)",
+      "helper": "Kalau anda guna template kami dan design dalam Canva, tampal link di sini.",
+      "reviewCheckbox": "Dapat semakan design percuma sebelum kami buat production."
+    },
+    "otherToolsHeading": "Kalau anda guna PS atau AI, anda akan diminta hantar file lepas pembayaran.",
+    "delivery": {
+      "estimatedLabel": "Anggaran tarikh siap:",
+      "note": "Boleh sampai lebih awal atau lewat ikut jadual production."
+    },
+    "checkoutButton": "Teruskan ke checkout",
+    "largeOrderNote": "Untuk order 600+ unit, sila hubungi kami."
+  },
+  "helpSection": {
+    "prompt": "Perlu bantuan lagi?",
+    "contactLink": "Hubungi kami"
+  },
+  "volumeBenefits": {
+    "title": "Kelebihan order jumlah besar:",
+    "items": [
+      "Quotation khas ikut volume",
+      "Pilihan bayaran yang fleksibel",
+      "Dedicated account manager",
+      "Bantuan design",
+      "Sokongan pantas melalui WhatsApp"
+    ],
+    "contactButton": "Hubungi Kami"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "billing": {
+      "title": "Alamat Bil",
+      "eventOrOrg": "Tajuk Event atau Nama Organisasi",
+      "fullName": "Nama Penuh *",
+      "email": "Emel *",
+      "phone": "Nombor Telefon *",
+      "address1": "Alamat Baris 1 *",
+      "address2": "Alamat Baris 2",
+      "city": "Bandar *",
+      "state": "Negeri *",
+      "postalCode": "Poskod *",
+      "country": "Negara *"
+    },
+    "shipping": {
+      "title": "Alamat Penghantaran",
+      "sameAsBilling": "Sama seperti alamat bil",
+      "sameAsBillingInfo": "Alamat penghantaran akan ikut alamat bil yang anda isi.",
+      "recipientName": "Nama Penerima *",
+      "phone": "Nombor Telefon *",
+      "address1": "Alamat Baris 1 *",
+      "address2": "Alamat Baris 2",
+      "city": "Bandar *",
+      "state": "Negeri *",
+      "postalCode": "Poskod *",
+      "country": "Negara *"
+    },
+    "summary": {
+      "title": "Ringkasan Order",
+      "estimatedDeliveryLabel": "Anggaran tarikh penghantaran",
+      "subtotal": "Subtotal",
+      "promoApplied": "Kod promo digunakan",
+      "continueButton": "Teruskan ke Pembayaran"
+    },
+    "promo": {
+      "sectionLabel": "Masukkan Kod Promo (jika ada):",
+      "openButton": "Masukkan kod promo anda",
+      "inputLabel": "Kod Promo",
+      "applyButton": "Guna",
+      "cancelButton": "Batal",
+      "removeButton": "Buang",
+      "invalidCode": "Kod promo tidak sah",
+      "validateFailed": "Kod promo tak dapat disahkan. Sila cuba lagi.",
+      "invalidOrInactive": "Kod promo tidak sah atau tidak aktif.",
+      "notAvailableForAccount": "Kod promo ini tidak tersedia untuk akaun anda.",
+      "codeRequired": "Kod promo diperlukan.",
+      "invalidFormat": "Format kod promo tidak sah."
+    },
+    "errors": {
+      "billingNameRequired": "Nama untuk bil diperlukan",
+      "billingEmailRequired": "Emel untuk bil diperlukan",
+      "billingEmailInvalid": "Emel bil tidak sah",
+      "billingPhoneRequired": "Nombor telefon untuk bil diperlukan",
+      "billingPhoneInvalid": "Nombor telefon bil tidak sah",
+      "billingAddressRequired": "Alamat diperlukan",
+      "billingCityRequired": "Bandar diperlukan",
+      "billingStateRequired": "Negeri diperlukan",
+      "billingPostalRequired": "Poskod diperlukan",
+      "shippingNameRequired": "Nama untuk penghantaran diperlukan",
+      "shippingPhoneRequired": "Nombor telefon untuk penghantaran diperlukan",
+      "shippingPhoneInvalid": "Nombor telefon penghantaran tidak sah",
+      "shippingAddressRequired": "Alamat penghantaran diperlukan",
+      "shippingCityRequired": "Bandar penghantaran diperlukan",
+      "shippingStateRequired": "Negeri penghantaran diperlukan",
+      "shippingPostalRequired": "Poskod penghantaran diperlukan",
+      "proceedFailed": "Ralat berlaku. Sila cuba sekali lagi."
+    }
+  },
+  "payment": {
+    "title": "Pembayaran",
+    "loading": "Tengah muatkan maklumat pembayaran...",
+    "returnToCustomize": "Kembali ke Customize",
+    "bankNotConfigured": "Maklumat akaun bank tidak dikonfigurasi. Sila hubungi sokongan.",
+    "totalAmountToPay": "Jumlah Bayaran",
+    "orderSummary": "Ringkasan Order",
+    "lanyardSpecs": "Specs Lanyard",
+    "yourCanvaDesignLink": "Link Design Canva Anda",
+    "designConfirmation": "Kami akan semak design dengan anda sekali lagi sebelum production.",
+    "paymentMethod": "Cara Pembayaran",
+    "duitnowBankTransfer": "DuitNow/Transfer Bank",
+    "step1": "1. Buka app bank atau website bank anda.",
+    "step2": "2. Transfer {{amount}} ke akaun yang diberikan di bawah. <strong>Guna Order Number sebagai Rujukan Penerima.</strong>",
+    "bankName": "Nama Bank",
+    "accountNumber": "Nombor Akaun",
+    "copy": "Salin",
+    "showQR": "Tunjukkan QR",
+    "recipientReference": "Rujukan Penerima",
+    "accountName": "Nama Akaun",
+    "moneyBackGuarantee": "Jaminan Wang Balik",
+    "guaranteeText": "Kalau kami tentukan design anda tak boleh dibuat, anda akan dapat refund penuh.",
+    "confirmPaymentButton": "Saya dah bayar",
+    "verificationNote": "Kami akan sahkan transfer anda biasanya dalam 1-2 jam waktu kerja. Anda akan dapat email pengesahan lepas pembayaran disahkan.",
+    "designFilesNote": "Anda akan diminta hantar file design anda dalam langkah seterusnya.",
+    "qrModal": {
+      "title": "QR Code Pembayaran",
+      "scanText": "Imbas QR code ini untuk buat pembayaran"
+    },
+    "notifications": {
+      "accountNumberCopied": "Nombor akaun disalin.",
+      "recipientReferenceCopied": "Rujukan penerima disalin.",
+      "copyFailed": "Gagal salin. Sila salin secara manual."
+    },
+    "errors": {
+      "loadFailed": "Gagal muatkan maklumat pembayaran. Sila cuba lagi.",
+      "calculatePriceFailed": "Gagal kira harga",
+      "createOrderFailed": "Gagal buat order",
+      "createOrderFailedRetry": "Gagal buat order. Sila cuba lagi."
+    }
+  },
+  "confirmation": {
+    "loading": "Tengah muatkan maklumat order...",
+    "loadingFallback": "Tengah muatkan...",
+    "title": "Order Diterima!",
+    "subtitle": "Kami dah terima order anda.",
+    "verifyingPayment": {
+      "title": "Tengah Sahkan Pembayaran",
+      "description": "Kami sedang padankan pembayaran anda dengan Order Number {{orderNumber}}. Pengesahan biasanya ambil masa 1–2 jam waktu kerja. Anda akan dapat notifikasi lepas pembayaran disahkan."
+    },
+    "nextStep": {
+      "title": "Seterusnya: Hantar File Design Anda",
+      "button": "Hantar File Design melalui WhatsApp",
+      "note": "Hantar design sekarang untuk dapat timeline production paling cepat."
+    },
+    "orderDetails": {
+      "title": "Maklumat Order",
+      "orderNumber": "No. Order",
+      "total": "Total",
+      "quantity": "Kuantiti",
+      "promoCodeApplied": "Kod promo digunakan",
+      "shippingInformation": "Maklumat Penghantaran",
+      "recipientName": "Nama Penerima",
+      "shippingAddress": "Alamat Penghantaran",
+      "emailAddress": "Alamat Emel"
+    },
+    "importantNotice": "Penting: Halaman ini hanya boleh dilihat sekali sahaja. Sila simpan nombor order anda {{orderNumber}} untuk rujukan masa depan.",
+    "trackOrderButton": "Check Order Anda",
+    "notifications": {
+      "orderNumberCopied": "No. order disalin.",
+      "copyFailed": "Gagal salin. Sila salin secara manual."
+    },
+    "errors": {
+      "invalidLink": "Link pengesahan tidak sah. Sila semak link anda dan cuba lagi.",
+      "linkExpired": "Link ini telah tamat tempoh atau tidak sah. Sila guna halaman tracking untuk tengok status order anda.",
+      "loadFailed": "Gagal muatkan pengesahan order. Sila cuba lagi atau guna halaman tracking.",
+      "fetchFailed": "Gagal dapatkan order",
+      "loadOrderFailed": "Gagal muatkan order. Sila guna halaman tracking untuk tengok order anda.",
+      "orderNotFound": "Order tidak dijumpai.",
+      "linkExpiredTitle": "Link Tamat Tempoh",
+      "goToTracking": "Pergi ke Halaman Tracking"
+    }
   }
 }
+

@@ -5,10 +5,12 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { formatCurrency } from '@/lib/utils';
 import { Order } from '@/types/order';
 import HelpSection from '@/components/HelpSection';
+import { useTranslation } from 'react-i18next';
 
 export default function ConfirmationPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
   const tokenParam = searchParams.get('token');
   // Support legacy order_number for backward compatibility during transition
   const orderNumberParam = searchParams.get('order_number') || searchParams.get('orderNumber');
@@ -35,7 +37,7 @@ export default function ConfirmationPageClient() {
       hasFetchedRef.current = true;
       fetchOrderByNumber();
     } else {
-      setError('Invalid confirmation link. Please check your link and try again.');
+      setError(t('confirmation.errors.invalidLink'));
       setLoading(false);
     }
   }, [tokenParam, orderNumberParam]);
@@ -49,7 +51,7 @@ export default function ConfirmationPageClient() {
 
       if (!response.ok || !data.success) {
         // Token expired or invalid
-        setError('This link has expired or is invalid. Please use the tracking page to view your order status.');
+        setError(t('confirmation.errors.linkExpired'));
         setOrder(null);
         return;
       }
@@ -57,7 +59,7 @@ export default function ConfirmationPageClient() {
       setOrder(data.data);
       setError(null);
     } catch (err) {
-      setError('Failed to load order confirmation. Please try again or use the tracking page.');
+      setError(t('confirmation.errors.loadFailed'));
       setOrder(null);
     } finally {
       setLoading(false);
@@ -72,13 +74,13 @@ export default function ConfirmationPageClient() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch order');
+        throw new Error(data.error || t('confirmation.errors.fetchFailed'));
       }
 
       setOrder(data.data);
       setError(null);
     } catch (err) {
-      setError('Failed to load order. Please use the tracking page to view your order.');
+      setError(t('confirmation.errors.loadOrderFailed'));
       setOrder(null);
     } finally {
       setLoading(false);
@@ -115,7 +117,7 @@ export default function ConfirmationPageClient() {
       }, 5000);
     } catch (err) {
       // Copy failed silently
-      alert('Failed to copy. Please copy manually.');
+      alert(t('confirmation.notifications.copyFailed'));
     }
   };
 
@@ -131,7 +133,7 @@ export default function ConfirmationPageClient() {
             <div className="modern-spinner-dot"></div>
             <div className="modern-spinner-dot"></div>
           </div>
-          <p style={{ color: 'var(--text-bright-secondary)' }}>Loading order details...</p>
+          <p style={{ color: 'var(--text-bright-secondary)' }}>{t('confirmation.loading')}</p>
         </div>
       </div>
     );
@@ -156,7 +158,7 @@ export default function ConfirmationPageClient() {
             fontWeight: 'var(--font-weight-bold)',
             marginBottom: 'var(--space-4)'
           }}>
-            Link Expired
+            {t('confirmation.errors.linkExpiredTitle')}
           </h1>
           <p style={{ 
             fontSize: 'var(--text-lg)',
@@ -177,7 +179,7 @@ export default function ConfirmationPageClient() {
               borderRadius: '9999px'
             }}
           >
-            Go to Tracking Page
+            {t('confirmation.errors.goToTracking')}
           </a>
         </div>
       </div>
@@ -189,7 +191,7 @@ export default function ConfirmationPageClient() {
       return (
         <div className="container section-padding">
           <div style={{ textAlign: 'center' }}>
-            <p style={{ color: 'var(--text-bright-secondary)' }}>Order not found.</p>
+            <p style={{ color: 'var(--text-bright-secondary)' }}>{t('confirmation.errors.orderNotFound')}</p>
           </div>
         </div>
       );
@@ -212,14 +214,14 @@ export default function ConfirmationPageClient() {
             fontWeight: 'var(--font-weight-bold)',
             marginBottom: 'var(--space-4)'
           }}>
-            Order Confirmed!
+            {t('confirmation.title')}
           </h1>
           <p style={{ 
             fontSize: 'var(--text-lg)',
             color: 'var(--text-bright-secondary)',
             marginBottom: 'var(--space-4)'
           }}>
-            We've received your order.
+            {t('confirmation.subtitle')}
           </p>
         </div>
 
@@ -243,16 +245,20 @@ export default function ConfirmationPageClient() {
             color: 'var(--text-bright-primary)',
             marginBottom: 'var(--space-2)'
           }}>
-            Verifying Payment
+            {t('confirmation.verifyingPayment.title')}
           </p>
           <p style={{ 
             fontSize: 'var(--text-base)',
             color: 'var(--text-bright-secondary)',
             margin: 0,
             lineHeight: '1.6'
-          }}>
-            We're matching your payment with Order Number <strong>{order.order_number}</strong>. Verification typically takes 1–2 business hours. You'll be notified once your payment is confirmed.
-          </p>
+          }}
+            dangerouslySetInnerHTML={{
+              __html: t('confirmation.verifyingPayment.description', { 
+                orderNumber: order.order_number
+              }).replace('{{orderNumber}}', `<strong>${order.order_number}</strong>`)
+            }}
+          />
         </div>
 
         {/* Primary Next Step: Design Submission */}
@@ -263,7 +269,7 @@ export default function ConfirmationPageClient() {
             marginBottom: 'var(--space-4)',
             textAlign: 'center'
           }}>
-            Next: Send Your Design File
+            {t('confirmation.nextStep.title')}
           </h3>
           <a
             href={`https://wa.me/60137482481?text=Hi%20Teevent!%20My%20order%20number%20is%20${encodeURIComponent(order.order_number)}.%20I%20have%20completed%20payment%20and%20would%20like%20to%20send%20my%20design%20file.`}
@@ -280,7 +286,7 @@ export default function ConfirmationPageClient() {
               borderRadius: '9999px'
             }}
           >
-            Send Design File via WhatsApp
+            {t('confirmation.nextStep.button')}
           </a>
           <p style={{
             marginTop: 'var(--space-3)',
@@ -289,7 +295,7 @@ export default function ConfirmationPageClient() {
             textAlign: 'center',
             lineHeight: '1.6'
           }}>
-            Sending your design now ensures the fastest production timeline.
+            {t('confirmation.nextStep.note')}
           </p>
         </div>
 
@@ -300,13 +306,13 @@ export default function ConfirmationPageClient() {
             fontWeight: 'var(--font-weight-semibold)',
             marginBottom: 'var(--space-4)'
           }}>
-            Order Details
+            {t('confirmation.orderDetails.title')}
           </h2>
           
           {/* Order Number - Most Prominent */}
           <div style={{ marginBottom: 'var(--space-6)', paddingBottom: 'var(--space-4)', borderBottom: '1px solid var(--color-gray-200)' }}>
             <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-2)' }}>
-              Order Number
+              {t('confirmation.orderDetails.orderNumber')}
             </p>
             <p style={{ 
               fontSize: 'var(--text-xl)', 
@@ -320,7 +326,7 @@ export default function ConfirmationPageClient() {
             </p>
             {' '}
             <button
-              onClick={() => handleCopy(order.order_number, 'Order number copied.')}
+              onClick={() => handleCopy(order.order_number, t('confirmation.notifications.orderNumberCopied'))}
               style={{
                 background: 'none',
                 border: 'none',
@@ -332,7 +338,7 @@ export default function ConfirmationPageClient() {
                 display: 'inline'
               }}
             >
-              Copy
+              {t('payment.copy')}
             </button>
           </div>
 
@@ -340,7 +346,7 @@ export default function ConfirmationPageClient() {
           <div style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', marginBottom: 'var(--space-4)' }}>
             <div>
               <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
-                Total
+                {t('confirmation.orderDetails.total')}
               </p>
               <p style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-weight-bold)', color: 'var(--text-bright-primary)', margin: 0 }}>
                 {formatCurrency(order.total_price)}
@@ -348,16 +354,16 @@ export default function ConfirmationPageClient() {
             </div>
             <div>
               <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
-                Quantity
+                {t('confirmation.orderDetails.quantity')}
               </p>
               <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
-                {order.quantity} pieces
+                {order.quantity} {t('pricingPreview.pieces')}
               </p>
             </div>
             {order.promo_code && order.discount_amount && order.discount_amount > 0 && (
               <div>
                 <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
-                  Promo Code Applied
+                  {t('confirmation.orderDetails.promoCodeApplied')}
                 </p>
                 <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0, wordBreak: 'break-word', whiteSpace: 'normal' }}>
                   {order.promo_code} (-{formatCurrency(order.discount_amount)})
@@ -373,7 +379,7 @@ export default function ConfirmationPageClient() {
               color: 'var(--text-bright-tertiary)',
               marginBottom: 'var(--space-2)'
             }}>
-              Lanyard Specs
+              {t('payment.lanyardSpecs')}
             </p>
             <ul style={{
               listStyle: 'none',
@@ -382,9 +388,9 @@ export default function ConfirmationPageClient() {
               fontSize: 'var(--text-sm)',
               color: 'var(--text-bright-secondary)'
             }}>
-              <li style={{ marginBottom: 'var(--space-1)' }}>• 2cm width</li>
-              <li style={{ marginBottom: 'var(--space-1)' }}>• 2-sided color printing</li>
-              <li>• Single lobster hook</li>
+              <li style={{ marginBottom: 'var(--space-1)' }}>• {t('pricingPreview.spec2cm')}</li>
+              <li style={{ marginBottom: 'var(--space-1)' }}>• {t('pricingPreview.spec2sided')}</li>
+              <li>• {t('pricingPreview.specHook')}</li>
             </ul>
           </div>
 
@@ -396,13 +402,13 @@ export default function ConfirmationPageClient() {
               marginBottom: 'var(--space-3)',
               color: 'var(--text-bright-primary)'
             }}>
-              Shipping Information
+              {t('confirmation.orderDetails.shippingInformation')}
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
               {order.shipping_name && (
                 <div>
                   <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
-                    Recipient Name
+                    {t('confirmation.orderDetails.recipientName')}
                   </p>
                   <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
                     {order.shipping_name}
@@ -417,7 +423,7 @@ export default function ConfirmationPageClient() {
               {order.shipping_address_line1 && (
                 <div>
                   <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
-                    Shipping Address
+                    {t('confirmation.orderDetails.shippingAddress')}
                   </p>
                   <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
                     {order.shipping_address_line1}
@@ -430,7 +436,7 @@ export default function ConfirmationPageClient() {
               {order.customer_email && (
                 <div>
                   <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-bright-secondary)', marginBottom: 'var(--space-1)' }}>
-                    Email Address
+                    {t('confirmation.orderDetails.emailAddress')}
                   </p>
                   <p style={{ fontSize: 'var(--text-base)', color: 'var(--text-bright-primary)', margin: 0 }}>
                     {order.customer_email}
@@ -455,9 +461,13 @@ export default function ConfirmationPageClient() {
             color: '#92400e',
             margin: 0,
             lineHeight: '1.6'
-          }}>
-            <strong>Important:</strong> This page can only be viewed once. Please save your order number <strong>{order.order_number}</strong> for future reference.
-          </p>
+          }}
+            dangerouslySetInnerHTML={{
+              __html: t('confirmation.importantNotice', { 
+                orderNumber: order.order_number
+              }).replace('{{orderNumber}}', `<strong>${order.order_number}</strong>`)
+            }}
+          />
         </div>
 
         {/* Secondary Actions */}
@@ -485,7 +495,7 @@ export default function ConfirmationPageClient() {
               e.currentTarget.style.color = 'var(--color-primary)';
             }}
           >
-            Track Your Order
+            {t('confirmation.trackOrderButton')}
           </a>
         </div>
 

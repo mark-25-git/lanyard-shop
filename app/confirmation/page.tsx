@@ -16,7 +16,7 @@ function LoadingFallback() {
           <div className="modern-spinner-dot"></div>
           <div className="modern-spinner-dot"></div>
         </div>
-        <p style={{ color: 'var(--text-bright-secondary)' }}>Loading...</p>
+        <p style={{ color: 'var(--text-bright-secondary)' }}>{/* Translation handled in client component */}</p>
       </div>
     </div>
   );

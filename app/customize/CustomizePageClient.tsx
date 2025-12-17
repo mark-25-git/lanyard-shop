@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from 'next/navigation';
-import QuantitySelector from '@/components/QuantitySelector';
-import PriceDisplay from '@/components/PriceDisplay';
-import TemplateDownload from '@/components/TemplateDownload';
-import LanyardCarousel from '@/components/LanyardCarousel';
-import HelpSection from '@/components/HelpSection';
-import CustomCheckbox from '@/components/CustomCheckbox';
-import { trackEvent } from '@/lib/ga';
+import QuantitySelector from "@/components/QuantitySelector";
+import PriceDisplay from "@/components/PriceDisplay";
+import TemplateDownload from "@/components/TemplateDownload";
+import LanyardCarousel from "@/components/LanyardCarousel";
+import HelpSection from "@/components/HelpSection";
+import CustomCheckbox from "@/components/CustomCheckbox";
+import { trackEvent } from "@/lib/ga";
+import { useTranslation } from "react-i18next";
 
 interface SocialProofStats {
   text: string;
@@ -25,6 +26,7 @@ interface CustomizePageClientProps {
 export default function CustomizePageClient({ initialStats }: CustomizePageClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
   
   // Initialize quantity from URL param if available, otherwise default to 100
   const initialQuantity = searchParams.get('quantity');
@@ -38,7 +40,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
   } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [canvaLink, setCanvaLink] = useState('');
+  const [canvaLink, setCanvaLink] = useState("");
   const [freeDesignReview, setFreeDesignReview] = useState(true);
 
   // Stats data kept for future use on product landing page
@@ -82,16 +84,16 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
     setError(null);
 
     try {
-      const response = await fetch('/api/calculate-price', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/calculate-price", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ quantity }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to calculate price');
+        throw new Error(data.error || "Failed to calculate price");
       }
 
       setPriceData({
@@ -99,7 +101,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
         totalPrice: data.data.total_price,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to calculate price');
+      setError(err instanceof Error ? err.message : "Failed to calculate price");
     } finally {
       setLoading(false);
     }
@@ -107,70 +109,70 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
 
   const handleCheckout = () => {
     if (priceData && quantity >= 50) {
-      trackEvent('customize_checkout_click', {
-        location: 'customize_page',
+      trackEvent("customize_checkout_click", {
+        location: "customize_page",
         quantity,
         has_canva_link: !!canvaLink.trim(),
       });
       // Store quantity and price in sessionStorage for checkout
-      sessionStorage.setItem('orderQuantity', quantity.toString());
-      sessionStorage.setItem('orderUnitPrice', priceData.unitPrice.toString());
-      sessionStorage.setItem('orderTotalPrice', priceData.totalPrice.toString());
+      sessionStorage.setItem("orderQuantity", quantity.toString());
+      sessionStorage.setItem("orderUnitPrice", priceData.unitPrice.toString());
+      sessionStorage.setItem("orderTotalPrice", priceData.totalPrice.toString());
       // Store Canva link if provided
       if (canvaLink.trim()) {
-        sessionStorage.setItem('canvaLink', canvaLink.trim());
+        sessionStorage.setItem("canvaLink", canvaLink.trim());
       }
-      router.push('/checkout');
+      router.push("/checkout");
     }
   };
 
   return (
     <>
       <div className="container section-padding">
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
           <h1 className="page-title" style={{ 
-            fontWeight: 'var(--font-weight-bold)',
-            marginBottom: 'var(--space-8)'
+            fontWeight: "var(--font-weight-bold)",
+            marginBottom: "var(--space-8)"
           }}>
-            Customize your lanyard.
+            {t("customize.title")}
           </h1>
 
 
-          <div style={{ marginBottom: 'var(--space-8)' }}>
+          <div style={{ marginBottom: "var(--space-8)" }}>
             {/* Your lanyard will have */}
-            <div style={{ marginBottom: '5rem' }}>
+            <div style={{ marginBottom: "5rem" }}>
               <h2 style={{ 
-                fontSize: 'var(--text-2xl)', 
-                fontWeight: 'var(--font-weight-semibold)',
-                marginBottom: 'var(--space-4)'
+                fontSize: "var(--text-2xl)", 
+                fontWeight: "var(--font-weight-semibold)",
+                marginBottom: "var(--space-4)"
               }}>
-                Your lanyard will have
+                {t("pricingPreview.sectionTitle")}
               </h2>
-              <div className="card" style={{ padding: 'var(--space-6)' }}>
+              <div className="card" style={{ padding: "var(--space-6)" }}>
                 <div style={{
-                  display: 'flex',
-                  gap: 'var(--space-6)',
-                  alignItems: 'stretch'
+                  display: "flex",
+                  gap: "var(--space-6)",
+                  alignItems: "stretch"
                 }}>
                   <ul style={{ 
-                    listStyle: 'none', 
+                    listStyle: "none", 
                     padding: 0,
-                    color: 'var(--text-bright-secondary)',
-                    flex: '1',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-start'
+                    color: "var(--text-bright-secondary)",
+                    flex: "1",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "flex-start"
                   }}>
-                    <li style={{ marginBottom: 'var(--space-2)' }}>2cm width</li>
-                    <li style={{ marginBottom: 'var(--space-2)' }}>2-sided color printing</li>
-                    <li style={{ marginBottom: 'var(--space-2)' }}>Single lobster hook</li>
+                    <li style={{ marginBottom: "var(--space-2)" }}>{t("pricingPreview.spec2cm")}</li>
+                    <li style={{ marginBottom: "var(--space-2)" }}>{t("pricingPreview.spec2sided")}</li>
+                    <li style={{ marginBottom: "var(--space-2)" }}>{t("pricingPreview.specHook")}</li>
                   </ul>
                   <div style={{
-                    flex: '1',
-                    position: 'relative',
-                    display: 'flex',
-                    alignItems: 'stretch',
-                    justifyContent: 'flex-end'
+                    flex: "1",
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "stretch",
+                    justifyContent: "flex-end"
                   }}>
                     <LanyardCarousel />
                   </div>
@@ -179,18 +181,18 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
             </div>
 
             {/* Quantity */}
-            <div style={{ marginBottom: '5rem' }}>
+            <div style={{ marginBottom: "5rem" }}>
               <h2 style={{ 
-                fontSize: 'var(--text-2xl)', 
-                fontWeight: 'var(--font-weight-semibold)',
-                marginBottom: 'var(--space-4)'
+                fontSize: "var(--text-2xl)", 
+                fontWeight: "var(--font-weight-semibold)",
+                marginBottom: "var(--space-4)"
               }}>
-                Quantity.{' '}
-                <span style={{ color: 'var(--text-bright-tertiary)' }}>
-                  How many do you need?
+                {t("pricingPreview.quantityTitle")}{" "}
+                <span style={{ color: "var(--text-bright-tertiary)" }}>
+                  {t("pricingPreview.quantitySubtitle")}
                 </span>
               </h2>
-              <div className="card" style={{ padding: 'var(--space-6)' }}>
+              <div className="card" style={{ padding: "var(--space-6)" }}>
                 <QuantitySelector
                   value={quantity}
                   onChange={setQuantity}
@@ -199,45 +201,43 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
                 />
                 {quantity > 0 && quantity < 50 && (
                   <div style={{
-                    marginTop: 'var(--space-4)',
-                    padding: 'var(--space-4)',
-                    background: 'var(--bg-bright-secondary)',
-                    borderRadius: 'var(--radius-lg)',
-                    fontSize: 'var(--text-sm)',
-                    color: 'var(--text-bright-primary)'
+                    marginTop: "var(--space-4)",
+                    padding: "var(--space-4)",
+                    background: "var(--bg-bright-secondary)",
+                    borderRadius: "var(--radius-lg)",
+                    fontSize: "var(--text-sm)",
+                    color: "var(--text-bright-primary)"
                   }}>
-                    <p style={{ marginBottom: 'var(--space-2)' }}>
-                      50pcs lanyard is only{' '}
-                      <span style={{ fontWeight: 'var(--font-weight-semibold)' }}>RM195</span>.
-                      {' '}
+                    <p style={{ marginBottom: "var(--space-2)" }}>
+                      {t("customize.lowQuantity.priceLine")}{" "}
                       <button
                         type="button"
                         onClick={() => setQuantity(50)}
                         style={{
-                          background: 'none',
-                          border: 'none',
-                          color: 'var(--color-primary)',
-                          textDecoration: 'underline',
-                          cursor: 'pointer',
+                          background: "none",
+                          border: "none",
+                          color: "var(--color-primary)",
+                          textDecoration: "underline",
+                          cursor: "pointer",
                           padding: 0,
-                          font: 'inherit'
+                          font: "inherit"
                         }}
                       >
-                        Order 50?
+                        {t("customize.lowQuantity.order50Button")}
                       </button>
                     </p>
-                    <p style={{ marginTop: 'var(--space-2)' }}>
-                      For quantity less than 50,{' '}
+                    <p style={{ marginTop: "var(--space-2)" }}>
+                      {t("customize.lowQuantity.contactText")}{" "}
                       <a
                         href="https://wa.me/60137482481?text=Hi%20Teevent!%20I%27d%20like%20to%20order%20less%20than%2050%20lanyards."
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
-                          color: 'var(--color-primary)',
-                          textDecoration: 'underline'
+                          color: "var(--color-primary)",
+                          textDecoration: "underline"
                         }}
                       >
-                        contact us
+                        {t("customize.lowQuantity.contactLink")}
                       </a>
                       .
                     </p>
@@ -247,59 +247,59 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
             </div>
 
             {/* Design Template */}
-            <div style={{ marginBottom: '5rem' }}>
+            <div style={{ marginBottom: "5rem" }}>
               <h2 style={{ 
-                fontSize: 'var(--text-2xl)', 
-                fontWeight: 'var(--font-weight-semibold)',
-                marginBottom: 'var(--space-4)'
+                fontSize: "var(--text-2xl)", 
+                fontWeight: "var(--font-weight-semibold)",
+                marginBottom: "var(--space-4)"
               }}>
-                Use our template.{' '}
-                <span style={{ color: 'var(--text-bright-tertiary)' }}>
-                  Design directly in our template to avoid misalignment.
+                {t("canvaPreview.title")}{" "}
+                <span style={{ color: "var(--text-bright-tertiary)" }}>
+                  {t("canvaPreview.subtitle")}
                 </span>
               </h2>
               <TemplateDownload />
               <p style={{
-                marginTop: 'var(--space-4)',
-                fontSize: 'var(--text-sm)',
-                color: 'var(--text-bright-secondary)',
-                lineHeight: '1.6'
+                marginTop: "var(--space-4)",
+                fontSize: "var(--text-sm)",
+                color: "var(--text-bright-secondary)",
+                lineHeight: "1.6"
               }}>
-                By using our template, we can avoid the size adjustment process.
+                {t("customize.templateInfo.line1")}
               </p>
               <p style={{
-                marginTop: 'var(--space-2)',
-                fontSize: 'var(--text-sm)',
-                color: 'var(--text-bright-secondary)',
-                lineHeight: '1.6'
+                marginTop: "var(--space-2)",
+                fontSize: "var(--text-sm)",
+                color: "var(--text-bright-secondary)",
+                lineHeight: "1.6"
               }}>
-                During size adjustment process, your design might be misaligned.
+                {t("customize.templateInfo.line2")}
               </p>
             </div>
 
             {/* Canva Link Input */}
-            <div style={{ marginBottom: '5rem' }}>
+            <div style={{ marginBottom: "5rem" }}>
               <h2 style={{ 
-                fontSize: 'var(--text-2xl)', 
-                fontWeight: 'var(--font-weight-semibold)',
-                marginBottom: 'var(--space-4)'
+                fontSize: "var(--text-2xl)", 
+                fontWeight: "var(--font-weight-semibold)",
+                marginBottom: "var(--space-4)"
               }}>
-                Designed with{' '}
+                {t("customize.canva.designedWith")}{" "}
                 <span style={{
-                  background: 'linear-gradient(135deg, #01c3cc 0%, #7c2be8 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  fontWeight: 'var(--font-weight-semibold)'
+                  background: "linear-gradient(135deg, #01c3cc 0%, #7c2be8 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  fontWeight: "var(--font-weight-semibold)"
                 }}>
                   Canva
                 </span>
-                ?{' '}
-                <span style={{ color: 'var(--text-bright-tertiary)' }}>
-                  Share your design link (optional)
+                ?{" "}
+                <span style={{ color: "var(--text-bright-tertiary)" }}>
+                  {t("customize.canva.shareOptional")}
                 </span>
               </h2>
-              <div className="card" style={{ padding: 'var(--space-6)' }}>
+              <div className="card" style={{ padding: "var(--space-6)" }}>
                 <div className="floating-label-wrapper">
                   <input
                     type="url"
@@ -309,38 +309,38 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
                     placeholder=" "
                   />
                   <label className="floating-label">
-                    Canva Design Link (Optional)
+                    {t("customize.canva.inputLabel")}
                   </label>
                 </div>
                 <p style={{
-                  marginTop: 'var(--space-3)',
-                  fontSize: 'var(--text-sm)',
-                  color: 'var(--text-bright-tertiary)'
+                  marginTop: "var(--space-3)",
+                  fontSize: "var(--text-sm)",
+                  color: "var(--text-bright-tertiary)"
                 }}>
-                  If you have used our template and designed in Canva, paste link here.
+                  {t("customize.canva.helper")}
                 </p>
               </div>
               <div style={{
-                marginTop: 'var(--space-4)'
+                marginTop: "var(--space-4)"
               }}>
                 <CustomCheckbox
                   checked={freeDesignReview}
                   onChange={() => setFreeDesignReview(true)}
-                  label="Get free design review by us before production."
+                  label={t("customize.canva.reviewCheckbox")}
                   id="free-design-review"
-                  labelStyle={{ fontSize: 'var(--text-base)' }}
+                  labelStyle={{ fontSize: "var(--text-base)" }}
                 />
               </div>
             </div>
 
             {/* Other Design File Instruction */}
-            <div style={{ marginBottom: '5rem' }}>
+            <div style={{ marginBottom: "5rem" }}>
               <h2 style={{ 
-                fontSize: 'var(--text-2xl)', 
-                fontWeight: 'var(--font-weight-semibold)',
-                marginBottom: 'var(--space-4)'
+                fontSize: "var(--text-2xl)", 
+                fontWeight: "var(--font-weight-semibold)",
+                marginBottom: "var(--space-4)"
               }}>
-                If you're using PS or AI, you'll be instructed to send it to us after payment.
+                {t("customize.otherToolsHeading")}
               </h2>
             </div>
           </div>
@@ -349,20 +349,20 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
 
       {/* Full-width price section - breaks out of container */}
       <div style={{ 
-        width: '100vw',
-        position: 'relative',
-        left: '50%',
-        right: '50%',
-        marginLeft: '-50vw',
-        marginRight: '-50vw',
+        width: "100vw",
+        position: "relative",
+        left: "50%",
+        right: "50%",
+        marginLeft: "-50vw",
+        marginRight: "-50vw",
         marginBottom: 0,
-        background: '#f1f3f5'
+        background: "#f1f3f5"
       }}>
         <div style={{ 
-          maxWidth: '800px', 
-          margin: '0 auto',
-          paddingLeft: 'var(--space-4)',
-          paddingRight: 'var(--space-4)'
+          maxWidth: "800px", 
+          margin: "0 auto",
+          paddingLeft: "var(--space-4)",
+          paddingRight: "var(--space-4)"
         }}>
           <PriceDisplay
             quantity={quantity}
@@ -374,45 +374,45 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
           {/* Estimated Delivery Date */}
           {priceData && quantity >= 50 && (
             <div style={{
-              marginTop: 'var(--space-6)',
-              padding: 'var(--space-4)',
-              textAlign: 'center'
+              marginTop: "var(--space-6)",
+              padding: "var(--space-4)",
+              textAlign: "center"
             }}>
               <i className="bi bi-calendar" style={{
-                fontSize: 'var(--text-2xl)',
-                color: 'var(--text-bright-primary)',
-                marginBottom: 'var(--space-2)',
-                display: 'block'
+                fontSize: "var(--text-2xl)",
+                color: "var(--text-bright-primary)",
+                marginBottom: "var(--space-2)",
+                display: "block"
               }}></i>
               <p style={{
-                fontSize: 'var(--text-base)',
-                lineHeight: '1.6',
-                color: 'var(--text-bright-secondary)',
-                margin: '0'
+                fontSize: "var(--text-base)",
+                lineHeight: "1.6",
+                color: "var(--text-bright-secondary)",
+                margin: "0"
               }}>
-                Estimated delivery:{' '}
+                {t("customize.delivery.estimatedLabel")}{" "}
                 <span style={{
-                  fontWeight: 'var(--font-weight-semibold)',
-                  color: 'var(--text-bright-primary)'
+                  fontWeight: "var(--font-weight-semibold)",
+                  color: "var(--text-bright-primary)"
                 }}>
                   {(() => {
                     const deliveryDate = new Date();
                     deliveryDate.setDate(deliveryDate.getDate() + 14); // 2 weeks from today
-                    return deliveryDate.toLocaleDateString('en-US', { 
-                      month: 'long', 
-                      day: 'numeric', 
-                      year: 'numeric' 
+                    return deliveryDate.toLocaleDateString("en-US", { 
+                      month: "long", 
+                      day: "numeric", 
+                      year: "numeric" 
                     });
                   })()}
                 </span>
               </p>
               <p style={{
-                fontSize: 'var(--text-sm)',
-                lineHeight: '1.5',
-                color: 'var(--text-bright-tertiary)',
-                margin: 'var(--space-2) 0 0 0'
+                fontSize: "var(--text-sm)",
+                lineHeight: "1.5",
+                color: "var(--text-bright-tertiary)",
+                margin: "var(--space-2) 0 0 0"
               }}>
-                May arrive earlier or later depending on production availability.
+                {t("customize.delivery.note")}
               </p>
             </div>
           )}
@@ -421,13 +421,13 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
           {/* Checkout Button - Moved inside price section */}
           {error && (
             <div style={{
-              marginTop: 'var(--space-6)',
-              marginBottom: 'var(--space-4)',
-              padding: 'var(--space-3)',
-              background: '#fee2e2',
-              color: '#991b1b',
-              borderRadius: 'var(--radius-xl)',
-              fontSize: 'var(--text-sm)',
+              marginTop: "var(--space-6)",
+              marginBottom: "var(--space-4)",
+              padding: "var(--space-3)",
+              background: "#fee2e2",
+              color: "#991b1b",
+              borderRadius: "var(--radius-xl)",
+              fontSize: "var(--text-sm)",
             }}>
               {error}
             </div>
@@ -435,70 +435,70 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
 
           {priceData && quantity >= 50 && quantity < 600 && (
             <div style={{ 
-              marginTop: 'var(--space-6)',
-              paddingBottom: 'var(--space-6)'
+              marginTop: "var(--space-6)",
+              paddingBottom: "var(--space-6)"
             }}>
               <button
                 onClick={handleCheckout}
                 className="btn-primary"
                 style={{ 
-                  width: '100%', 
-                  padding: 'var(--space-4)',
-                  fontSize: 'var(--text-lg)',
-                  borderRadius: 'var(--radius-xl)'
+                  width: "100%", 
+                  padding: "var(--space-4)",
+                  fontSize: "var(--text-lg)",
+                  borderRadius: "var(--radius-xl)"
                 }}
               >
-                Check Out
+                {t("customize.checkoutButton")}
               </button>
             </div>
           )}
           {quantity >= 600 && (
             <div style={{ 
-              marginTop: 'var(--space-6)',
-              paddingBottom: 'var(--space-6)'
+              marginTop: "var(--space-6)",
+              paddingBottom: "var(--space-6)"
             }}>
               <button
                 disabled
                 className="btn-primary"
                 style={{ 
-                  width: '100%', 
-                  padding: 'var(--space-4)',
-                  fontSize: 'var(--text-lg)',
+                  width: "100%", 
+                  padding: "var(--space-4)",
+                  fontSize: "var(--text-lg)",
                   opacity: 0.5,
-                  cursor: 'not-allowed',
-                  borderRadius: 'var(--radius-xl)'
+                  cursor: "not-allowed",
+                  borderRadius: "var(--radius-xl)"
                 }}
               >
-                Check Out
+                {t("customize.checkoutButton")}
               </button>
               <p style={{
-                marginTop: 'var(--space-3)',
-                textAlign: 'center',
-                fontSize: 'var(--text-sm)',
-                color: 'var(--text-bright-tertiary)'
+                marginTop: "var(--space-3)",
+                textAlign: "center",
+                fontSize: "var(--text-sm)",
+                color: "var(--text-bright-tertiary)"
               }}>
-                Please contact us for orders of 600+ pieces.
+                {t("customize.largeOrderNote")}
               </p>
             </div>
           )}
           {quantity > 0 && quantity < 50 && (
             <div style={{ 
-              marginTop: 'var(--space-6)',
-              paddingBottom: 'var(--space-6)'
+              marginTop: "var(--space-6)",
+              paddingBottom: "var(--space-6)"
             }}>
               <button
                 disabled
                 className="btn-primary"
                 style={{ 
-                  width: '100%', 
-                  padding: 'var(--space-4)',
-                  fontSize: 'var(--text-lg)',
+                  width: "100%", 
+                  padding: "var(--space-4)",
+                  fontSize: "var(--text-lg)",
                   opacity: 0.5,
-                  cursor: 'not-allowed',
-                  borderRadius: 'var(--radius-xl)'
+                  cursor: "not-allowed",
+                  borderRadius: "var(--radius-xl)"
                 }}
               >
-                Check Out
+                {t("customize.checkoutButton")}
               </button>
             </div>
           )}
@@ -507,7 +507,7 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
 
       {/* Continue with rest of content */}
       <div className="container section-padding">
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
           <HelpSection />
         </div>
       </div>
