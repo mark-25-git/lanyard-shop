@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
 
@@ -8,7 +8,6 @@ const LANYARD_IMAGES = [
   '/images/landing/lanyard/bdcjuly2025.webp',
   '/images/landing/lanyard/bdcnov2025.webp',
   '/images/landing/lanyard/bloodmooncircus.webp',
-  // First TEDx UTAR appears in row 2
   '/images/landing/lanyard/tedxutar.webp',
   '/images/landing/lanyard/choralexchange8.webp',
   '/images/landing/lanyard/fms.webp',
@@ -17,12 +16,8 @@ const LANYARD_IMAGES = [
   '/images/landing/lanyard/sdgxi.webp',
   '/images/landing/lanyard/ses9.webp',
   '/images/landing/lanyard/upo.webp',
-  // The Santa Village appears in the last row
   '/images/landing/lanyard/thesantavillage.webp',
 ];
-
-// Pattern: 2, 3, 2, 3, 2 (12 items total) for a balanced honeycomb effect
-const ROW_COUNTS = [2, 3, 2, 3, 2];
 
 // Background gradients for each lanyard image (135°)
 const LANYARD_GRADIENTS: Record<string, string> = {
@@ -40,235 +35,208 @@ const LANYARD_GRADIENTS: Record<string, string> = {
   '/images/landing/lanyard/thesantavillage.webp': 'linear-gradient(135deg, #cbcbc4, #ae8267)',
 };
 
-interface ActiveItem {
-  src: string;
-  rect: DOMRect;
-}
-
 export default function LanyardShowcaseSection() {
   const { t } = useTranslation();
-  const [activeItem, setActiveItem] = useState<ActiveItem | null>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
-  
-  // Timer ref to handle cleanup of closing animations
-  const closeTimerRef = useRef<NodeJS.Timeout | null>(null);
-  // Ref to track ongoing expansion animations
-  const expansionRafRef = useRef<number | null>(null);
-  
-  // Keep track of the latest activeItem for event handlers
-  const activeItemRef = useRef<ActiveItem | null>(null);
-  useEffect(() => {
-    activeItemRef.current = activeItem;
-  }, [activeItem]);
 
-  const MODAL_WIDTH = 500;
-  const MODAL_HEIGHT = 600;
+  // Carousel scroll functionality
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [activeDotIndex, setActiveDotIndex] = useState(0);
 
-  // Lock page scroll on mobile & tablet only when modal is expanded
-  useEffect(() => {
-    if (typeof window === 'undefined' || typeof document === 'undefined') return;
-
-    // Match main layout breakpoints: treat widths < 1024px as tablet/mobile
-    const isTabletOrMobile = window.innerWidth < 1024;
-    if (!isTabletOrMobile) return;
-
-    const originalBodyOverflow = document.body.style.overflow;
-    const originalHtmlOverflow = document.documentElement.style.overflow;
-
-    if (isExpanded) {
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = originalBodyOverflow || '';
-      document.documentElement.style.overflow = originalHtmlOverflow || '';
-    }
-
-    return () => {
-      document.body.style.overflow = originalBodyOverflow || '';
-      document.documentElement.style.overflow = originalHtmlOverflow || '';
-    };
-  }, [isExpanded]);
-
-  const handleCardHover = (src: string, element: HTMLDivElement) => {
-    // If already active
-    if (activeItem?.src === src) {
-        // If we are currently closing (isExpanded is false), we should re-expand it immediately
-        // This handles the case where user leaves and quickly returns to the same item
-        if (!isExpanded) {
-            // Clear pending close timer
-            if (closeTimerRef.current) {
-                clearTimeout(closeTimerRef.current);
-                closeTimerRef.current = null;
-            }
-            // Force re-expansion
-            setIsExpanded(true);
-        }
-        return;
-    }
-
-    // If there is a pending close timer, clear it to prevent race conditions
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-
-    const rect = element.getBoundingClientRect();
-    
-    // 1. Set active item (mounts clone at origin)
-    setActiveItem({ src, rect });
-    // 2. Reset expansion state (so it starts at origin)
-    setIsExpanded(false);
-  };
-
-  const closeModal = useCallback(() => {
-    // Animate back to origin
-    setIsExpanded(false);
-    
-    // Clear any existing timer first
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-    }
-
-    // Wait for transition (500ms) then unmount
-    closeTimerRef.current = setTimeout(() => {
-      setActiveItem(null);
-      closeTimerRef.current = null;
-    }, 500);
+  const checkScrollability = useCallback(() => {
+    if (!carouselRef.current) return;
+    const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
+    setCanScrollLeft(scrollLeft > 0);
+    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
   }, []);
 
-  const handleCardClick = (src: string, element: HTMLDivElement) => {
-    if (activeItem?.src === src) {
-      closeModal();
-    } else {
-      handleCardHover(src, element);
-    }
-  };
-
-  const handleCardInteraction = (src: string, e: React.MouseEvent<HTMLDivElement>) => {
-    const element = e.currentTarget;
-    if (e.type === 'click') {
-      handleCardClick(src, element);
-    } else {
-      handleCardHover(src, element);
-    }
-  };
-
-  // Effect: Trigger expansion after mount
-  useEffect(() => {
-    if (activeItem && !isExpanded) {
-        // Cancel any existing pending expansion
-        if (expansionRafRef.current) {
-            cancelAnimationFrame(expansionRafRef.current);
-        }
-
-        expansionRafRef.current = requestAnimationFrame(() => {
-            expansionRafRef.current = requestAnimationFrame(() => {
-                // CRITICAL CHECK:
-                // If closeTimerRef is set, it means the user triggered a close (mouse leave)
-                // while we were waiting for the next frame.
-                // In that case, DO NOT expand.
-                if (closeTimerRef.current) return;
-
-                setIsExpanded(true);
-                expansionRafRef.current = null;
-            });
-        });
-    }
+  // Calculate which card is most visible
+  const updateActiveDot = useCallback(() => {
+    if (!carouselRef.current) return;
     
-    // Cleanup: cancel any pending frames if activeItem changes or component unmounts
-    return () => {
-        if (expansionRafRef.current) {
-            cancelAnimationFrame(expansionRafRef.current);
-        }
-    };
-  }, [activeItem]); // Only re-run when activeItem changes (new item hovered)
-
-  const handleBackdropClick = () => {
-    closeModal();
-  };
-
-  // Mouse tracking to close when leaving the origin area
-  useEffect(() => {
-    if (!activeItem) return;
-
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      const currentItem = activeItemRef.current;
-      if (!currentItem) return;
-
-      const { rect } = currentItem;
-      const BUFFER = 30;
-
-      const isOverOrigin =
-        e.clientX >= rect.left - BUFFER &&
-        e.clientX <= rect.right + BUFFER &&
-        e.clientY >= rect.top - BUFFER &&
-        e.clientY <= rect.bottom + BUFFER;
-
-      if (!isOverOrigin) {
-        closeModal();
+    const carousel = carouselRef.current;
+    const scrollLeft = carousel.scrollLeft;
+    const containerWidth = carousel.clientWidth;
+    const centerX = scrollLeft + containerWidth / 2;
+    
+    // Find the card closest to center
+    let closestIndex = 0;
+    let closestDistance = Infinity;
+    
+    cardRefs.current.forEach((card, index) => {
+      if (!card) return;
+      const cardRect = card.getBoundingClientRect();
+      const cardCenterX = cardRect.left + cardRect.width / 2 - carousel.getBoundingClientRect().left + scrollLeft;
+      const distance = Math.abs(centerX - cardCenterX);
+      
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
       }
-    };
-
-    document.addEventListener('mousemove', handleGlobalMouseMove);
-    return () => {
-      document.removeEventListener('mousemove', handleGlobalMouseMove);
-    };
-  }, [activeItem, closeModal]);
-
-  // Clean up timer on unmount
-  useEffect(() => {
-    return () => {
-      if (closeTimerRef.current) {
-        clearTimeout(closeTimerRef.current);
-      }
-    };
+    });
+    
+    setActiveDotIndex(closestIndex);
   }, []);
 
-  // Calculate dynamic styles based on state
-  const cloneStyle = useMemo(() => {
-    if (!activeItem) return null;
+  useEffect(() => {
+    // Check scrollability after images load
+    const checkAfterLoad = () => {
+      setTimeout(() => {
+        checkScrollability();
+        updateActiveDot();
+      }, 100);
+    };
+    
+    checkScrollability();
+    updateActiveDot();
+    const carousel = carouselRef.current;
+    if (!carousel) return;
 
-    const base: React.CSSProperties = {};
+    const handleScroll = () => {
+      checkScrollability();
+      updateActiveDot();
+    };
 
-    // Position & size
-    if (!isExpanded) {
-      base.left = `${activeItem.rect.left}px`;
-      base.top = `${activeItem.rect.top}px`;
-      base.width = `${activeItem.rect.width}px`;
-      base.height = `${activeItem.rect.height}px`;
-    } else {
-      if (typeof window !== 'undefined') {
-        const winW = window.innerWidth;
-        const winH = window.innerHeight;
-        const targetW = Math.min(MODAL_WIDTH, winW * 0.9);
-        const targetH = Math.min(MODAL_HEIGHT, winH * 0.8);
-        const targetX = (winW - targetW) / 2;
-        const targetY = (winH - targetH) / 2;
-        base.left = `${targetX}px`;
-        base.top = `${targetY}px`;
-        base.width = `${targetW}px`;
-        base.height = `${targetH}px`;
-      }
+    carousel.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', checkAfterLoad);
+    window.addEventListener('load', checkAfterLoad);
+
+    return () => {
+      carousel.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', checkAfterLoad);
+      window.removeEventListener('load', checkAfterLoad);
+    };
+  }, [checkScrollability, updateActiveDot]);
+
+
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    if (!carouselRef.current) return;
+    const scrollAmount = carouselRef.current.clientWidth * 0.8;
+    const scrollTo = direction === 'left' 
+      ? carouselRef.current.scrollLeft - scrollAmount
+      : carouselRef.current.scrollLeft + scrollAmount;
+    
+    carouselRef.current.scrollTo({
+      left: scrollTo,
+      behavior: 'smooth'
+    });
+  };
+
+  // Touch/swipe support - snap to one card on tablet/mobile
+  const touchStartX = useRef<number | null>(null);
+  const lastTouchX = useRef<number | null>(null);
+  const isDragging = useRef(false);
+  const initialScrollLeft = useRef<number>(0);
+
+  const centerCard = useCallback((index: number) => {
+    if (!carouselRef.current || !cardRefs.current[index]) return;
+    
+    const card = cardRefs.current[index];
+    const carousel = carouselRef.current;
+    const carouselRect = carousel.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const scrollLeft = carousel.scrollLeft;
+    const cardLeft = cardRect.left - carouselRect.left + scrollLeft;
+    const containerWidth = carousel.clientWidth;
+    const cardWidth = cardRect.width;
+    const targetScroll = cardLeft - (containerWidth / 2) + (cardWidth / 2);
+    
+    // Update active dot immediately
+    setActiveDotIndex(index);
+    
+    carousel.scrollTo({
+      left: Math.max(0, targetScroll),
+      behavior: 'smooth'
+    });
+    
+    // Update after scroll completes
+    setTimeout(() => {
+      updateActiveDot();
+      checkScrollability();
+    }, 300);
+  }, [updateActiveDot, checkScrollability]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!carouselRef.current) return;
+    
+    // Only apply snap behavior on tablet/mobile
+    const isTabletOrMobile = window.innerWidth <= 1024;
+    if (!isTabletOrMobile) {
+      // Desktop: allow free scrolling
+      touchStartX.current = e.touches[0].clientX;
+      lastTouchX.current = e.touches[0].clientX;
+      isDragging.current = true;
+      return;
     }
+    
+    touchStartX.current = e.touches[0].clientX;
+    lastTouchX.current = e.touches[0].clientX;
+    initialScrollLeft.current = carouselRef.current.scrollLeft;
+    isDragging.current = true;
+  };
 
-    // Background: match the circular card gradient in expanded state
-    if (isExpanded) {
-      const gradient = LANYARD_GRADIENTS[activeItem.src];
-      if (gradient) {
-        base.background = gradient;
-      }
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!carouselRef.current || !isDragging.current || lastTouchX.current === null) return;
+    
+    const isTabletOrMobile = window.innerWidth <= 1024;
+    if (!isTabletOrMobile) {
+      // Desktop: free scrolling
+      const currentX = e.touches[0].clientX;
+      const diffX = lastTouchX.current - currentX;
+      carouselRef.current.scrollLeft += diffX;
+      lastTouchX.current = currentX;
+      return;
     }
+    
+    // Tablet/Mobile: follow finger but will snap on release
+    const currentX = e.touches[0].clientX;
+    const diffX = lastTouchX.current - currentX;
+    carouselRef.current.scrollLeft += diffX;
+    lastTouchX.current = currentX;
+  };
 
-    return base;
-  }, [activeItem, isExpanded]);
+  const handleTouchEnd = () => {
+    if (!isDragging.current || !carouselRef.current) return;
+    
+    const isTabletOrMobile = window.innerWidth <= 1024;
+    
+    if (isTabletOrMobile && touchStartX.current !== null && lastTouchX.current !== null) {
+      // Tablet/Mobile: snap to nearest card
+      const swipeDistance = touchStartX.current - lastTouchX.current;
+      const minSwipeDistance = 30; // Minimum swipe to trigger card change
+      
+      let targetIndex = activeDotIndex;
+      
+      if (Math.abs(swipeDistance) > minSwipeDistance) {
+        // Determine direction and target card
+        if (swipeDistance > 0) {
+          // Swiped left - go to next card
+          targetIndex = Math.min(activeDotIndex + 1, LANYARD_IMAGES.length - 1);
+        } else {
+          // Swiped right - go to previous card
+          targetIndex = Math.max(activeDotIndex - 1, 0);
+        }
+      }
+      
+      // Center the target card
+      centerCard(targetIndex);
+    }
+    
+    isDragging.current = false;
+    
+    // Update scrollability and active dot
+    setTimeout(() => {
+      checkScrollability();
+      updateActiveDot();
+    }, 100);
+    
+    // Reset touch tracking
+    touchStartX.current = null;
+    lastTouchX.current = null;
+  };
 
-  // Build rows
-  let cursor = 0;
-  const rows: string[][] = [];
-  ROW_COUNTS.forEach((count) => {
-    rows.push(LANYARD_IMAGES.slice(cursor, cursor + count));
-    cursor += count;
-  });
 
   return (
     <>
@@ -277,59 +245,97 @@ export default function LanyardShowcaseSection() {
           <h2 className="hero-title lanyard-showcase-title fade-in">
             {t('showcase.title')}
           </h2>
-          <div className="beehive-container" id="gallery-root">
-            {rows.map((rowImages, rowIndex) => (
-              <div key={rowIndex} className="beehive-row">
-                {rowImages.map((src, imgIndex) => (
-                  <div
-                    key={`${rowIndex}-${imgIndex}`}
-                    className={`product-card ${rowIndex > 0 ? 'tucked' : ''}`}
-                    style={{ background: LANYARD_GRADIENTS[src] || undefined }}
-                    onMouseEnter={(e) => handleCardInteraction(src, e)}
-                    onClick={(e) => handleCardInteraction(src, e)}
-                  >
-                    <Image
-                      src={src}
-                      alt={`Lanyard ${rowIndex * 10 + imgIndex + 1}`}
-                      width={100}
-                      height={100}
-                      className="product-image"
-                      unoptimized
-                    />
-                  </div>
-                ))}
-                {rowIndex < rows.length - 1 && <div className="break" />}
-              </div>
-            ))}
+          <div className="carousel-wrapper">
+            {canScrollLeft && (
+              <button
+                className="carousel-nav carousel-prev"
+                onClick={() => scrollCarousel('left')}
+                aria-label="Previous"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </button>
+            )}
+            <div
+              className="carousel-container"
+              ref={carouselRef}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              {LANYARD_IMAGES.map((src, index) => (
+                <div
+                  key={index}
+                  ref={(el) => {
+                    if (el) {
+                      cardRefs.current[index] = el;
+                    }
+                  }}
+                  className="product-card"
+                  style={{ background: LANYARD_GRADIENTS[src] || undefined }}
+                >
+                  <Image
+                    src={src}
+                    alt={`Lanyard ${index + 1}`}
+                    width={360}
+                    height={432}
+                    className="product-image"
+                    unoptimized
+                  />
+                </div>
+              ))}
+            </div>
+            {canScrollRight && (
+              <button
+                className="carousel-nav carousel-next"
+                onClick={() => scrollCarousel('right')}
+                aria-label="Next"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </button>
+            )}
+          </div>
+          {/* Dot Navigation Indicators */}
+          <div className="carousel-dots">
+            {(() => {
+              const totalDots = LANYARD_IMAGES.length;
+              const maxVisible = 5;
+              
+              // Calculate which dots to show
+              let startIndex = 0;
+              let endIndex = Math.min(maxVisible - 1, totalDots - 1);
+              
+              if (totalDots > maxVisible) {
+                // Center the active dot when possible
+                const halfVisible = Math.floor(maxVisible / 2);
+                startIndex = Math.max(0, activeDotIndex - halfVisible);
+                endIndex = Math.min(totalDots - 1, startIndex + maxVisible - 1);
+                
+                // Adjust if we're near the end
+                if (endIndex - startIndex < maxVisible - 1) {
+                  startIndex = Math.max(0, endIndex - maxVisible + 1);
+                }
+              }
+              
+              const visibleDots = [];
+              for (let i = startIndex; i <= endIndex; i++) {
+                visibleDots.push(i);
+              }
+              
+              return visibleDots.map((index) => (
+                <div
+                  key={index}
+                  className={`carousel-dot ${activeDotIndex === index ? 'active' : ''}`}
+                  aria-label={`Slide ${index + 1}`}
+                />
+              ));
+            })()}
           </div>
         </div>
       </section>
-
-      {/* Backdrop 
-          Only 'active' (pointer-events: auto) when fully expanded.
-          When closing (!isExpanded), it should not block clicks/hovers on the grid.
-      */}
-      <div
-        className={`backdrop ${isExpanded ? 'active' : ''}`}
-        onClick={handleBackdropClick}
-      />
-
-      {/* Expanded Clone */}
-      {activeItem && cloneStyle && (
-        <div
-          className={`product-clone ${isExpanded ? 'expanded' : ''}`}
-          style={cloneStyle}
-        >
-          <Image
-            src={activeItem.src}
-            alt="Expanded lanyard"
-            fill
-            className="product-clone-image"
-            unoptimized
-            priority
-          />
-        </div>
-      )}
     </>
   );
 }
