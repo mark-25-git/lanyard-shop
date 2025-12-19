@@ -58,7 +58,7 @@
   },
   "testimonials": {
     "title": "Cara moden tempah lanyard.",
-    "testimonial1": "Servis Teevent memang laju, tepat, dan boleh dipercayai.",
+    "testimonial1": "Website Teevent memang laju, tepat, dan boleh dipercayai.",
     "testimonial1Author": "Penganjur, The Santa Village, UTAR",
     "testimonial2": "Sebagai introvert, saya suka gila cara ni! Semua info dah ada kat website Teevent... Tak yah WhatsApp tanya orang dan tunggu reply. Memang jimat masa dan 'introvert friendly'.",
     "testimonial2Author": "Pelajar, CSMU"
@@ -115,21 +115,27 @@
       "estimatedLabel": "Anggaran tarikh siap:",
       "note": "Boleh sampai lebih awal atau lewat ikut jadual production."
     },
-    "checkoutButton": "Teruskan ke checkout",
+    "checkoutButton": "Check Out",
     "largeOrderNote": "Untuk order 600+ unit, sila hubungi kami."
   },
   "helpSection": {
     "prompt": "Perlu bantuan lagi?",
     "contactLink": "Hubungi kami"
   },
+  "talkToExpert": {
+    "primaryButton": "Tanya Pakar",
+    "secondaryLink": "Perlu bantuan memilih?",
+    "linkText": "Tanya pakar",
+    "whatsappMessage": "Hi Teevent! Saya ingin mengesahkan order saya:\n- Kuantiti: {{quantity}} lanyard\n- Harga Unit: {{unitPrice}}\n- Jumlah: {{totalPrice}}\n\nBoleh tolong sahkan sebelum saya buat order?"
+  },
   "volumeBenefits": {
-    "title": "Kelebihan order jumlah besar:",
+    "title": "Kelebihan pembelian kuantiti besar:",
     "items": [
-      "Quotation khas ikut volume",
-      "Pilihan bayaran yang fleksibel",
-      "Dedicated account manager",
+      "Quotation khas",
+      "Pengebilan fleksibel",
+      "Pengurus akaun khusus",
       "Bantuan design",
-      "Sokongan pantas melalui WhatsApp"
+      "Sokongan keutamaan melalui WhatsApp"
     ],
     "contactButton": "Hubungi Kami"
   },

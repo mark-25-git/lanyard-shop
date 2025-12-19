@@ -7,6 +7,8 @@ import PriceDisplay from "@/components/PriceDisplay";
 import TemplateDownload from "@/components/TemplateDownload";
 import LanyardCarousel from "@/components/LanyardCarousel";
 import HelpSection from "@/components/HelpSection";
+import FloatingCustomerService from "@/components/FloatingCustomerService";
+import TalkToExpert from "@/components/TalkToExpert";
 import CustomCheckbox from "@/components/CustomCheckbox";
 import { trackEvent } from "@/lib/ga";
 import { useTranslation } from "react-i18next";
@@ -438,18 +440,35 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
               marginTop: "var(--space-6)",
               paddingBottom: "var(--space-6)"
             }}>
-              <button
-                onClick={handleCheckout}
-                className="btn-primary"
-                style={{ 
-                  width: "100%", 
-                  padding: "var(--space-4)",
-                  fontSize: "var(--text-lg)",
-                  borderRadius: "var(--radius-xl)"
-                }}
-              >
-                {t("customize.checkoutButton")}
-              </button>
+              {/* Primary placement: Talk to Expert and Checkout buttons side by side */}
+              <div style={{
+                display: "flex",
+                gap: "var(--space-4)",
+                flexDirection: "row"
+              }} className="talk-to-expert-checkout-buttons">
+                <div style={{ flex: 1 }}>
+                  <TalkToExpert
+                    quantity={quantity}
+                    unitPrice={priceData.unitPrice}
+                    totalPrice={priceData.totalPrice}
+                    variant="primary"
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <button
+                    onClick={handleCheckout}
+                    className="btn-primary"
+                    style={{ 
+                      width: "100%", 
+                      padding: "var(--space-4)",
+                      fontSize: "var(--text-lg)",
+                      borderRadius: "var(--radius-xl)"
+                    }}
+                  >
+                    {t("customize.checkoutButton")}
+                  </button>
+                </div>
+              </div>
             </div>
           )}
           {quantity >= 600 && (
@@ -511,6 +530,8 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
           <HelpSection />
         </div>
       </div>
+
+      <FloatingCustomerService />
     </>
   );
 }

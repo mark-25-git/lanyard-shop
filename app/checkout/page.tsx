@@ -6,6 +6,7 @@ import { isValidEmail, isValidPhone } from "@/lib/utils";
 import { formatCurrency } from "@/lib/utils";
 import { BillingAddress, ShippingAddress } from "@/types/order";
 import HelpSection from "@/components/HelpSection";
+import FloatingCustomerService from "@/components/FloatingCustomerService";
 import CustomCheckbox from "@/components/CustomCheckbox";
 import { trackEvent } from "@/lib/ga";
 import { useTranslation } from "react-i18next";
@@ -1144,6 +1145,8 @@ export default function CheckoutPage() {
 
         <HelpSection />
       </div>
+
+      <FloatingCustomerService />
     </div>
   );
 }

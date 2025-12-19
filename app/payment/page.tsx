@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { formatCurrency } from '@/lib/utils';
 import { generateOrderNumber } from '@/lib/pricing';
 import HelpSection from '@/components/HelpSection';
+import FloatingCustomerService from '@/components/FloatingCustomerService';
 import { trackEvent } from '@/lib/ga';
 import { useTranslation } from 'react-i18next';
 
@@ -920,6 +921,8 @@ export default function PaymentPage() {
           </div>
         </div>
       )}
+
+      <FloatingCustomerService />
     </div>
   );
 }

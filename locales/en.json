@@ -122,6 +122,12 @@
     "prompt": "Need more help?",
     "contactLink": "Contact us"
   },
+  "talkToExpert": {
+    "primaryButton": "Talk to Expert",
+    "secondaryLink": "Need help choosing?",
+    "linkText": "Talk to expert",
+    "whatsappMessage": "Hi Teevent! I'd like to confirm my order:\n- Quantity: {{quantity}} lanyards\n- Unit Price: {{unitPrice}}\n- Total: {{totalPrice}}\n\nCan you help me confirm this before I place the order?"
+  },
   "volumeBenefits": {
     "title": "Unlock volume benefits:",
     "items": [
