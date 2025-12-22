@@ -10,6 +10,7 @@ import HelpSection from "@/components/HelpSection";
 import FloatingCustomerService from "@/components/FloatingCustomerService";
 import TalkToExpert from "@/components/TalkToExpert";
 import CustomCheckbox from "@/components/CustomCheckbox";
+import QuotationModal from "@/components/QuotationModal";
 import { trackEvent } from "@/lib/ga";
 import { useTranslation } from "react-i18next";
 
@@ -44,6 +45,8 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
   const [error, setError] = useState<string | null>(null);
   const [canvaLink, setCanvaLink] = useState("");
   const [freeDesignReview, setFreeDesignReview] = useState(true);
+  const [showQuotationModal, setShowQuotationModal] = useState(false);
+  const [quotationSentEmail, setQuotationSentEmail] = useState<string | null>(null);
 
   // Stats data kept for future use on product landing page
   // Format numbers with commas
@@ -524,6 +527,71 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
         </div>
       </div>
 
+      {/* Quotation CTA Section */}
+      {priceData && quantity >= 50 && quantity < 600 && (
+        <div className="container section-padding">
+          <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+            <div style={{
+              textAlign: "center",
+              padding: "var(--space-8) 0"
+            }}>
+              <p style={{
+                fontSize: "var(--text-lg)",
+                color: "var(--text-bright-secondary)",
+                marginBottom: "var(--space-4)"
+              }}>
+                Need a formal quotation for approval?
+              </p>
+              <button
+                onClick={() => setShowQuotationModal(true)}
+                className="btn-secondary"
+                style={{
+                  padding: "var(--space-3) var(--space-6)",
+                  fontSize: "var(--text-base)",
+                  fontWeight: "var(--font-weight-semibold)",
+                  borderRadius: "var(--radius-full)",
+                  border: "2px solid var(--color-primary)",
+                  color: "var(--color-primary)",
+                  background: "transparent",
+                  cursor: "pointer",
+                  transition: "all var(--transition-base)"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "var(--color-primary)";
+                  e.currentTarget.style.color = "var(--color-white)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = "var(--color-primary)";
+                }}
+              >
+                Email me the PDF
+              </button>
+              {quotationSentEmail && (
+                <p
+                  style={{
+                    marginTop: "var(--space-4)",
+                    fontSize: "var(--text-sm)",
+                    color: "var(--text-bright-secondary)",
+                  }}
+                >
+                  We’ve emailed your quotation to{" "}
+                  <span
+                    style={{
+                      fontWeight: "var(--font-weight-semibold)",
+                      color: "var(--text-bright-primary)",
+                    }}
+                  >
+                    {quotationSentEmail}
+                  </span>
+                  . Please check your inbox (and spam/junk folder).
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Continue with rest of content */}
       <div className="container section-padding">
         <div style={{ maxWidth: "800px", margin: "0 auto" }}>
@@ -531,6 +599,16 @@ export default function CustomizePageClient({ initialStats }: CustomizePageClien
         </div>
       </div>
 
+      {priceData && (
+        <QuotationModal 
+          isOpen={showQuotationModal} 
+          onClose={() => setShowQuotationModal(false)} 
+          quantity={quantity}
+          unitPrice={priceData.unitPrice}
+          totalPrice={priceData.totalPrice}
+          onSent={(email) => setQuotationSentEmail(email)}
+        />
+      )}
       <FloatingCustomerService />
     </>
   );
