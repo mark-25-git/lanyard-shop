@@ -9,9 +9,11 @@
 @import url('../styles/layout.css');
 /* 5. Utility classes (animations, helpers, responsive utilities) */
 @import url('../styles/utilities.css');
-/* 6. Main styles (page-specific styles) */
+/* 6. Page-specific styles (landing, checkout, admin, blog, customize) */
+@import url('../styles/pages.css');
+/* 7. Component utilities and remaining styles */
 @import url('../styles/main.css');
-/* 7. Additional design utilities (floating labels, mobile fixes) */
+/* 8. Additional design utilities (floating labels, mobile fixes) */
 @import url('../styles/teevent-design.css');
 
 
