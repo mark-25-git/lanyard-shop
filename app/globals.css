@@ -1,5 +1,9 @@
 /* Import existing Teevent design system */
+/* 1. Design tokens (CSS variables) - must be imported first */
+@import url('../styles/tokens.css');
+/* 2. Main styles */
 @import url('../styles/main.css');
+/* 3. Additional design utilities */
 @import url('../styles/teevent-design.css');
 
 * {
