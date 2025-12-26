@@ -103,21 +103,24 @@
   padding: var(--space-3) var(--space-6);
   background: var(--color-primary);
   color: var(--color-white);
-  border: none;
+  border: 2px solid var(--color-primary);
   border-radius: var(--radius-full);
   font-size: var(--text-base);
   font-weight: var(--font-weight-semibold);
   transition: all var(--transition-base);
   cursor: pointer;
   text-decoration: none;
+  box-sizing: border-box;
 }
 
 .btn-primary:hover {
   background: var(--color-primary-light);
+  border-color: var(--color-primary-light);
 }
 
 .btn-primary:active {
   background: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 .btn-primary:disabled {

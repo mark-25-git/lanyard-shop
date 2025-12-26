@@ -363,7 +363,7 @@ a.btn-secondary {
 .btn-primary {
     background: var(--color-primary);
     color: var(--color-white);
-    border: none;
+    border: 2px solid var(--color-primary);
 }
 
 .nav .btn-primary {
@@ -373,10 +373,12 @@ a.btn-secondary {
 
 .btn-primary:hover {
     background: var(--color-primary-light);
+    border-color: var(--color-primary-light);
 }
 
 .btn-primary:active {
     background: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 /* Secondary button variant - styles already defined above, this is just for specificity */
