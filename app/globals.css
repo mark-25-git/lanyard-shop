@@ -1,45 +1,11 @@
 /* Import existing Teevent design system */
 /* 1. Design tokens (CSS variables) - must be imported first */
 @import url('../styles/tokens.css');
-/* 2. Main styles */
+/* 2. Base styles (resets, typography, global defaults) */
+@import url('../styles/base.css');
+/* 3. Main styles (components, layout, pages) */
 @import url('../styles/main.css');
-/* 3. Additional design utilities */
+/* 4. Additional design utilities */
 @import url('../styles/teevent-design.css');
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--text-bright-primary);
-  background: var(--bg-bright-primary);
-  font-family: var(--font-family-primary);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button {
-  font-family: inherit;
-  cursor: pointer;
-}
-
-input,
-textarea,
-select {
-  font-family: inherit;
-}
 
 

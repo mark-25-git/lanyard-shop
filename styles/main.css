@@ -7,16 +7,8 @@
 */
 
 /* ===================================
-   BASE STYLES
+   NOTE: Base styles have been moved to base.css
    =================================== */
-body {
-    font-family: var(--font-family-primary);
-    background-color: var(--bg-bright-primary);
-    color: var(--text-bright-primary);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    line-height: var(--leading-normal);
-}
 
 /* ===================================
    LAYOUT & SPACING
