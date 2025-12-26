@@ -5,9 +5,13 @@
 @import url('../styles/base.css');
 /* 3. Component styles (buttons, inputs, cards, modals) */
 @import url('../styles/components.css');
-/* 4. Main styles (layout, pages) */
+/* 4. Layout styles (containers, grids, spacing) */
+@import url('../styles/layout.css');
+/* 5. Utility classes (animations, helpers, responsive utilities) */
+@import url('../styles/utilities.css');
+/* 6. Main styles (page-specific styles) */
 @import url('../styles/main.css');
-/* 5. Additional design utilities */
+/* 7. Additional design utilities (floating labels, mobile fixes) */
 @import url('../styles/teevent-design.css');
 
 

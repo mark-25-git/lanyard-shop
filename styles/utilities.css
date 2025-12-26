@@ -1,0 +1,303 @@
+/* ===================================
+   UTILITIES
+   ===================================
+   Helper classes, animations, and responsive utilities.
+   =================================== */
+
+/* ===================================
+   ANIMATIONS
+   =================================== */
+
+/* Modern loading spinner animations */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Modern dot pulse animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+.modern-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.modern-spinner-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.modern-spinner-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.modern-spinner-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.modern-spinner-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Floating notification animations */
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(-50%) translateY(20px);
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@-webkit-keyframes slideUpFade {
+  from {
+    opacity: 0;
+    -webkit-transform: translateX(-50%) translateY(20px);
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Fade-in animation */
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity var(--transition-slower) cubic-bezier(0.215, 0.610, 0.355, 1), transform var(--transition-slower) cubic-bezier(0.215, 0.610, 0.355, 1);
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===================================
+   TYPOGRAPHY UTILITIES
+   =================================== */
+
+.gradient-text {
+    background: linear-gradient(90deg, var(--color-gray-50), var(--text-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.gradient-text-bright {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Responsive Page Title */
+.page-title {
+    font-size: var(--text-4xl);
+}
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: var(--text-3xl);
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.75rem; /* 28px - between 2xl (24px) and 3xl (30px) to maintain hierarchy over section titles */
+    }
+}
+
+/* ===================================
+   UTILITY CLASSES
+   =================================== */
+
+/* Hidden utility */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive Grid Utilities */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+}
+
+@media (max-width: 768px) {
+  .responsive-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}
+
+/* Flex utilities - Responsive */
+.responsive-flex {
+  display: flex;
+  gap: var(--space-3);
+}
+
+@media (max-width: 768px) {
+  .responsive-flex {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .responsive-flex-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  /* Make sticky elements not sticky on mobile */
+  [style*="position: sticky"] {
+    position: relative !important;
+    top: auto !important;
+  }
+
+  /* Responsive shipping header */
+  .shipping-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: var(--space-3) !important;
+  }
+
+  /* Order summary card - not sticky on mobile */
+  .order-summary-card {
+    position: relative !important;
+    top: auto !important;
+  }
+}
+
+/* Mobile Utility Classes */
+@media (max-width: 768px) {
+  /* Stack elements on mobile */
+  .mobile-stack {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Full width on mobile */
+  .mobile-full-width {
+    width: 100%;
+  }
+
+  /* Center text on mobile */
+  .mobile-text-center {
+    text-align: center;
+  }
+
+  /* Hide on mobile */
+  .mobile-hide {
+    display: none;
+  }
+
+  /* Show on mobile only */
+  .mobile-only {
+    display: block;
+  }
+
+  /* Hide on desktop */
+  .desktop-only {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none;
+  }
+
+  .desktop-only {
+    display: block;
+  }
+}
+
+/* Additional responsive utilities */
+@media (max-width: 768px) {
+  /* Stack elements on mobile */
+  .mobile-stack {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Full width on mobile */
+  .mobile-full-width {
+    width: 100%;
+  }
+
+  /* Center text on mobile */
+  .mobile-text-center {
+    text-align: center;
+  }
+
+  /* Hide on mobile */
+  .mobile-hide {
+    display: none;
+  }
+
+  /* Show on mobile only */
+  .mobile-only {
+    display: block;
+  }
+
+  /* Hide on desktop */
+  .desktop-only {
+    display: none;
+  }
+}
+
+/* Hide number input spinner */
+.quantity-input-no-spinner {
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.quantity-input-no-spinner::-webkit-inner-spin-button,
+.quantity-input-no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
