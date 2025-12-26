@@ -3,9 +3,11 @@
 @import url('../styles/tokens.css');
 /* 2. Base styles (resets, typography, global defaults) */
 @import url('../styles/base.css');
-/* 3. Main styles (components, layout, pages) */
+/* 3. Component styles (buttons, inputs, cards, modals) */
+@import url('../styles/components.css');
+/* 4. Main styles (layout, pages) */
 @import url('../styles/main.css');
-/* 4. Additional design utilities */
+/* 5. Additional design utilities */
 @import url('../styles/teevent-design.css');
 
 
