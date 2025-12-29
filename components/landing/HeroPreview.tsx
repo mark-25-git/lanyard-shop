@@ -15,7 +15,7 @@ export default function HeroPreview() {
 
   const handleGetStarted = () => {
     if (isLoading) return;
-    
+
     trackEvent('hero_get_started_click', {
       location: 'hero_preview',
       quantity,
@@ -30,8 +30,20 @@ export default function HeroPreview() {
         <div className="hero-preview-content">
           <div style={{ maxWidth: '800px', margin: '0 auto 0 auto', marginBottom: 0, textAlign: 'center' }}>
             {/* Quantity Selector Card */}
-            <div className="card" style={{ padding: 'var(--space-6)', border: 'none', boxShadow: '0 0 20px rgba(0, 0, 0, 0.15), 0 0 40px rgba(0, 0, 0, 0.1)' }}>
-              <div style={{ 
+            {/* Quantity Selector Card */}
+            <div className="card" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 'var(--space-6)',
+              padding: 'var(--space-8) var(--space-8)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
+              background: 'rgba(255, 255, 255, 0.4)', // More transparent
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)'
+            }}>
+              <div style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -54,37 +66,30 @@ export default function HeroPreview() {
                   {t('hero.lanyards')}
                 </span>
               </div>
+
+              <button
+                onClick={handleGetStarted}
+                disabled={isLoading}
+                className="btn-primary hero-cta"
+                style={{
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  opacity: isLoading ? 0.6 : 1,
+                  width: '100%',
+                  maxWidth: '300px'
+                }}
+              >
+                {isLoading ? (
+                  <div className="modern-spinner" style={{ display: 'inline-flex' }}>
+                    <div className="modern-spinner-dot"></div>
+                    <div className="modern-spinner-dot"></div>
+                    <div className="modern-spinner-dot"></div>
+                  </div>
+                ) : (
+                  t('hero.getStarted')
+                )}
+              </button>
             </div>
           </div>
-        </div>
-        {/* Get Started Button (matches hero CTA pill style) */}
-        <div style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-          <button
-            onClick={handleGetStarted}
-            disabled={isLoading}
-            className="btn-primary hero-cta"
-            style={{
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              opacity: isLoading ? 0.6 : 1
-            }}
-          >
-            {isLoading ? (
-              <div className="modern-spinner" style={{ display: 'inline-flex' }}>
-                <div className="modern-spinner-dot"></div>
-                <div className="modern-spinner-dot"></div>
-                <div className="modern-spinner-dot"></div>
-              </div>
-            ) : (
-              t('hero.getStarted')
-            )}
-          </button>
-          <p style={{ 
-            marginTop: 'var(--space-4)', 
-            fontSize: 'var(--text-sm)', 
-            color: 'var(--text-bright-muted)' 
-          }}>
-            {t('hero.seePriceInstantly')}
-          </p>
         </div>
       </div>
     </div>

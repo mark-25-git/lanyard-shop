@@ -9,7 +9,7 @@ export const revalidate = 0; // Never cache this page
 export default async function Home() {
   // Explicitly prevent caching
   noStore();
-  
+
   // Fetch stats server-side before rendering
   const stats = await getStats();
 

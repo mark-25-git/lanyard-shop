@@ -5,7 +5,7 @@ import { createServerClient } from './supabase';
  */
 export async function incrementStat(statKey: string, amount: number = 1): Promise<void> {
   const supabase = createServerClient();
-  
+
   // Try RPC function first (if it exists)
   const { error: rpcError } = await supabase.rpc('increment_stat', {
     stat_key: statKey,
@@ -47,7 +47,7 @@ export async function incrementStat(statKey: string, amount: number = 1): Promis
 
     const { error: updateError } = await supabase
       .from('stats')
-      .update({ 
+      .update({
         base_value: newValue,
         last_updated: new Date().toISOString()
       })
@@ -73,32 +73,48 @@ export async function getStats(): Promise<{
   complaints: number;
 } | null> {
   const supabase = createServerClient();
-  
-  const { data, error } = await supabase
-    .from('stats')
-    .select('stat_key, base_value');
 
-  if (error) {
-    console.error('Error fetching stats:', error);
+  try {
+    // strict timeout to prevent page hanging
+    const timeoutPromise = new Promise<null>((_, reject) => {
+      setTimeout(() => reject(new Error('Stats fetch timeout')), 2000);
+    });
+
+    const dbPromise = supabase
+      .from('stats')
+      .select('stat_key, base_value');
+
+    const result = await Promise.race([dbPromise, timeoutPromise]) as any;
+
+    // Check if result is what we expect from supbase
+    const data = result?.data;
+    const error = result?.error;
+
+    if (error) {
+      console.error('Error fetching stats:', error);
+      return null;
+    }
+
+    const stats = {
+      unique_events: 0,
+      lanyards_delivered: 0,
+      complaints: 0,
+    };
+
+    data?.forEach((stat: any) => {
+      if (stat.stat_key === 'unique_events') {
+        stats.unique_events = stat.base_value;
+      } else if (stat.stat_key === 'lanyards_delivered') {
+        stats.lanyards_delivered = stat.base_value;
+      } else if (stat.stat_key === 'complaints') {
+        stats.complaints = stat.base_value;
+      }
+    });
+
+    return stats;
+  } catch (err) {
+    console.error('Failed to fetch stats (timeout or error):', err);
     return null;
   }
-
-  const stats = {
-    unique_events: 0,
-    lanyards_delivered: 0,
-    complaints: 0,
-  };
-
-  data?.forEach((stat) => {
-    if (stat.stat_key === 'unique_events') {
-      stats.unique_events = stat.base_value;
-    } else if (stat.stat_key === 'lanyards_delivered') {
-      stats.lanyards_delivered = stat.base_value;
-    } else if (stat.stat_key === 'complaints') {
-      stats.complaints = stat.base_value;
-    }
-  });
-
-  return stats;
 }
 
